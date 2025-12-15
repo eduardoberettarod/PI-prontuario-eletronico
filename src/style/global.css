@@ -1,0 +1,19 @@
+:root {
+    --cor-primaria: #02498C;
+    --cor-primaria-hover: rgba(2, 73, 140, 0.65);
+    --cor-segundaria: #F79736;
+    --cor-segundaria-hover: rgba(247, 151, 54, 0.65);
+    --cor-terciaria: #FDBA7C;
+    --branco: #eee;
+    --font-size: 16px
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}

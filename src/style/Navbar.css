@@ -1,0 +1,39 @@
+.navbar-system {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 98%;
+    filter: drop-shadow(5px 10px 5px rgba(0, 0, 0, 0.15));
+}
+
+.icon-button, .icon-confi {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.icon-button{
+    background-color: var(--cor-primaria);
+}
+
+.icon-button:hover{
+    background-color: var(--cor-primaria-hover);
+}
+
+.icon-confi{
+    background-color: var(--cor-segundaria);
+}
+
+.icon-confi:hover{
+    background-color: var(--cor-segundaria-hover);
+}
+.icon-button i, .icon-confi i {
+    color: white;
+    transition: color 0.2s ease;
+}
+
