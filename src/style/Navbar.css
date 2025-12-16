@@ -6,7 +6,8 @@
     filter: drop-shadow(5px 10px 5px rgba(0, 0, 0, 0.15));
 }
 
-.icon-button, .icon-confi {
+.icon-button,
+.icon-confi {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -17,23 +18,51 @@
     transition: background-color 0.2s ease;
 }
 
-.icon-button{
+.icon-button {
     background-color: var(--cor-primaria);
 }
 
-.icon-button:hover{
+.icon-button:hover {
     background-color: var(--cor-primaria-hover);
 }
 
-.icon-confi{
+.icon-confi {
     background-color: var(--cor-segundaria);
 }
 
-.icon-confi:hover{
+.icon-confi:hover {
     background-color: var(--cor-segundaria-hover);
 }
-.icon-button i, .icon-confi i {
+
+.icon-button i,
+.icon-confi i {
     color: white;
     transition: color 0.2s ease;
 }
 
+.container-button-navbar {
+    gap: 55px;
+}
+
+@media (max-width:1260px) {
+    .container-button-navbar {
+        gap: 35px;
+    }
+}
+
+@media (max-width:1200px) {
+    .icon-button {
+        width: 50px;
+        height: 50px;
+    }
+
+    .icon-confi {
+        width: 40px;
+        height: 40px;
+        filter: drop-shadow(0 0 3px var(--cor-segundaria));
+    }
+
+    .btn-slide-navbar:hover {
+        background-color: var(--bg-card);
+    }
+}
