@@ -3,16 +3,6 @@ import '../style/Navbar.css'
 import logo from '/image/logo.svg';
 import { NavLink } from "react-router-dom";
 
-
-const pageTitles = {
-    dashboard: 'Dashboard',
-    pacientes: 'Pacientes',
-    prontuarios: 'Prontuários',
-    relatorios: 'Relatórios',
-    remedios: 'Remédios',
-};
-
-
 const navItems = [
     {
         route: 'dashboard',
@@ -113,11 +103,11 @@ function Navbar() {
 
             {/* Navbar Mobile */}
 
-            <nav className="navbar fixed-top d-flex d-xl-none">
+            <nav className="navbar fixed-top d-flex d-xl-none mt-2">
                 <div className="container-fluid">
 
                     {/* Botões da Esquerda */}
-                    <div className="d-flex align-items-center ms-4">
+                    <div className="d-flex align-items-center ms-2">
                         <a
                             href="#"
                             className="navbar-brand d-flex align-items-center"
@@ -182,7 +172,7 @@ function Navbar() {
                         <a
                             href=''
                             className="btn btn-link icon-confi shadow-none focus-ring-0 p-0 position-absolute bottom-0 end-0 mb-4 me-4">
-                            <i className="bi bi-gear fs-6 mx-auto"></i>
+                            <i className="bi bi-gear fs-5 mx-auto"></i>
                         </a>
                     </div>
                 </div>

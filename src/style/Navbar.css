@@ -44,6 +44,7 @@
     gap: 55px;
 }
 
+
 @media (max-width:1260px) {
     .container-button-navbar {
         gap: 35px;
@@ -57,12 +58,20 @@
     }
 
     .icon-confi {
-        width: 40px;
-        height: 40px;
-        filter: drop-shadow(0 0 3px var(--cor-segundaria));
+        width: 50px;
+        height: 50px;
+        background-color: transparent;
+    }
+
+    .icon-confi i{
+        color: black;
+    }
+
+    .icon-confi:hover{
+        background-color: var(--bg-hover-button);
     }
 
     .btn-slide-navbar:hover {
-        background-color: var(--bg-card);
+        background-color: var(--bg-hover-button);
     }
 }
