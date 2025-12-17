@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from './components/Navbar/Navbar'
 
 //Páginas
-import Index from './pages/Home/Index.Jsx';
+import Index from './pages/Home/Index.jsx';
 
 
 
