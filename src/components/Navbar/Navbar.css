@@ -4,6 +4,7 @@
     transform: translateX(-50%);
     width: 98%;
     filter: drop-shadow(5px 10px 5px rgba(0, 0, 0, 0.15));
+    z-index: 1;
 }
 
 .icon-button {

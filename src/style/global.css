@@ -6,7 +6,9 @@
     --cor-terciaria: #FDBA7C;
     --branco: #eee;
     --bg-hover-button: rgba(0, 0, 0, 0.2);
-    --font-size: 16px
+    --font-size: 16px;
+    --mg-inline: 3.2rem;
+    --mg-inline-mobile: 1rem
 }
 
 * {
@@ -17,4 +19,9 @@
 
 html {
     scroll-behavior: smooth;
+}
+
+section{
+    width: 100%;
+    height: 100vh;
 }

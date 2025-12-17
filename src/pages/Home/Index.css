@@ -1,0 +1,83 @@
+#home-page-section {
+    position: absolute;
+    top: 0;
+    background-color: #e6f0fa;
+}
+
+.container-home {
+    position: relative;
+    top: 20%;
+    margin-inline: var(--mg-inline);
+}
+
+.container-home h1 {
+    font-size: 1.5rem;
+}
+
+.container-home p {
+    font-size: 14px;
+}
+
+.icon-pacientes-card {
+    content: '';
+    background-color: rgba(13, 109, 253, 0.25);
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-prescricoes-card {
+    content: '';
+    background-color: rgba(25, 135, 84, 0.25);
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-registros-card {
+    content: '';
+    background-color: rgba(247, 151, 54, 0.25);
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-registros-card i {
+    color: var(--cor-segundaria);
+}
+
+.icon-relatorios-card {
+    content: '';
+    background-color: rgba(152, 16, 250, 0.25);
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-relatorios-card i {
+    color: #9810FA;
+}
+
+@media (max-width:1200px) {
+    .container-home {
+        top: 12%;
+        margin-inline: var(--mg-inline-mobile);
+    }
+
+    .container-home h1 {
+        font-size: 1.5rem;
+    }
+
+    .container-home p {
+        font-size: 14px;
+    }
+
+}

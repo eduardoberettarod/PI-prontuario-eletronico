@@ -1,5 +1,5 @@
 import React from 'react'
-import '../style/Navbar.css'
+import './Navbar.css'
 import logo from '/image/logo.svg';
 import { NavLink } from "react-router-dom";
 
@@ -17,7 +17,7 @@ const navItems = [
     {
         route: 'prontuarios',
         label: 'Prontuários',
-        iconClass: "bi bi-file-earmark-text",
+        iconClass: "bi bi-file-earmark-medical",
     },
     {
         route: 'relatorios',
