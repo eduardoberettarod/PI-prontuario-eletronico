@@ -82,22 +82,32 @@ function Navbar() {
                     ))}
                 </div>
                 {/* Botões à direita */}
-                <div className="d-flex align-items-center me-4">
+                <div className="d-flex align-items-center me-2">
 
                     <div className="me-4">
                         <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
                         <p className="mb-0 small text-muted text-end">Docente</p>
                     </div>
-                    {/* Botão de perfil */}
-                    <button href='' className="btn btn-link icon-button shadow-none focus-ring-0 p-0 me-3">
-                        <i className='bi bi-person fs-6 mx-auto'></i>
-                    </button>
-                    {/* Botão de configuração */}
-                    <a
-                        href=''
-                        className="btn btn-link icon-confi shadow-none focus-ring-0 p-0">
-                        <i className="bi bi-gear fs-6 mx-auto"></i>
-                    </a>
+                    <div className="dropdown">
+                        <button
+                            className="btn icon-button shadow-none focus-ring-0 p-0 me-3 dropdown-toggle d-flex align-items-center"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            <span className="dropdown-icon">
+                                <i className="bi bi-person fs-6"></i>
+                            </span>
+                        </button>
+
+                        <ul className="dropdown-menu dropdown-menu-end">
+                            <li><a className="dropdown-item" href="#">Meu Perfil</a></li>
+                            <li><a className="dropdown-item" href="#">Configurações</a></li>
+                            <li><hr className="dropdown-divider" /></li>
+                            <li><a className="dropdown-item text-danger" href="#"><i className="bi bi-box-arrow-left fs-6 me-2"></i>Sair</a></li>
+                        </ul>
+                    </div>
+
                 </div>
             </nav>
 
@@ -143,7 +153,7 @@ function Navbar() {
 
                                 {/* Botão de perfil */}
                                 <button href='' className="btn btn-link icon-button shadow-none focus-ring-0 p-0 ms-2 me-3">
-                                    <i className='bi bi-person fs-6 mx-auto'></i>
+                                    <i className='bi bi-person fs-6 mx-auto text-white'></i>
                                 </button>
                                 <div className="me-4">
                                     <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
