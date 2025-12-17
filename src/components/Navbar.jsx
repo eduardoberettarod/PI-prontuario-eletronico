@@ -5,8 +5,8 @@ import { NavLink } from "react-router-dom";
 
 const navItems = [
     {
-        route: 'dashboard',
-        label: 'Dashboard',
+        route: 'index',
+        label: 'Página Inicial',
         iconClass: "bi bi-house",
     },
     {
@@ -101,13 +101,15 @@ function Navbar() {
                 </div>
             </nav>
 
+
+
             {/* Navbar Mobile */}
 
-            <nav className="navbar fixed-top d-flex d-xl-none mt-2">
+            <nav className="navbar fixed-top d-flex d-xl-none">
                 <div className="container-fluid">
 
                     {/* Botões da Esquerda */}
-                    <div className="d-flex align-items-center ms-2">
+                    <div className="d-flex align-items-center">
                         <a
                             href="#"
                             className="navbar-brand d-flex align-items-center"
@@ -152,9 +154,10 @@ function Navbar() {
                         </div>
                         <hr class="my-3 border-secondary opacity-25" />
                         <div className="offcanvas-body">
+                            <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
                                 {navItems.map(item => (
-                                    <li key={item.route} className="nav-item ms-2 btn p-lg-1 btn-slide-navbar d-flex mb-3 rounded-4">
+                                    <li key={item.route} className="nav-item ms-2 btn p-lg-1 btn-slide-navbar d-flex mb-1 rounded-4">
                                         <NavLink
                                             to={`/${item.route}`}
                                             className="nav-link ms-2"
@@ -164,16 +167,44 @@ function Navbar() {
                                         </NavLink>
                                     </li>
                                 ))}
+                                {/* Botão de configuração */}
+                                <li className="nav-item ms-2 btn p-lg-1 btn-slide-navbar d-flex mb-1 rounded-4">
+                                    <a href="" className="nav-link ms-2">
+                                        <i className="bi bi-gear fs-6 me-3"></i>
+                                        Configuração
+                                    </a>
+                                </li>
                             </ul>
                             <hr class="my-3 border-secondary opacity-25" />
+                            <div className='navbar-nav position-relative'>
+                                <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Serviços Rápidos</p>
+
+                                <div className="list-group rounded-4 p-2">
+                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                        <i className="bi bi-person-plus me-2"></i>
+                                        Registrar paciente
+                                    </button>
+
+                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                        <i className="bi bi-file-earmark-medical me-2"></i>
+                                        Criar prescrição
+                                    </button>
+
+                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                        <i className="bi bi-clipboard-plus me-2"></i>
+                                        Criar relatório
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr class="my-3 border-secondary opacity-25" />
+
+                            <button type='button' className='btn text-danger w-100 log-out mt-5'>
+                                <i class="bi bi-box-arrow-left fs-5 me-2"></i>
+                                Sair
+                            </button>
                         </div>
 
-                        {/* Botão de configuração */}
-                        <a
-                            href=''
-                            className="btn btn-link icon-confi shadow-none focus-ring-0 p-0 position-absolute bottom-0 end-0 mb-4 me-4">
-                            <i className="bi bi-gear fs-5 mx-auto"></i>
-                        </a>
                     </div>
                 </div>
             </nav>

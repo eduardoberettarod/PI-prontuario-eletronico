@@ -57,12 +57,6 @@
         height: 50px;
     }
 
-    .icon-confi {
-        width: 50px;
-        height: 50px;
-        background-color: transparent;
-    }
-
     .icon-confi i{
         color: black;
     }
@@ -73,5 +67,11 @@
 
     .btn-slide-navbar:hover {
         background-color: var(--bg-hover-button);
+    }
+    .quick-item{
+        padding: 18px;
+    }
+    .log-out{
+        border: 1px solid #dc3545;
     }
 }
