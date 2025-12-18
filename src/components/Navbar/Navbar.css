@@ -7,10 +7,6 @@
     z-index: 1;
 }
 
-.icon-button {
-    background-color: var(--cor-primaria);
-}
-
 .icon-button:hover {
     background-color: var(--cor-primaria-hover);
 }
@@ -69,8 +65,13 @@
         height: 50px;
     }
 
+    .btn-slide-navbar {
+        transition: 0.2s all;
+    }
+
     .btn-slide-navbar:hover {
         background-color: var(--bg-hover-button);
+
     }
 
     .quick-item {

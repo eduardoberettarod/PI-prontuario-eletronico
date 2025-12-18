@@ -1,7 +1,14 @@
 import React from 'react'
 import './Index.css'
+import TagStatus from '../../components/Tag/TagStatus';
 
 const Index = () => {
+
+    const paciente = {
+        nome: "João",
+        estado: "critico"
+    }
+
 
     const nomesDias = [
         "Domingo",
@@ -40,7 +47,7 @@ const Index = () => {
                     <div className="row g-3">
                         {/* card de pacientes ativos */}
                         <div className="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div className='card shadow-lg p-4 h-100'>
+                            <div className='card shadow p-4 h-100'>
                                 <span className='icon-pacientes-card rounded-2'>
                                     <i className='bi bi-people text-primary fs-4'></i>
                                 </span>
@@ -52,7 +59,7 @@ const Index = () => {
 
                         {/* card das prescrições */}
                         <div className="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div className='card shadow-lg p-4 h-100'>
+                            <div className='card shadow p-4 h-100'>
                                 <span className='icon-prescricoes-card rounded-2'>
                                     <i className='bi bi-journal-medical text-success fs-4'></i>
                                 </span>
@@ -63,7 +70,7 @@ const Index = () => {
 
                         {/* card de cuidados registrados */}
                         <div className="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div className='card shadow-lg p-4 h-100'>
+                            <div className='card shadow p-4 h-100'>
                                 <span className='icon-registros-card rounded-2'>
                                     <i className='bi bi-clipboard-check fs-4'></i>
                                 </span>
@@ -74,7 +81,7 @@ const Index = () => {
 
                         {/* card de relatorios escritos pelo usuario */}
                         <div className="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div className='card shadow-lg p-4 h-100'>
+                            <div className='card shadow p-4 h-100'>
                                 <span className='icon-relatorios-card rounded-2'>
                                     <i className='bi bi-clipboard fs-4'></i>
                                 </span>
@@ -84,6 +91,84 @@ const Index = () => {
                         </div>
                     </div>
 
+                    <div className='row g-3 mt-4'>
+
+                        {/* Card de ultimos acessos */}
+                        <div className='col-12 col-md-8'>
+                            <div className='list-group shadow h-100'>
+                                <div className='list-group-item p-3'>
+                                    <p className='fw-bold mb-0 fs-6 ms-2 mt-2'>Últimos Acessos</p>
+                                    <p className='card-subtitle opacity-75 mt-0 ms-2'>Pacientes acessados recentemente</p>
+                                </div>
+
+                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
+                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
+                                    <div className='p-2 w-75'>
+
+                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
+
+                                        <p className='opacity-75 m-0 a-card-home-subtitle'>Quarto 201/A • Equipe Azul</p>
+
+                                    </div>
+                                    <span className='position-relative align-items-end ms-3'>
+                                        <TagStatus status="critico" />
+                                    </span>
+                                </a>
+
+                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
+                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
+                                    <div className='p-2 w-75'>
+                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
+                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
+                                    </div>
+                                    <span className='position-relative align-items-end ms-3'>
+                                        <TagStatus status="estavel" />
+                                    </span>
+                                </a>
+
+                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home h-100'>
+                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
+                                    <div className='p-2 w-75'>
+
+                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
+
+                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
+
+                                    </div>
+                                    <span className='position-relative align-items-end ms-3'>
+                                        <TagStatus status="critico" />
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Card de acesso rapido */}
+                        <div className='col-12 col-md-4'>
+                            <div className='list-group shadow h-100'>
+                                <div className='list-group-item p-3'>
+                                    <p className='fw-bold mb-0 fs-6 ms-2 mt-2'>Acesso Rápido</p>
+                                    <p className='card-subtitle opacity-75 mt-0 ms-2'>Atalhos do sistema</p>
+                                </div>
+
+                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                    <span><i className="bi bi-person-plus"></i></span>
+                                    Registrar paciente
+                                </button>
+
+                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                    <span><i className="bi bi-file-earmark-medical"></i></span>
+                                    Criar prescrição
+                                </button>
+
+                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                    <span><i className="bi bi-clipboard-plus"></i></span>
+                                    Criar relatório
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </section>
         </>

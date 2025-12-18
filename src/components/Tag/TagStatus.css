@@ -1,0 +1,26 @@
+.tag {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.tag-critico {
+    background-color: rgb(220, 53, 69, 0.25);
+    /* vermelho */
+}
+
+.tag-estavel {
+    background-color: rgba(25, 135, 84, 0.25);
+    /* verde */
+}
+
+.tag-observacao {
+    background-color: rgba(255, 193, 7, 0.25);
+    /* amarelo */
+}

@@ -160,7 +160,7 @@ function Navbar() {
                                     <p className="mb-0 small text-muted text-start">Docente</p>
                                 </div>
                             </div>
-                            <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                            <button type="button" className="btn-close me-1 mb-2" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
                         <hr class="my-3 border-secondary opacity-25" />
                         <div className="offcanvas-body">
