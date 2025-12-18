@@ -1,4 +1,5 @@
 :root {
+    --bg-body: #e6f0fa;
     --cor-primaria: #02498C;
     --cor-primaria-hover: rgba(2, 73, 140, 0.65);
     --cor-segundaria: #F79736;
@@ -9,6 +10,10 @@
     --font-size: 16px;
     --mg-inline: 3.2rem;
     --mg-inline-mobile: 1rem
+}
+
+body{
+    background-color: var(--bg-body);
 }
 
 * {

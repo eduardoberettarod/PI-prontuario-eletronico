@@ -115,7 +115,7 @@ function Navbar() {
 
             {/* Navbar Mobile */}
 
-            <nav className="navbar fixed-top d-flex d-xl-none">
+            <nav className="navbar fixed-top d-flex d-xl-none bg-navbar">
                 <div className="container-fluid">
 
                     {/* Botões da Esquerda */}
