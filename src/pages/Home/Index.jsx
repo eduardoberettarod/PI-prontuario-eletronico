@@ -2,7 +2,30 @@ import React from 'react'
 import './Index.css'
 
 const Index = () => {
+
+    const nomesDias = [
+        "Domingo",
+        "Segunda-Feira",
+        "Terça-Feira",
+        "Quarta-Feira",
+        "Quinta-Feira",
+        "Sexta-Feira",
+        "Sábado",
+    ];
+
+    const diaSemana = nomesDias[new Date().getDay()];
+    const hoje = new Date();
+
+    const dia = hoje.getDate();
+    const meses = [
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+    ];
+    const mes = meses[hoje.getMonth()];
+    const ano = hoje.getFullYear();
+
     return (
+
         <>
             <section id='home-page-section'>
 
@@ -11,7 +34,7 @@ const Index = () => {
                         <h1>
                             Boa noite, Dr. Eduardo!
                         </h1>
-                        <p className='opacity-75'>Sexta-Feira, 17 de novembro de dezembro de 2025</p>
+                        <p className='opacity-75'>{diaSemana}, {dia} de {mes} de {ano}</p>
                     </div>
 
                     <div className="row g-3">
