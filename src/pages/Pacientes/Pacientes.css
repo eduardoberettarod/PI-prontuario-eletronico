@@ -1,0 +1,74 @@
+#pacientes-page-section {
+    position: absolute;
+    top: 0;
+}
+
+.container-pacientes {
+    position: relative;
+    margin-inline: var(--mg-inline);
+    top: 20%;
+}
+
+.container-pacientes h2 {
+    font-size: 1.5rem;
+}
+
+.container-pacientes p {
+    font-size: 16px;
+}
+
+.input-search {
+    padding-left: 40px;                 
+    padding-right: 16px;                
+    padding-top: 15px;                  
+    padding-bottom: 15px;
+    border-radius: 8px;                 
+    border: 1px solid #d1d5db;          
+    font-size: 16px;
+}
+
+.btn-filter {
+    padding: 12px 24px;                
+    border-radius: 8px;                
+    border: 1px solid #d1d5db;         
+    background-color: #ffffff;         
+    color: #4b5563;                    
+    display: flex;                     
+    align-items: center;               
+    gap: 8px;                          
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.btn-filter:hover {
+    background-color: #f9fafb;
+}
+
+.btn-filter:focus {
+    outline: none;
+}
+
+
+@media (max-width:1200px) {
+    .container-pacientes {
+        top: 12%;
+        margin-inline: var(--mg-inline-mobile);
+    }
+
+    .container-pacientes h2 {
+        font-size: 1.5rem;
+    }
+
+    .container-pacientes p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 575.98px) { /* mobile do Bootstrap */
+    .header-action-btn {
+        width: 100%;
+    }
+    .container-action-btn{
+        width: 100%;
+    }
+}

@@ -8,7 +8,7 @@
     --branco: #eee;
     --bg-hover-button: rgba(0, 0, 0, 0.2);
     --font-size: 16px;
-    --mg-inline: 3.2rem;
+    --mg-inline: 20%;
     --mg-inline-mobile: 1rem
 }
 
@@ -29,4 +29,8 @@ html {
 section{
     width: 100%;
     height: 100vh;
+}
+
+.form-control::placeholder {
+  opacity: 0.75;
 }

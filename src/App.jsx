@@ -5,6 +5,7 @@ import Navbar from './components/Navbar/Navbar'
 
 //Páginas
 import Index from './pages/Home/Index.jsx';
+import Pacientes from './pages/Pacientes/Pacientes.jsx';
 
 
 
@@ -18,6 +19,7 @@ function App() {
         {/* conteudo das paginas */}
         <Routes>
           <Route path='/index' element={<Index />} ></Route>
+          <Route path='/pacientes' element={<Pacientes />} ></Route>
 
 
           {/* rota padrão */}
