@@ -103,40 +103,38 @@ const Index = () => {
 
                                 <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
                                     <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-                                    <div className='p-2 w-75'>
-
+                                    
+                                    <div className='p-2 width-a-home'>
                                         <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
-
-                                        <p className='opacity-75 m-0 a-card-home-subtitle'>Quarto 201/A • Equipe Azul</p>
-
+                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
                                     </div>
-                                    <span className='position-relative align-items-end ms-3'>
+
+                                    <span className='position-absolute end-0 me-4'>
                                         <TagStatus status="critico" />
                                     </span>
                                 </a>
 
                                 <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
                                     <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-                                    <div className='p-2 w-75'>
-                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
-                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
+                                    <div className='p-2 width-a-home'>
+                                        <p className='fw-bold mb-0'>Vania Rodrigues</p>
+                                        <p className='opacity-75 m-0'>Quarto 102/A • Equipe Amarela</p>
                                     </div>
-                                    <span className='position-relative align-items-end ms-3'>
+                                    <span className='position-absolute end-0 me-4'>
                                         <TagStatus status="estavel" />
                                     </span>
                                 </a>
 
                                 <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home h-100'>
                                     <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-                                    <div className='p-2 w-75'>
 
-                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
-
-                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
-
+                                    <div className='p-2 width-a-home'>
+                                        <p className='fw-bold mb-0'>Roberto Santana</p>
+                                        <p className='opacity-75 m-0 '>Quarto 325/B • Equipe Vermelha</p>
                                     </div>
-                                    <span className='position-relative align-items-end ms-3'>
-                                        <TagStatus status="critico" />
+
+                                    <span className='position-absolute end-0 me-4'>
+                                        <TagStatus status="observacao" />
                                     </span>
                                 </a>
                             </div>

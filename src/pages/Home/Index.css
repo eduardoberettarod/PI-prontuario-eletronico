@@ -95,9 +95,7 @@
 .a-card-home:hover{
     background-color: var(--bg-hover-button);
 }
-.a-card-home-subtitle{
-    font-size: 1rem;
-}
+
 .a-card-home-icon{
     width: 40px;
     height: 40px;
@@ -121,9 +119,8 @@
     .container-home p {
         font-size: 14px;
     }
-
-    .a-card-home-subtitle{
-        
+    .width-a-home{
+        width: 45%;
     }
 
 }
