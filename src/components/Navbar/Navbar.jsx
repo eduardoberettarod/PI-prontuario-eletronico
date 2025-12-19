@@ -162,28 +162,25 @@ function Navbar() {
                             </div>
                             <button type="button" className="btn-close me-1 mb-2" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
-                        <hr class="my-3 border-secondary opacity-25" />
+                        <hr className="my-3 border-secondary opacity-25" />
                         <div className="offcanvas-body">
                             <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
-                                {navItems.map(item => (
-                                    <li key={item.route} className="nav-item ms-2 btn p-lg-1 btn-slide-navbar d-flex mb-1 rounded-4">
-                                        <NavLink
-                                            to={`/${item.route}`}
-                                            className="nav-link ms-2"
-                                            data-bs-dismiss="offcanvas">
-                                            <i className={`${item.iconClass} fs-6 me-3`} />
-                                            {item.label}
-                                        </NavLink>
-                                    </li>
+                                {navItems.map((item) => (
+                                    <NavLink
+                                        key={item.route}
+                                        to={`/${item.route}`}
+                                        className= 'nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
+                                        <i className={`${item.iconClass} fs-6 me-3`} />
+                                        <span className="fs-6">{item.label}</span>
+                                    </NavLink>
+
                                 ))}
                                 {/* Botão de configuração */}
-                                <li className="nav-item ms-2 btn p-lg-1 btn-slide-navbar d-flex mb-1 rounded-4">
-                                    <a href="" className="nav-link ms-2">
+                                    <a href="/configuracao" className="nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2">
                                         <i className="bi bi-gear fs-6 me-3"></i>
                                         Configuração
                                     </a>
-                                </li>
                             </ul>
                             <hr class="my-3 border-secondary opacity-25" />
                             <div className='navbar-nav position-relative'>
