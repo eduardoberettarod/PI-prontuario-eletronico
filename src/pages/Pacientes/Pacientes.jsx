@@ -52,7 +52,8 @@ const Pacientes = () => {
                                     </select>
                                 </div>
 
-                                <div className='col-md-2 mt-5'>
+                                <div className='col-md-2'>
+                                    <label className='form-label'>Fator RH *</label>
                                     <select className='form-select'>
                                         <option value="+">+</option>
                                         <option value="-">-</option>
@@ -95,7 +96,7 @@ const Pacientes = () => {
                             </form>
                         </div>
 
-                        <div className="modal-footer">
+                        <div className="modal-footer mt-2">
                             <button
                                 className="btn btn-outline-danger"
                                 data-bs-dismiss="modal"
