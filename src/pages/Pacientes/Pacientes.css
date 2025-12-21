@@ -48,6 +48,18 @@
     outline: none;
 }
 
+.btn-Limparfiltro{
+    position: relative;
+    left: 100%;
+    transform: translateX(-100%);
+    border: none;
+    background-color: transparent;
+}
+
+.btn-Limparfiltro:hover{
+    opacity: 0.75; 
+}
+
 
 @media (max-width:1200px) {
     .container-pacientes {
