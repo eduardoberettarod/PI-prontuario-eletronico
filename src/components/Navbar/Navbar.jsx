@@ -167,13 +167,13 @@ function Navbar() {
                             <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
                                 {navItems.map((item) => (
-                                        <a
+                                        <NavLink
                                             key={item.route}
-                                            href={`/${item.route}`}
+                                            to={`/${item.route}`}
                                             className='nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
                                             <i className={`${item.iconClass} fs-6 me-3`} />
                                             <span className="fs-6">{item.label}</span>
-                                        </a>
+                                        </NavLink>
                                 ))}
                                 {/* Botão de configuração */}
                                 <a href="/configuracao" className="nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2">
