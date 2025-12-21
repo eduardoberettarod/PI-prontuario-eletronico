@@ -86,7 +86,7 @@ const Index = () => {
                         </div>
                     </div>
 
-                    <div className='row g-3 mt-4'>
+                    <div className='row g-3 mt-4 container-cards-home'>
 
                         {/* Card de ultimos acessos */}
                         <div className='col-12 col-md-8'>

@@ -125,3 +125,11 @@
     }
 
 }
+
+@media (max-width: 575.98px) {
+
+    /* mobile do Bootstrap */
+    .container-cards-home {
+        padding-bottom: 100px;
+    }
+}
