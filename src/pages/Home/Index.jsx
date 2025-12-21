@@ -4,11 +4,6 @@ import TagStatus from '../../components/Tag/TagStatus';
 
 const Index = () => {
 
-    const paciente = {
-        nome: "João",
-        estado: "critico"
-    }
-
 
     const nomesDias = [
         "Domingo",

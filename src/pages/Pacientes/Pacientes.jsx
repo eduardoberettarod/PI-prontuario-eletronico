@@ -1,10 +1,28 @@
 import React from 'react'
 import { useState } from "react";
+import { useRef } from "react";
 import './Pacientes.css'
-import TagStatus from '../../components/Tag/TagStatus'
+import CardPaciente from '../../components/Card/CardPaciente.jsx';
 
 const Pacientes = () => {
 
+    const NomePaciente = useRef(null)
+    const NomeMaePaciente = useRef(null)
+    const NascPaciente = useRef(null)
+    const TipoSanguePaciente = useRef(null)
+    const FatorRhPaciente = useRef(null)
+    const EquipePaciente = useRef(null)
+    const StatusPaciente = useRef(null)
+    const ConvenioPaciente = useRef(null)
+    const QuartoPaciente = useRef(null)
+    const LeitoPaciente = useRef(null)
+
+    const formFiltro = useRef(null)
+
+    function fnLimparFiltro() {
+        formFiltro.current.reset();
+
+    }
     const [ativo, setAtivo] = useState(false);
 
     return (
@@ -33,22 +51,22 @@ const Pacientes = () => {
 
                                 <div className='col-12'>
                                     <label className='form-label'>Nome do Paciente *</label>
-                                    <input type="text" className='form-control' />
+                                    <input type="text" className='form-control' ref={NomePaciente} />
                                 </div>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Nome da Mãe *</label>
-                                    <input type="text" className='form-control' />
+                                    <input type="text" className='form-control' ref={NomeMaePaciente} />
                                 </div>
 
                                 <div className='col-md-6'>
                                     <label className='form-label'>Data de Nascimento *</label>
-                                    <input type="date" className='form-control' />
+                                    <input type="date" className='form-control' ref={NascPaciente} />
                                 </div>
 
                                 <div className='col-md-4'>
                                     <label className='form-label'>Tipo Sanguíneo *</label>
-                                    <select className='form-select'>
+                                    <select className='form-select' ref={TipoSanguePaciente}>
                                         <option value={'A'}>A</option>
                                         <option value={'B'}>B</option>
                                         <option value={'AB'}>AB</option>
@@ -58,7 +76,7 @@ const Pacientes = () => {
 
                                 <div className='col-md-2'>
                                     <label className='form-label'>Fator RH *</label>
-                                    <select className='form-select'>
+                                    <select className='form-select' ref={FatorRhPaciente}>
                                         <option value={'-'}>+</option>
                                         <option value={'-'}>-</option>
                                     </select>
@@ -66,13 +84,13 @@ const Pacientes = () => {
 
                                 <div className='col-12'>
                                     <label className='form-label'>Equipe *</label>
-                                    <input type="text" className='form-control' placeholder='Ex: Equipe Azul - Clínica Médica' />
+                                    <input type="text" className='form-control' placeholder='Ex: Equipe Azul - Clínica Médica' ref={EquipePaciente} />
                                     <p className='small mt-1 opacity-50'>A equipe representa o grupo multiprofissional responsável pelo cuidado ao paciente</p>
                                 </div>
 
                                 <div className='col-md-6'>
                                     <label className='form-label'>Status do Paciente *</label>
-                                    <select className='form-select'>
+                                    <select className='form-select' ref={StatusPaciente}>
                                         <option value="estavel">Estável</option>
                                         <option value="observacao">Em Observação</option>
                                         <option value="critico">Crítico</option>
@@ -83,18 +101,18 @@ const Pacientes = () => {
                                 <div className='col-md-6'>
                                     <label className='form-label'>Convênio *</label>
                                     <input type="text" className='form-control'
-                                        placeholder='Ex: SUS, Unimed, etc.' />
+                                        placeholder='Ex: SUS, Unimed, etc.' ref={ConvenioPaciente} />
                                 </div>
 
                                 <div className='col-md-3'>
                                     <label className='form-label'>Quarto *</label>
                                     <input type="text" className='form-control'
-                                        placeholder='Ex: 201' />
+                                        placeholder='Ex: 201' ref={QuartoPaciente} />
                                 </div>
 
                                 <div className='col-md-3'>
                                     <label className='form-label'>Leito *</label>
-                                    <input type="text" className='form-control' placeholder='Ex: A' />
+                                    <input type="text" className='form-control' placeholder='Ex: A' ref={LeitoPaciente} />
                                 </div>
 
                             </form>
@@ -166,12 +184,12 @@ const Pacientes = () => {
 
                     {/* Collapse */}
                     <div class="collapse" id="FormularioFiltro">
-                        <form className='row g-3 form-control d-flex mt-3 m-0'>
+                        <form className='row g-3 form-control d-flex mt-3 m-0' ref={formFiltro}>
 
                             <div className='col-md-4'>
                                 <label className='form-label'>Status do Paciente</label>
                                 <select className='form-select'>
-                                    <option disabled>Todos os status</option>
+                                    <option value={''}>Todos os status</option>
                                     <option value={'estavel'}>Estável</option>
                                     <option value={'observacao'}>Em Observação</option>
                                     <option value={'critico'}>Crítico</option>
@@ -181,7 +199,7 @@ const Pacientes = () => {
                             <div className='col-md-4'>
                                 <label className='form-label'>Equipe</label>
                                 <select className='form-select'>
-                                    <option disabled>Todas as Equipes</option>
+                                    <option value={''}>Todas as Equipes</option>
                                     <option value={'ClinicaMedica'}>Equipe Azul - Clínica Médica</option>
                                     <option value={'Cardologia'}>Equipe Verde - Cardologia</option>
                                     <option value={'UTI'}>Equipe Vermelha - UTI</option>
@@ -191,18 +209,30 @@ const Pacientes = () => {
                             <div className='col-md-4'>
                                 <label className='form-label'>Convênio</label>
                                 <select className='form-select'>
-                                    <option disabled>Todos os convênios</option>
+                                    <option value={''}>Todos os convênios</option>
                                     <option value={'SUS'}>SUS</option>
                                     <option value={'Unimed'}>Unimed</option>
                                     <option value={'Particular'}>Particular</option>
+                                    <option value={'Outros'}>Outros</option>
                                 </select>
                             </div>
-                            <button type='button' className=' btn-Limparfiltro text-primary w-auto mt-3 mb-2'>
+                            <button type='button' className=' btn-Limparfiltro text-primary w-auto mt-3 mb-2' onClick={fnLimparFiltro}>
                                 Limpar filtros
                             </button>
                         </form>
                     </div>
 
+                </div>
+
+
+                <div className='mt-4'>
+                    <p className='opacity-75 small'>3 pacientes encontrados</p>
+                </div>
+
+                <div className='row g-2'>
+                    <div className='col-12 col-md-4'>
+                        <CardPaciente />
+                    </div>       
                 </div>
 
             </div>

@@ -1,0 +1,22 @@
+.card-paciente {
+    border-left: 5px solid blue;
+}
+
+.info-card-paciente {
+    font-size: 0.75rem;
+}
+
+.icon-card-status {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(0, 0, 255, 0.349);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.status-card-paciente {
+    position: relative;
+    
+}
