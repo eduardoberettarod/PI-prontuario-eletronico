@@ -3,10 +3,18 @@
     --cor-primaria: #02498C;
     --cor-primaria-hover: rgba(2, 73, 140, 0.65);
     --cor-segundaria: #F79736;
-    --cor-segundaria-hover: rgba(247, 151, 54, 0.65);
+    --cor-segundaria-hover: rgba(247, 151, 54, 0.25);
     --cor-terciaria: #FDBA7C;
     --branco: #eee;
-    --bg-hover-button: rgba(0, 0, 0, 0.2);
+    --success: rgba(25, 135, 84);
+    --success-hover: rgba(25, 135, 84, 0.25);
+    --danger: rgb(220, 53, 69);
+    --danger-hover: rgb(220, 53, 69, 0.25);
+    --primary: rgba(13, 109, 253);
+    --primary-hover: rgba(13, 109, 253, 0.25);
+    --warning: rgba(255, 193, 7);
+    --warning-hover: rgba(255, 193, 7, 0.25);
+    --bg-hover-button: rgba(0, 0, 0, 0.15);
     --font-size: 16px;
     --mg-inline: 15%;
     --mg-inline-mobile: 1rem

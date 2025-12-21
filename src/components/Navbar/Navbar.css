@@ -79,7 +79,7 @@
     }
 
     .log-out {
-        border: 1px solid #dc3545;
+        border: 1px solid var(--danger);
     }
 
     .bg-navbar {
