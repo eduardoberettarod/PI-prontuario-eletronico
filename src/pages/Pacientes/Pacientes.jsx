@@ -2,35 +2,64 @@ import React from 'react'
 import { useState } from "react";
 import { useRef } from "react";
 import './Pacientes.css'
-import CardPaciente from '../../components/Card/CardPaciente.jsx';
+import CardPaciente from '../../components/Card/CardPaciente';
+
 
 const Pacientes = () => {
 
-    const NomePaciente = useRef(null)
-    const NomeMaePaciente = useRef(null)
-    const NascPaciente = useRef(null)
-    const TipoSanguePaciente = useRef(null)
-    const FatorRhPaciente = useRef(null)
-    const EquipePaciente = useRef(null)
-    const StatusPaciente = useRef(null)
-    const ConvenioPaciente = useRef(null)
-    const QuartoPaciente = useRef(null)
-    const LeitoPaciente = useRef(null)
+    const NomePaciente = useRef(null);
+    const NomeMaePaciente = useRef(null);
+    const NascPaciente = useRef(null);
+    const TipoSanguePaciente = useRef(null);
+    const FatorRhPaciente = useRef(null);
+    const EquipePaciente = useRef(null);
+    const StatusPaciente = useRef(null);
+    const ConvenioPaciente = useRef(null);
+    const QuartoPaciente = useRef(null);
+    const LeitoPaciente = useRef(null);
+
+    const modalRef = useRef(null);
+
+
+    const [pacientes, setPacientes] = useState([]);
+
+    function fnCriarPaciente() {
+        const novoPaciente = {
+            NomePaciente: NomePaciente.current.value,
+            NomeMaePaciente: NomeMaePaciente.current.value,
+            NascPaciente: NascPaciente.current.value,
+            TipoSanguePaciente: TipoSanguePaciente.current.value,
+            FatorRhPaciente: FatorRhPaciente.current.value,
+            EquipePaciente: EquipePaciente.current.value,
+            StatusPaciente: StatusPaciente.current.value,
+            ConvenioPaciente: ConvenioPaciente.current.value,
+            QuartoPaciente: QuartoPaciente.current.value,
+            LeitoPaciente: LeitoPaciente.current.value,
+        };
+
+        setPacientes((prev) => [...prev, novoPaciente]);
+
+        // limpa campos
+        modalRef.current.querySelector("form").reset();
+    }
+
+
+    const [ativo, setAtivo] = useState(false);
 
     const formFiltro = useRef(null)
-
+    
     function fnLimparFiltro() {
         formFiltro.current.reset();
 
     }
-    const [ativo, setAtivo] = useState(false);
+    
 
     return (
         <section id='pacientes-page-section'>
 
 
             {/* Modal */}
-            <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden='true'>
+            <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden='true' ref={modalRef}>
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content">
 
@@ -125,9 +154,10 @@ const Pacientes = () => {
                             >
                                 Cancelar
                             </button>
-                            <button className="btn btn-primary">
+                            <button className="btn btn-primary" type="button" onClick={fnCriarPaciente}>
                                 Criar Paciente
                             </button>
+
                         </div>
 
                     </div>
@@ -230,9 +260,23 @@ const Pacientes = () => {
                 </div>
 
                 <div className='row g-2'>
-                    <div className='col-12 col-md-4'>
-                        <CardPaciente />
-                    </div>       
+                    {pacientes.map((p, index) => (
+                        <div className='col-12 col-md-4' key={index}>
+                            <CardPaciente
+                                NomePaciente={p.NomePaciente}
+                                NomeMaePaciente={p.NomeMaePaciente}
+                                NascPaciente={p.NascPaciente}
+                                StatusPaciente={p.StatusPaciente}
+                                TipoSanguePaciente={p.TipoSanguePaciente}
+                                FatorRhPaciente={p.FatorRhPaciente}
+                                QuartoPaciente={p.QuartoPaciente}
+                                LeitoPaciente={p.LeitoPaciente}
+                                EquipePaciente={p.EquipePaciente}
+                                ConvenioPaciente={p.ConvenioPaciente}
+                            />
+                        </div>
+                    ))}
+
                 </div>
 
             </div>
