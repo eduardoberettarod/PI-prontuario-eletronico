@@ -1,11 +1,27 @@
 import React from 'react'
 import { useState } from "react";
 import { useRef } from "react";
+import { useEffect } from 'react';
 import './Pacientes.css'
 import CardPaciente from '../../components/Card/CardPaciente';
+import * as bootstrap from 'bootstrap';
+
 
 
 const Pacientes = () => {
+
+    // Notificacao de paciente criado com sucesso
+    const toastRef = useRef(null);
+    const toastInstance = useRef(null);
+
+    useEffect(() => {
+        if (toastRef.current) {
+            toastInstance.current = bootstrap.Toast.getOrCreateInstance(toastRef.current);
+        }
+    }, []);
+
+
+    // variaveis para a criaçao do card dos pacientes
 
     const NomePaciente = useRef(null);
     const NomeMaePaciente = useRef(null);
@@ -17,12 +33,11 @@ const Pacientes = () => {
     const ConvenioPaciente = useRef(null);
     const QuartoPaciente = useRef(null);
     const LeitoPaciente = useRef(null);
-
     const modalRef = useRef(null);
-
-
     const [pacientes, setPacientes] = useState([]);
 
+
+    // funcao para criar paciente
     function fnCriarPaciente() {
         const novoPaciente = {
             NomePaciente: NomePaciente.current.value,
@@ -44,15 +59,15 @@ const Pacientes = () => {
     }
 
 
-    const [ativo, setAtivo] = useState(false);
 
+    // variaveis e funcao para limpar o form do botao de filtro
+    const [ativo, setAtivo] = useState(false);
     const formFiltro = useRef(null)
-    
     function fnLimparFiltro() {
         formFiltro.current.reset();
 
     }
-    
+
 
     return (
         <section id='pacientes-page-section'>
@@ -106,7 +121,7 @@ const Pacientes = () => {
                                 <div className='col-md-2'>
                                     <label className='form-label'>Fator RH *</label>
                                     <select className='form-select' ref={FatorRhPaciente}>
-                                        <option value={'-'}>+</option>
+                                        <option value={'+'}>+</option>
                                         <option value={'-'}>-</option>
                                     </select>
                                 </div>
@@ -154,12 +169,32 @@ const Pacientes = () => {
                             >
                                 Cancelar
                             </button>
-                            <button className="btn btn-primary" type="button" onClick={fnCriarPaciente}>
+                            <button
+                                className="btn btn-primary"
+                                type="button"
+                                onClick={() => {
+                                    fnCriarPaciente();
+                                    toastInstance.current.show();
+                                }}
+                            >
                                 Criar Paciente
                             </button>
 
+
                         </div>
 
+                    </div>
+                </div>
+            </div>
+
+            <div className="toast-container position-fixed bottom-0 end-0 p-3">
+                <div ref={toastRef} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div className="toast-header toast-color">
+                        <strong className="me-auto d-flex align-items-center text-success">Paciente Criado <i className='bi bi-check fs-5 ms-1'></i></strong>
+                        <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div className="toast-body">
+                        Paciente criado com sucesso!
                     </div>
                 </div>
             </div>

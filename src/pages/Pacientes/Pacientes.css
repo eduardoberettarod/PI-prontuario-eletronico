@@ -60,6 +60,10 @@
     opacity: 0.75; 
 }
 
+.toast-color{
+    background-color: var(--success-hover);
+}
+
 
 @media (max-width:1200px) {
     .container-pacientes {
