@@ -87,18 +87,40 @@ const Pacientes = () => {
         };
 
         setPacientes(prev => [...prev, novoPaciente]);
+    }
 
-        // fecha o modal corretamente
-        const modalInstance = bootstrap.Modal.getInstance(modalRef.current);
-        modalInstance.hide();
+    /* ============================
+VALIDAÇÃO PARA O FORM CRIAR PACIENTE
+============================ */
+    const formRef = useRef(null);
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const form = formRef.current;
+
+        // validação bootstrap
+        if (!form.checkValidity()) {
+            form.classList.add("was-validated");
+            return;
+        }
+
+        // 1️⃣ cria o paciente
+        fnCriarPaciente();
+
+        // 2️⃣ fecha o modal corretamente
+        const modal = bootstrap.Modal.getOrCreateInstance(modalRef.current);
+        modal.hide();
 
         // remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
         document.activeElement.blur();
 
-        // mostra o toast
+        // 3️⃣ mostra o toast
         toastInstance.current.show();
-    }
 
+        // 4️⃣ limpa o form
+        form.reset();
+        form.classList.remove("was-validated");
+    }
 
     /* ============================
        RESET AUTOMÁTICO DO FORM AO FECHAR O MODAL
@@ -143,46 +165,68 @@ const Pacientes = () => {
                         </div>
 
                         <div className="modal-body">
-                            <form className="row g-3">
+
+                            <form className="row g-3 needs-validation"
+                                noValidate
+                                ref={formRef}
+                                onSubmit={handleSubmit} >
 
                                 <div className="col-12">
                                     <label className="form-label">Nome do Paciente *</label>
-                                    <input type="text" className="form-control" ref={NomePaciente} />
+                                    <input type="text" className="form-control" ref={NomePaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe o nome do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-12">
                                     <label className="form-label">Nome da Mãe *</label>
-                                    <input type="text" className="form-control" ref={NomeMaePaciente} />
+                                    <input type="text" className="form-control" ref={NomeMaePaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe o nome da mãe do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-md-6">
                                     <label className="form-label">Data de Nascimento *</label>
-                                    <input type="date" className="form-control" ref={NascPaciente} />
+                                    <input type="date" className="form-control" ref={NascPaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe a data de nascimento do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-md-4">
                                     <label className="form-label">Tipo Sanguíneo *</label>
-                                    <select className="form-select" ref={TipoSanguePaciente}>
+                                    <select className="form-select" ref={TipoSanguePaciente} required>
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                         <option value="AB">AB</option>
                                         <option value="O">O</option>
                                     </select>
+                                    <div className="invalid-feedback">
+                                        Informe o tipo sanguíneo do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-md-2">
                                     <label className="form-label">Fator RH *</label>
-                                    <select className="form-select" ref={FatorRhPaciente}>
+                                    <select className="form-select" ref={FatorRhPaciente} required>
                                         <option value="+">+</option>
                                         <option value="-">-</option>
                                     </select>
+                                    <div className="invalid-feedback">
+                                        Informe o fator RH do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-12">
                                     <label className="form-label">Equipe *</label>
                                     <input type="text" className="form-control"
                                         placeholder="Ex: Equipe Azul - Clínica Médica"
-                                        ref={EquipePaciente} />
+                                        ref={EquipePaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe a equipe responsável pelo paciente.
+                                    </div>
                                     <p className="small mt-1 opacity-50">
                                         A equipe representa o grupo multiprofissional responsável pelo cuidado ao paciente
                                     </p>
@@ -190,11 +234,14 @@ const Pacientes = () => {
 
                                 <div className="col-md-6">
                                     <label className="form-label">Status do Paciente *</label>
-                                    <select className="form-select" ref={StatusPaciente}>
+                                    <select className="form-select" ref={StatusPaciente} required>
                                         <option value="estavel">Estável</option>
                                         <option value="observacao">Em Observação</option>
                                         <option value="critico">Crítico</option>
                                     </select>
+                                    <div className="invalid-feedback">
+                                        Informe o status do paciente.
+                                    </div>
                                     <p className="small mt-1 opacity-50">
                                         Define o nível de atenção necessário para o paciente
                                     </p>
@@ -204,39 +251,44 @@ const Pacientes = () => {
                                     <label className="form-label">Convênio *</label>
                                     <input type="text" className="form-control"
                                         placeholder="Ex: SUS, Unimed, etc."
-                                        ref={ConvenioPaciente} />
+                                        ref={ConvenioPaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe o convênio do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-md-3">
                                     <label className="form-label">Quarto *</label>
                                     <input type="text" className="form-control"
                                         placeholder="Ex: 201"
-                                        ref={QuartoPaciente} />
+                                        ref={QuartoPaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe o quarto do paciente.
+                                    </div>
                                 </div>
 
                                 <div className="col-md-3">
                                     <label className="form-label">Leito *</label>
                                     <input type="text" className="form-control"
                                         placeholder="Ex: A"
-                                        ref={LeitoPaciente} />
+                                        ref={LeitoPaciente} required />
+                                    <div className="invalid-feedback">
+                                        Informe o leito do paciente.
+                                    </div>
                                 </div>
 
+                                <div className="modal-footer mt-2">
+                                    <button className="btn btn-outline-danger" data-bs-dismiss="modal">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit" className="btn btn-primary">
+                                        Criar Paciente
+                                    </button>
+                                </div>
                             </form>
                         </div>
 
-                        <div className="modal-footer mt-2">
-                            <button className="btn btn-outline-danger" data-bs-dismiss="modal">
-                                Cancelar
-                            </button>
-
-                            <button
-                                className="btn btn-primary"
-                                type="button"
-                                onClick={fnCriarPaciente}
-                            >
-                                Criar Paciente
-                            </button>
-                        </div>
 
                     </div>
                 </div>
