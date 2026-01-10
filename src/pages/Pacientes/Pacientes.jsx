@@ -198,6 +198,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 <div className="col-md-4">
                                     <label className="form-label">Tipo Sanguíneo *</label>
                                     <select className="form-select" ref={TipoSanguePaciente} required>
+                                        <option value=""></option>
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                         <option value="AB">AB</option>
@@ -211,6 +212,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 <div className="col-md-2">
                                     <label className="form-label">Fator RH *</label>
                                     <select className="form-select" ref={FatorRhPaciente} required>
+                                        <option value=""></option>
                                         <option value="+">+</option>
                                         <option value="-">-</option>
                                     </select>
@@ -235,6 +237,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 <div className="col-md-6">
                                     <label className="form-label">Status do Paciente *</label>
                                     <select className="form-select" ref={StatusPaciente} required>
+                                        <option value=""></option>
                                         <option value="estavel">Estável</option>
                                         <option value="observacao">Em Observação</option>
                                         <option value="critico">Crítico</option>
