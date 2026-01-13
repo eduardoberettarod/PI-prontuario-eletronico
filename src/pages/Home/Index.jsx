@@ -143,20 +143,20 @@ const Index = () => {
                                     <p className='card-subtitle opacity-75 mt-0 ms-2'>Atalhos do sistema</p>
                                 </div>
 
-                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                <a href='/pacientes' className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-person-plus"></i></span>
                                     Registrar paciente
-                                </button>
+                                </a>
 
-                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                <a href='/prescricao' className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-file-earmark-medical"></i></span>
                                     Criar prescrição
-                                </button>
+                                </a>
 
-                                <button className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                <a className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-clipboard-plus"></i></span>
                                     Criar relatório
-                                </button>
+                                </a>
 
                             </div>
                         </div>

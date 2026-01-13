@@ -89,14 +89,31 @@ const Pacientes = () => {
         setPacientes(prev => [...prev, novoPaciente]);
     }
 
+    const NascInvalido = useRef(null);
     /* ============================
 VALIDAÇÃO PARA O FORM CRIAR PACIENTE
 ============================ */
     const formRef = useRef(null);
     function handleSubmit(e) {
+
+        NascInvalido.current.style.display = "none";
+
         e.preventDefault();
 
         const form = formRef.current;
+
+        const hoje = new Date();
+        const anoAtual = hoje.getFullYear();
+
+        const nascimento = new Date(NascPaciente.current.value);
+        const anoNascimento = nascimento.getFullYear();
+
+        if (anoNascimento > anoAtual) {
+            NascInvalido.current.style.display = "block";
+            return;
+        }
+
+
 
         // validação bootstrap
         if (!form.checkValidity()) {
@@ -104,20 +121,20 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
             return;
         }
 
-        // 1️⃣ cria o paciente
+        // 1️ cria o paciente
         fnCriarPaciente();
 
-        // 2️⃣ fecha o modal corretamente
+        // 2️ fecha o modal corretamente
         const modal = bootstrap.Modal.getOrCreateInstance(modalRef.current);
         modal.hide();
 
         // remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
         document.activeElement.blur();
 
-        // 3️⃣ mostra o toast
+        // 3️ mostra o toast
         toastInstance.current.show();
 
-        // 4️⃣ limpa o form
+        // 4️ limpa o form
         form.reset();
         form.classList.remove("was-validated");
     }
@@ -192,6 +209,9 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                     <input type="date" className="form-control" ref={NascPaciente} required />
                                     <div className="invalid-feedback">
                                         Informe a data de nascimento do paciente.
+                                    </div>
+                                    <div className="small text-danger nascInvalido" ref={NascInvalido}>
+                                        Informe uma data de nascimento válida para o paciente.
                                     </div>
                                 </div>
 

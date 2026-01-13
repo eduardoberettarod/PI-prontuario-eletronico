@@ -3,6 +3,10 @@
     top: 0;
 }
 
+.nascInvalido{
+    display: none;
+}
+
 .container-pacientes {
     position: relative;
     margin-inline: var(--mg-inline);
