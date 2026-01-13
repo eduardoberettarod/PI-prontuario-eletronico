@@ -16,7 +16,23 @@
     border-radius: 50%;
 }
 
+.status-observacao.card-paciente {
+    border-left-color: var(--warning);
+}
+
+.status-observacao.icon-card-status {
+    background-color: var(--warning-hover);
+}
+
+.status-critico.card-paciente {
+    border-left-color: var(--danger);
+}
+
+.status-critico.icon-card-status {
+    background-color: var(--danger-hover);
+}
+
+
 .status-card-paciente {
     position: relative;
-
 }

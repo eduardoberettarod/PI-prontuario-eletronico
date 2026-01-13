@@ -17,6 +17,8 @@ function CardPaciente({
     NomeMaePaciente,
 }) {
 
+    const statusClass = `status-${StatusPaciente}`
+
     const nascimento = new Date(NascPaciente);
     const hoje = new Date();
 
@@ -29,10 +31,10 @@ function CardPaciente({
 
     return (
         <>
-            <div className='card rounded-2 p-3 card-paciente'>
+            <div className={`card rounded-2 p-3 card-paciente ${statusClass}`}>
                 <div className='d-flex pt-2 justify-content-between align-items-center'>
                     <div className='d-flex w-100'>
-                        <span className='icon-card-status'>
+                        <span className={`icon-card-status ${statusClass}`}>
                             <i className='bi bi-person fs-5'></i>
                         </span>
 
