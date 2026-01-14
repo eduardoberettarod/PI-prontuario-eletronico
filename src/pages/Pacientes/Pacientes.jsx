@@ -67,7 +67,7 @@ const Pacientes = () => {
     const ConvenioPaciente = useRef(null);
     const QuartoPaciente = useRef(null);
     const LeitoPaciente = useRef(null);
-    const modalRef = useRef(null);
+    const modalRefPaciente = useRef(null);
 
     const [pacientes, setPacientes] = useState([]);
 
@@ -125,7 +125,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
         fnCriarPaciente();
 
         // 2️ fecha o modal corretamente
-        const modal = bootstrap.Modal.getOrCreateInstance(modalRef.current);
+        const modal = bootstrap.Modal.getOrCreateInstance(modalRefPaciente.current);
         modal.hide();
 
         // remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
@@ -143,9 +143,9 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
        RESET AUTOMÁTICO DO FORM AO FECHAR O MODAL
     ============================ */
     useEffect(() => {
-        if (!modalRef.current) return;
+        if (!modalRefPaciente.current) return;
 
-        const modalEl = modalRef.current;
+        const modalEl = modalRefPaciente.current;
 
         const handleHidden = () => {
             modalEl.querySelector("form").reset();
@@ -165,7 +165,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
         <section id="pacientes-page-section">
 
             {/* Modal Criar Paciente */}
-            <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden="true" ref={modalRef}>
+            <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden="true" ref={modalRefPaciente}>
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content">
 
