@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './Relatorio.css'
 import * as bootstrap from 'bootstrap';
 
@@ -7,10 +7,91 @@ import CardRelatorio from '../../components/CardRelatorio/CardRelatorio';
 
 const Relatorio = () => {
 
+  // TOAST RELATORIO
+  const toastRefRelatorio = useRef(null)
+  const toastInstanceRelatorio = useRef(null);
+
+  useEffect(() => {
+    if (toastRefRelatorio.current) {
+      toastInstanceRelatorio.current = bootstrap.Toast.getOrCreateInstance(toastRefRelatorio.current, {
+        autohide: true,
+        delay: 2500,
+      })
+    }
+  }, [])
+
+  // FORM DO MODAL DE RELATORIOS / CRIAR RELATORIO
+
   const modalRefRelatorio = useRef(null)
   const PacienteSelecionado = useRef(null)
   const TituloRelatorio = useRef(null)
   const ConteudoRelatorio = useRef(null)
+
+  const [relatorios, setRelatorios] = useState([]);
+
+  function fnCriarRelatorio() {
+
+    const novoRelatorio = {
+      PacienteSelecionado: PacienteSelecionado.current.value,
+      TituloRelatorio: TituloRelatorio.current.value,
+      ConteudoRelatorio: ConteudoRelatorio.current.value
+    };
+
+    setRelatorios(prev => [...prev, novoRelatorio]);
+  }
+
+  const formRefRelatorio = useRef(null)
+  function SubmitRelatorio(e) {
+
+    e.preventDefault();
+
+    const formRelatorio = formRefRelatorio.current
+
+    // validação bootstrap
+    if (!formRelatorio.checkValidity()) {
+      formRelatorio.classList.add("was-validated");
+      return
+    }
+
+    // cria o relatorio
+    fnCriarRelatorio();
+
+    //fecha o modal
+    const modalRelatorio = bootstrap.Modal.getOrCreateInstance(modalRefRelatorio.current);
+    modalRelatorio.hide();
+
+    //remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
+    document.activeElement.blur();
+
+    // 3️ mostra o toast
+    toastInstanceRelatorio.current?.show();
+
+
+    formRelatorio.classList.remove("was-validated")
+  }
+
+  useEffect(() => {
+    if (!modalRefRelatorio.current) return;
+
+    const modalElRelatorio = modalRefRelatorio.current;
+
+    const handleHidden = () => {
+      modalElRelatorio.querySelector('form').reset();
+    }
+
+    modalElRelatorio.addEventListener("hidden.bs.modal", handleHidden);
+
+    return () => {
+      modalElRelatorio.removeEventListener("hidden.bs.modal", handleHidden)
+    };
+  }, []);
+
+  // FUNCAO DELETAR RELATORIO
+  function fnDeletarRelatorio(indexParaDeletar) {
+    setRelatorios(prev =>
+      prev.filter((_, index) => index !== indexParaDeletar)
+    );
+  }
 
   return (
     <>
@@ -37,13 +118,14 @@ const Relatorio = () => {
 
                 <form className="row g-3 needs-validation"
                   noValidate
-                >
+                  ref={formRefRelatorio}
+                  onSubmit={SubmitRelatorio}>
 
                   <div className="col-12">
                     <label className="form-label">Paciente *</label>
                     <select type="text" className="form-select" ref={PacienteSelecionado} required>
                       <option value="" selected disabled>Selecione um paciente</option>
-                      <option value="">João da Silva - Quarto 201/A</option>
+                      <option value="João da Silva">João da Silva - Quarto 201/A</option>
                     </select>
                     <div className="invalid-feedback">
                       Selecione um paciente.
@@ -79,12 +161,17 @@ Sugestões de estrutura:
                   </div>
 
                   <div className="modal-footer mt-2">
-                    <button className="btn btn-outline-danger" data-bs-dismiss="modal">
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger"
+                      data-bs-dismiss="modal"
+                    >
                       Cancelar
                     </button>
 
+
                     <button type="submit" className="btn btn-primary">
-                      Criar Paciente
+                      Criar Relatório
                     </button>
                   </div>
                 </form>
@@ -93,6 +180,21 @@ Sugestões de estrutura:
           </div>
         </div>
 
+        {/* Toast Relatorio */}
+        <div className="toast-container position-fixed bottom-0 end-0 p-3">
+          <div ref={toastRefRelatorio} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div className="toast-header toast-color">
+              <strong className="me-auto d-flex align-items-center text-success">
+                Relatório Criado <i className="bi bi-check fs-5 ms-1"></i>
+              </strong>
+              <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+
+            <div className="toast-body">
+              Relatório criado com sucesso!
+            </div>
+          </div>
+        </div>
 
         {/* contudo principal */}
         <div className='container-relatorio'>
@@ -128,8 +230,17 @@ Sugestões de estrutura:
             </form>
           </div>
 
-          <div className='mt-4'>
-          <CardRelatorio />
+          <div className='mt-4 row g-2'>
+            {relatorios.map((r, index) => (
+              <div className='col-12' key={index}>
+                <CardRelatorio
+                  PacienteSelecionado={r.PacienteSelecionado}
+                  TituloRelatorio={r.TituloRelatorio}
+                  ConteudoRelatorio={r.ConteudoRelatorio}
+                  onDelete={() => fnDeletarRelatorio(index)}
+                />
+              </div>
+            ))}
           </div>
 
 

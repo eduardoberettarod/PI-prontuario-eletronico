@@ -1,7 +1,12 @@
 import React from 'react'
 import './CardRelatorio.css'
 
-const CardRelatorio = () => {
+function CardRelatorio ({
+    TituloRelatorio,
+    ConteudoRelatorio,
+    PacienteSelecionado,
+    onDelete
+}) {
 
     const hoje = new Date();
 
@@ -22,8 +27,8 @@ const CardRelatorio = () => {
                     </div>
 
                     <div className="col-12 col-md-11">
-                        <p className="fw-medium fs-6 mb-1 mt-2">Titulo</p>
-                        <p className="mb-0">Paciente: João Silva</p>
+                        <p className="fw-medium fs-6 mb-1 mt-2">{TituloRelatorio}</p>
+                        <p className="mb-0">Paciente: {PacienteSelecionado}</p>
                         <p className="mb-0">
                             Criado por Dr. Eduardo Rodrigues em {data}, {hora}
                         </p>
@@ -32,8 +37,8 @@ const CardRelatorio = () => {
 
                 </div>
 
-                <div className="bg-body-secondary p-2 mt-3 rounded-2 d-flex align-items-center">
-                    <p className="mb-0">conteudo</p>
+                <div className="bg-body-secondary p-2 mt-3 rounded-2 d-flex align-items-center" style={{ overflow: 'hidden' }}>
+                    <p className="mb-0">{ConteudoRelatorio}</p>
                 </div>
 
                 <div className="position-absolute end-0 me-3 top-0 mt-3 gap-2 d-flex">
@@ -41,7 +46,7 @@ const CardRelatorio = () => {
                         <i className="bi bi-printer text-primary fs-5"></i>
                     </button>
 
-                    <button className="btn">
+                    <button className="btn" onClick={onDelete}>
                         <i className="bi bi-trash text-danger fs-5"></i>
                     </button>
                 </div>

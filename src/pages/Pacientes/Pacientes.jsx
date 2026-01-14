@@ -95,13 +95,20 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
 ============================ */
     const formRef = useRef(null);
     function handleSubmit(e) {
-
-        NascInvalido.current.style.display = "none";
-
         e.preventDefault();
 
         const form = formRef.current;
 
+        // 🔥 1. validação bootstrap PRIMEIRO
+        if (!form.checkValidity()) {
+            form.classList.add("was-validated");
+            return;
+        }
+
+        // limpa erro manual
+        NascInvalido.current.style.display = "none";
+
+        // 🔥 2. validação manual (agora segura)
         const hoje = new Date();
         const anoAtual = hoje.getFullYear();
 
@@ -113,31 +120,19 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
             return;
         }
 
-
-
-        // validação bootstrap
-        if (!form.checkValidity()) {
-            form.classList.add("was-validated");
-            return;
-        }
-
-        // 1️ cria o paciente
+        // cria o paciente
         fnCriarPaciente();
 
-        // 2️ fecha o modal corretamente
         const modal = bootstrap.Modal.getOrCreateInstance(modalRefPaciente.current);
         modal.hide();
 
-        // remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
         document.activeElement.blur();
-
-        // 3️ mostra o toast
         toastInstance.current.show();
 
-        // 4️ limpa o form
         form.reset();
         form.classList.remove("was-validated");
     }
+
 
     /* ============================
        RESET AUTOMÁTICO DO FORM AO FECHAR O MODAL
@@ -301,7 +296,11 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 </div>
 
                                 <div className="modal-footer mt-2">
-                                    <button className="btn btn-outline-danger" data-bs-dismiss="modal">
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-danger"
+                                        data-bs-dismiss="modal"
+                                    >
                                         Cancelar
                                     </button>
 
