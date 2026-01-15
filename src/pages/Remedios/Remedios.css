@@ -17,6 +17,18 @@
     font-size: 16px;
 }
 
+.icon-medicamento {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+
 @media (max-width:1200px) {
     .container-remedios {
         top: 12%;
@@ -31,6 +43,15 @@
         font-size: 14px;
     }
 }
+
+@media (max-width: 767.98px) {
+    .table thead th {
+        font-size: 0.85rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
+
 
 @media (max-width: 575.98px) {
 
