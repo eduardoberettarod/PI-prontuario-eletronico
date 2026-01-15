@@ -6,6 +6,34 @@ import * as bootstrap from 'bootstrap';
 import CardRelatorio from '../../components/CardRelatorio/CardRelatorio';
 
 const Relatorio = () => {
+  //EXCLUIR RELATORIO 
+  const [relatorioParaExcluir, setRelatorioParaExcluir] = useState(null);
+
+  function pedirConfirmacaoDelete(index) {
+    setRelatorioParaExcluir(index);
+
+    const modal = bootstrap.Modal.getOrCreateInstance(
+      document.getElementById('modalConfirmarDeleteRelatorio')
+    );
+
+    modal.show();
+  }
+
+  function confirmarDeleteRelatorio() {
+    setRelatorios(prev =>
+      prev.filter((_, index) => index !== relatorioParaExcluir)
+    );
+
+    setRelatorioParaExcluir(null);
+
+    const modal = bootstrap.Modal.getInstance(
+      document.getElementById('modalConfirmarDeleteRelatorio')
+    );
+
+    modal.hide();
+  }
+
+
 
   // TOAST RELATORIO
   const toastRefRelatorio = useRef(null)
@@ -237,13 +265,53 @@ Sugestões de estrutura:
                   PacienteSelecionado={r.PacienteSelecionado}
                   TituloRelatorio={r.TituloRelatorio}
                   ConteudoRelatorio={r.ConteudoRelatorio}
-                  onDelete={() => fnDeletarRelatorio(index)}
+                  onDelete={() => pedirConfirmacaoDelete(index)}
                 />
+
               </div>
             ))}
           </div>
 
 
+        </div>
+
+        {/* Modal para Deletar o Relatorio */}
+        <div
+          className="modal fade"
+          id="modalConfirmarDeleteRelatorio"
+          tabIndex="-1"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+
+              <div className="modal-header">
+                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
+                <button className="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div className="modal-body">
+                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este relatório?</p>
+                <p className="small text-muted">
+                  Essa ação não pode ser desfeita.
+                </p>
+              </div>
+
+              <div className="modal-footer">
+                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                  Cancelar
+                </button>
+
+                <button
+                  className="btn btn-danger"
+                  onClick={confirmarDeleteRelatorio}
+                >
+                  Excluir
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
 
       </section >

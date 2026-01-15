@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import './CardRelatorio.css'
 
-function CardRelatorio ({
+function CardRelatorio({
     TituloRelatorio,
     ConteudoRelatorio,
     PacienteSelecionado,
@@ -16,7 +16,7 @@ function CardRelatorio ({
 
     return (
         <>
-            <div className="card p-3 position-relative">
+            <div className="card p-3 position-relative card-relatorio">
 
                 <div className="row align-items-center">
 
@@ -49,6 +49,7 @@ function CardRelatorio ({
                     <button className="btn" onClick={onDelete}>
                         <i className="bi bi-trash text-danger fs-5"></i>
                     </button>
+
                 </div>
 
             </div>
