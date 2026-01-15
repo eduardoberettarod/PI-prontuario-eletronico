@@ -114,12 +114,7 @@ const Relatorio = () => {
     };
   }, []);
 
-  // FUNCAO DELETAR RELATORIO
-  function fnDeletarRelatorio(indexParaDeletar) {
-    setRelatorios(prev =>
-      prev.filter((_, index) => index !== indexParaDeletar)
-    );
-  }
+
 
   return (
     <>
@@ -252,7 +247,7 @@ Sugestões de estrutura:
                 <input
                   type="text"
                   className="form-control input-search"
-                  placeholder="Buscar por nome, equipe ou quarto..."
+                  placeholder="Buscar por título ou nome do paciente..."
                 />
               </div>
             </form>

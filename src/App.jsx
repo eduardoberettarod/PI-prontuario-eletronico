@@ -7,7 +7,7 @@ import Navbar from './components/Navbar/Navbar'
 import Index from './pages/Home/Index.jsx';
 import Pacientes from './pages/Pacientes/Pacientes.jsx';
 import Relatorio from './pages/Relatorios/Relatorio.jsx';
-
+import Remedios from './pages/Remedios/Remedios.jsx';
 
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
           <Route path='/index' element={<Index />} ></Route>
           <Route path='/pacientes' element={<Pacientes />} ></Route>
           <Route path='/relatorios' element={<Relatorio />} ></Route>
+          <Route path='/remedios' element={<Remedios />} ></Route>
 
 
           {/* rota padrão */}

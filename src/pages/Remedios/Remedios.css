@@ -1,0 +1,45 @@
+#remedios-page-section {
+    position: relative;
+    top: 0;
+}
+
+.container-remedios {
+    position: relative;
+    margin-inline: var(--mg-inline);
+    top: 11%;
+}
+
+.container-remedios h2 {
+    font-size: 1.5rem;
+}
+
+.container-remedios p {
+    font-size: 16px;
+}
+
+@media (max-width:1200px) {
+    .container-remedios {
+        top: 12%;
+        margin-inline: var(--mg-inline-mobile);
+    }
+
+    .container-remedios h2 {
+        font-size: 1.5rem;
+    }
+
+    .container-remedios p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    /* mobile do Bootstrap */
+    .header-action-btn {
+        width: 100%;
+    }
+
+    .container-action-btn {
+        width: 100%;
+    }
+}
