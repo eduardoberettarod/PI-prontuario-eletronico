@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import * as bootstrap from 'bootstrap'
 import './Remedios.css'
+import Navbar from '../../components/Navbar/Navbar';
 
 function Remedios() {
 
@@ -98,6 +99,7 @@ function Remedios() {
 
     return (
         <>
+        <Navbar />
             <section id='remedios-page-section'>
 
                 {/* Modal Criar Relatorio */}

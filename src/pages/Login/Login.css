@@ -1,0 +1,38 @@
+.login-page-section {
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.container-login {
+    position: relative;
+    margin-inline: var(--mg-inline);
+}
+
+.card-login {
+    width: 400px;
+}
+
+.card-login-footer p{
+    font-size: 15px;
+}
+
+.icon-logo-login{
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 575.98px) { /* mobile do Bootstrap */
+    .card-login{
+        width: 350px;
+    }
+
+    .icon-logo-login{
+        margin-left: 1rem;
+        margin-top: 1rem;
+    }
+}

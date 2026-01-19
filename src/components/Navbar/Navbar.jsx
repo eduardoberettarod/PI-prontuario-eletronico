@@ -102,9 +102,8 @@ function Navbar() {
 
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li><a className="dropdown-item" href="#">Meu Perfil</a></li>
-                            <li><a className="dropdown-item" href="#">Configurações</a></li>
                             <li><hr className="dropdown-divider" /></li>
-                            <li><a className="dropdown-item text-danger" href="#"><i className="bi bi-box-arrow-left fs-6 me-2"></i>Sair</a></li>
+                            <li><a className="dropdown-item text-danger" href="/login"><i className="bi bi-box-arrow-left fs-6 me-2"></i>Sair</a></li>
                         </ul>
                     </div>
 
@@ -176,10 +175,6 @@ function Navbar() {
                                         </NavLink>
                                 ))}
                                 {/* Botão de configuração */}
-                                <a href="/configuracao" className="nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2">
-                                    <i className="bi bi-gear fs-6 me-3"></i>
-                                    Configuração
-                                </a>
                             </ul>
                             <hr className="my-3 border-secondary opacity-25" />
                             <div className='navbar-nav position-relative'>
@@ -205,10 +200,10 @@ function Navbar() {
 
                             <hr className="my-3 border-secondary opacity-25" />
 
-                            <button type='button' className='btn text-danger w-100 log-out mt-5'>
+                            <a href='/login' className='btn text-danger w-100 log-out mt-5'>
                                 <i className="bi bi-box-arrow-left fs-5 me-2"></i>
                                 Sair
-                            </button>
+                            </a>
                         </div>
 
                     </div>

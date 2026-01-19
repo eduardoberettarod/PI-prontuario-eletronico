@@ -1,6 +1,7 @@
 import React from 'react'
 import './Index.css'
 import TagStatus from '../../components/Tag/TagStatus';
+import Navbar from '../../components/Navbar/Navbar';
 
 const Index = () => {
 
@@ -29,6 +30,7 @@ const Index = () => {
     return (
 
         <>
+        <Navbar />
             <section id='home-page-section'>
 
                 <div className='container-home'>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import './Pacientes.css';
 import CardPaciente from '../../components/Card/CardPaciente';
 import * as bootstrap from 'bootstrap';
+import Navbar from '../../components/Navbar/Navbar';
 
 const Pacientes = () => {
 
@@ -157,6 +158,8 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
 
 
     return (
+        <>
+        <Navbar />
         <section id="pacientes-page-section">
 
             {/* Modal Criar Paciente */}
@@ -455,6 +458,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
             </div>
 
         </section>
+        </>
     );
 };
 

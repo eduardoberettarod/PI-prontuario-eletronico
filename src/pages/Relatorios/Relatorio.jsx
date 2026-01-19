@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './Relatorio.css'
 import * as bootstrap from 'bootstrap';
+import Navbar from '../../components/Navbar/Navbar';
 
 //componentes
 import CardRelatorio from '../../components/CardRelatorio/CardRelatorio';
@@ -118,6 +119,7 @@ const Relatorio = () => {
 
   return (
     <>
+    <Navbar />
       <section id='relatorio-page-section'>
 
         {/* Modal Criar Relatorio */}
