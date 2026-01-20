@@ -1,42 +1,74 @@
-import React from 'react'
+import { useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Login.css'
-import logo from '/image/logo.svg';
+import logo from '/image/logo.svg'
 
 const Login = () => {
+
+    const NomeUsuario = useRef(null)
+    const SenhaUsuario = useRef(null)
+
+    const navigate = useNavigate()
+
+    function handleSubmitLogin(e) {
+        e.preventDefault()
+
+        const usuario = NomeUsuario.current.value
+        const senha = SenhaUsuario.current.value
+
+        // teste
+        alert(`Usuário: ${usuario} | Senha: ${senha}`)
+
+        // redireciona para /index
+        navigate('/index')
+    }
+
     return (
-        <>
-            <section id='login-page-section' className='d-flex align-items-center justify-content-center' style={{ minHeight: '100vh' }}>
-                
-                <img src={logo} alt="logo" className='icon-logo-login'/>
+        <section
+            id='login-page-section'
+            className='d-flex align-items-center justify-content-center'
+            style={{ minHeight: '100vh' }}
+        >
+            <img src={logo} alt="logo" className='icon-logo-login' />
 
+            <div className='card card-login p-4'>
+                <div className='d-flex align-items-center justify-content-center flex-column py-5'>
+                    <h1 className='text-center card-title fs-2'>Prontuário Eletrônico</h1>
+                    <p className='text-center card-subtitle small opacity-75'>
+                        Sistema de Prontuário Eletrônico Senac.
+                    </p>
+                </div>
 
-                <div className='card card-login p-4'>
-                    <div className='d-flex align-items-center justify-content-center flex-column py-5'>
-                        <h1 className='text-center card-title fs-2'>Prontuário Eletrônico</h1>
-                        <p className='text-center card-subtitle small opacity-75'>Sistema de Prontuário Eletrônico Senac.</p>
+                <form className='row g-3' onSubmit={handleSubmitLogin}>
+                    <div className='col-12'>
+                        <label className='form-label'>Usuário</label>
+                        <input
+                            type="text"
+                            className='form-control'
+                            placeholder='Digite seu nome'
+                            ref={NomeUsuario}
+                        />
                     </div>
 
-                    <form className='row g-3 needs-validation'>
-                        <div className='col-12'>
-                            <label className='form-label'>Email</label>
-                            <input type="text" className='form-control' placeholder='seu.email@senacsp.edu.br' />
-                        </div>
+                    <div className='col-12'>
+                        <label className='form-label'>Senha</label>
+                        <input
+                            type="password"
+                            className='form-control'
+                            placeholder='Senha'
+                            ref={SenhaUsuario}
+                        />
+                    </div>
 
-                        <div className='col-12'>
-                            <label className='form-label'>Senha</label>
-                            <input type="password" className='form-control' placeholder='Senha' />
-                        </div>
-
-                        <div className='card-login-footer'>
-                            <p>Não tem uma conta? <a href="#">Registre-se</a></p>
-                            <a href='/index' className="btn btn-primary w-100">
-                                Entrar
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </section>
-        </>
+                    <div className='card-login-footer'>
+                        <p>Não tem uma conta? <a href="#">Registre-se</a></p>
+                        <button type='submit' className="btn btn-primary w-100">
+                            Entrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
     )
 }
 
