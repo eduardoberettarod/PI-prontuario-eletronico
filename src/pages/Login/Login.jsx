@@ -5,19 +5,13 @@ import logo from '/image/logo.svg'
 
 const Login = () => {
 
-    const NomeUsuario = useRef(null)
+    const EmailUsuario = useRef(null)
     const SenhaUsuario = useRef(null)
 
     const navigate = useNavigate()
 
     function handleSubmitLogin(e) {
         e.preventDefault()
-
-        const usuario = NomeUsuario.current.value
-        const senha = SenhaUsuario.current.value
-
-        // teste
-        alert(`Usuário: ${usuario} | Senha: ${senha}`)
 
         // redireciona para /index
         navigate('/index')
@@ -39,14 +33,15 @@ const Login = () => {
                     </p>
                 </div>
 
-                <form className='row g-3' onSubmit={handleSubmitLogin}>
+                <form className='row g-3'
+                    onSubmit={handleSubmitLogin}>
                     <div className='col-12'>
-                        <label className='form-label'>Usuário</label>
+                        <label className='form-label'>Email</label>
                         <input
-                            type="text"
+                            type="email"
                             className='form-control'
-                            placeholder='Digite seu nome'
-                            ref={NomeUsuario}
+                            placeholder='seu.email@senacsp.edu.br'
+                            ref={EmailUsuario}
                         />
                     </div>
 

@@ -2,6 +2,7 @@ import React from 'react'
 import './Navbar.css'
 import logo from '/image/logo.svg';
 import { NavLink } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
 const navItems = [
     {
@@ -34,6 +35,11 @@ const navItems = [
 
 function Navbar() {
 
+    const navigate = useNavigate()
+
+    function fnSairLogin() {
+        navigate('/login')
+    }
 
     return (
         <>
@@ -103,7 +109,13 @@ function Navbar() {
                         <ul className="dropdown-menu dropdown-menu-end">
                             <li><a className="dropdown-item" href="#">Meu Perfil</a></li>
                             <li><hr className="dropdown-divider" /></li>
-                            <li><a className="dropdown-item text-danger" href="/login"><i className="bi bi-box-arrow-left fs-6 me-2"></i>Sair</a></li>
+                            <li>
+                                <button className="dropdown-item text-danger"
+                                    onClick={fnSairLogin}>
+                                    <i className="bi bi-box-arrow-left fs-6 me-2"></i>
+                                    Sair
+                                </button>
+                            </li>
                         </ul>
                     </div>
 
@@ -166,13 +178,13 @@ function Navbar() {
                             <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
                                 {navItems.map((item) => (
-                                        <NavLink
-                                            key={item.route}
-                                            to={`/${item.route}`}
-                                            className='nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
-                                            <i className={`${item.iconClass} fs-6 me-3`} />
-                                            <span className="fs-6">{item.label}</span>
-                                        </NavLink>
+                                    <NavLink
+                                        key={item.route}
+                                        to={`/${item.route}`}
+                                        className='nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
+                                        <i className={`${item.iconClass} fs-6 me-3`} />
+                                        <span className="fs-6">{item.label}</span>
+                                    </NavLink>
                                 ))}
                                 {/* Botão de configuração */}
                             </ul>
@@ -200,10 +212,10 @@ function Navbar() {
 
                             <hr className="my-3 border-secondary opacity-25" />
 
-                            <a href='/login' className='btn text-danger w-100 log-out mt-5'>
+                            <button onClick={fnSairLogin} className='btn text-danger w-100 log-out mt-5'>
                                 <i className="bi bi-box-arrow-left fs-5 me-2"></i>
                                 Sair
-                            </a>
+                            </button>
                         </div>
 
                     </div>
