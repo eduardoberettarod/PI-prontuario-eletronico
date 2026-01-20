@@ -132,4 +132,8 @@
     .container-cards-home {
         padding-bottom: 100px;
     }
+
+    #home-page-section {
+        margin-top: 5rem;
+    }
 }

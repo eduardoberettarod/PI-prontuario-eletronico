@@ -46,4 +46,8 @@
     .container-action-btn {
         width: 100%;
     }
+
+    #relatorio-page-section{
+        margin-top: 5rem;
+    }
 }

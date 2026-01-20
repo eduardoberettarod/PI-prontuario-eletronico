@@ -63,4 +63,8 @@
     .container-action-btn {
         width: 100%;
     }
+
+    #remedios-page-section {
+        margin-top: 5rem;
+    }
 }

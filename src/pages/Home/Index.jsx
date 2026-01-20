@@ -1,5 +1,6 @@
 import React from 'react'
 import './Index.css'
+import { NavLink } from "react-router-dom";
 import TagStatus from '../../components/Tag/TagStatus';
 import Navbar from '../../components/Navbar/Navbar';
 
@@ -145,10 +146,10 @@ const Index = () => {
                                     <p className='card-subtitle opacity-75 mt-0 ms-2'>Atalhos do sistema</p>
                                 </div>
 
-                                <a href='/pacientes' className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                <NavLink to='/pacientes' className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-person-plus"></i></span>
                                     Registrar paciente
-                                </a>
+                                </NavLink>
 
                                 <a href='/prescricao' className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-file-earmark-medical"></i></span>

@@ -1,4 +1,7 @@
 import React from 'react'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import * as bootstrap from 'bootstrap'
 import './Navbar.css'
 import logo from '/image/logo.svg';
 import { NavLink } from "react-router-dom";
@@ -40,6 +43,23 @@ function Navbar() {
     function fnSairLogin() {
         navigate('/login')
     }
+
+    const location = useLocation()
+
+    useEffect(() => {
+        const offcanvasEl = document.getElementById('offcanvasNavbar')
+
+        if (offcanvasEl) {
+            const instance = bootstrap.Offcanvas.getInstance(offcanvasEl)
+            if (instance) {
+                instance.hide()
+            }
+        }
+
+        // garante que o body volte ao normal
+        document.body.style.overflow = 'auto'
+    }, [location])
+
 
     return (
         <>
@@ -126,7 +146,7 @@ function Navbar() {
 
             {/* Navbar Mobile */}
 
-            <nav className="navbar fixed-top d-flex d-xl-none bg-navbar">
+            <nav className="navbar fixed-top d-flex d-xl-none bg-navbar navbar-mobile">
                 <div className="container-fluid">
 
                     {/* Botões da Esquerda */}
