@@ -156,10 +156,10 @@ const Index = () => {
                                     Criar prescrição
                                 </a>
 
-                                <a className="list-group-item d-flex align-items-center gap-3 button-card-home">
+                                <NavLink to={'/relatorios'} className="list-group-item d-flex align-items-center gap-3 button-card-home">
                                     <span><i className="bi bi-clipboard-plus"></i></span>
                                     Criar relatório
-                                </a>
+                                </NavLink>
 
                             </div>
                         </div>

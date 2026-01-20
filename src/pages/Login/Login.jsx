@@ -37,27 +37,33 @@ const Login = () => {
                     onSubmit={handleSubmitLogin}>
                     <div className='col-12'>
                         <label className='form-label'>Email</label>
-                        <input
-                            type="email"
-                            className='form-control'
-                            placeholder='seu.email@senacsp.edu.br'
-                            ref={EmailUsuario}
-                        />
+                        <div className='container-input-login'>
+                            <input
+                                type="email"
+                                className='form-control px-3'
+                                placeholder='seu.email@senacsp.edu.br'
+                                ref={EmailUsuario}
+                            />
+                            <i className='bi bi-person fs-5'></i>
+                        </div>
                     </div>
 
                     <div className='col-12'>
                         <label className='form-label'>Senha</label>
-                        <input
-                            type="password"
-                            className='form-control'
-                            placeholder='Senha'
-                            ref={SenhaUsuario}
-                        />
+                        <div className='container-input-login'>
+                            <input
+                                type="password"
+                                className='form-control h-50 px-3'
+                                placeholder='Senha'
+                                ref={SenhaUsuario}
+                            />
+                            <i className='bi bi-lock fs-5'></i>
+                        </div>
                     </div>
 
                     <div className='card-login-footer'>
                         <p>Não tem uma conta? <a href="#">Registre-se</a></p>
-                        <button type='submit' className="btn btn-primary w-100">
+                        <button type='submit' className="btn btn-primary w-100 py-2">
                             Entrar
                         </button>
                     </div>

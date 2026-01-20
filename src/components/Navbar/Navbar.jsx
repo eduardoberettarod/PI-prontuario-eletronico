@@ -213,20 +213,20 @@ function Navbar() {
                                 <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Serviços Rápidos</p>
 
                                 <div className="list-group rounded-4 p-2">
-                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                    <NavLink to={'/pacientes'} className="list-group-item d-flex btn-slide-navbar quick-item">
                                         <i className="bi bi-person-plus me-2"></i>
                                         Registrar paciente
-                                    </button>
+                                    </NavLink>
 
                                     <button className="list-group-item d-flex btn-slide-navbar quick-item">
                                         <i className="bi bi-file-earmark-medical me-2"></i>
                                         Criar prescrição
                                     </button>
 
-                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                    <NavLink to={'/relatorios'} className="list-group-item d-flex btn-slide-navbar quick-item">
                                         <i className="bi bi-clipboard-plus me-2"></i>
                                         Criar relatório
-                                    </button>
+                                    </NavLink>
                                 </div>
                             </div>
 

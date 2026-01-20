@@ -11,7 +11,7 @@
 }
 
 .card-login {
-    width: 400px;
+    width: 420px;
 }
 
 .card-login-footer p{
@@ -24,6 +24,23 @@
     left: 0;
     margin-left: 2rem;
     margin-top: 2rem;
+}
+
+.container-input-login{
+    position: relative;
+}
+
+.container-input-login input{
+    padding: 13px 0;
+}
+
+.container-input-login i{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 @media (max-width: 575.98px) { /* mobile do Bootstrap */
