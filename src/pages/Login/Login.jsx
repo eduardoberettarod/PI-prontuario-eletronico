@@ -1,12 +1,13 @@
 import React from 'react'
 import './Login.css'
+import logo from '/image/logo.svg';
 
 const Login = () => {
     return (
         <>
             <section id='login-page-section' className='d-flex align-items-center justify-content-center' style={{ minHeight: '100vh' }}>
                 
-                <img src="/public/image/logo.svg" alt="logo" className='icon-logo-login'/>
+                <img src={logo} alt="logo" className='icon-logo-login'/>
 
 
                 <div className='card card-login p-4'>
