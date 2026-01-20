@@ -438,7 +438,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                 {/* Cards */}
                 <div className="row g-2">
                     {pacientes.map((p, index) => (
-                        <div className="col-12 col-md-4" key={index}>
+                        <div className="col-12 col-md-4 card-pacientes" key={index}>
                             <CardPaciente
                                 NomePaciente={p.NomePaciente}
                                 NomeMaePaciente={p.NomeMaePaciente}
