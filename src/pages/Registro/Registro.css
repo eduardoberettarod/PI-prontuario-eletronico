@@ -1,0 +1,9 @@
+.card-register{
+    width: 60%;
+}
+
+@media (max-width: 575.98px) { /* mobile do Bootstrap */
+    .card-register{
+        width: 90%;
+    }
+}

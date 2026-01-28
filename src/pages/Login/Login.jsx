@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import './Login.css'
 import logo from '/image/logo.svg'
 
@@ -62,7 +62,7 @@ const Login = () => {
                     </div>
 
                     <div className='card-login-footer'>
-                        <p>Não tem uma conta? <a href="#">Registre-se</a></p>
+                        <p>Não tem uma conta? <NavLink to={'/registro'}>Registra-se</NavLink></p>
                         <button type='submit' className="btn btn-primary w-100 py-2">
                             Entrar
                         </button>

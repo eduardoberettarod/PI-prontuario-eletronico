@@ -10,6 +10,7 @@ import Relatorio from './pages/Relatorios/Relatorio.jsx';
 import Remedios from './pages/Remedios/Remedios.jsx';
 import Prontuarios from './pages/Prontuarios/Prontuarios.jsx';
 import Login from './pages/Login/Login.jsx';
+import Registro from './pages/Registro/Registro.jsx';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route path='/remedios' element={<Remedios />} ></Route>
         <Route path='/prontuarios' element={<Prontuarios />} ></Route>
         <Route path='/login' element={<Login />} ></Route>
+        <Route path='/registro' element={<Registro />} ></Route>
 
         {/* rota padrão */}
         <Route path="/" element={<Login />} />
