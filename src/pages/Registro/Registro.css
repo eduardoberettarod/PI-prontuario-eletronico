@@ -1,9 +1,23 @@
-.card-register{
+.card-register {
     width: 60%;
 }
 
-@media (max-width: 575.98px) { /* mobile do Bootstrap */
-    .card-register{
+@media (max-width: 575.98px) {
+
+    /* mobile do Bootstrap */
+    .card-register {
         width: 90%;
+    }
+}
+
+@media (max-width: 1300px) {
+    .container-img-register {
+        display: none;
+    }
+}
+
+@media (min-width: 1920px) {
+    .card-register {
+        width: 40%;
     }
 }

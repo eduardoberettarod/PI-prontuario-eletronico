@@ -17,7 +17,7 @@ const Registro = () => {
                 <div className='card p-4 d-flex card-register'>
 
                     <div className='d-flex gap-4 align-items-center'>
-                        <div className=' d-none d-md-none d-lg-block'>
+                        <div className='container-img-register'>
                             <img src={Logo} alt="" className='position-absolute ms-4 mt-4' style={{width:'35px'}} />
                             <img src={Medica} style={{height: '650px'}} className='object-fit-cover'/>
                         </div>
