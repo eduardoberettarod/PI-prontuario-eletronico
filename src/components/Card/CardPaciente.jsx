@@ -32,6 +32,7 @@ function CardPaciente({
     return (
         <>
             <div className={`card rounded-2 p-3 card-paciente ${statusClass}`}>
+                
                 <div className='d-flex pt-2 justify-content-between align-items-center'>
                     <div className='d-flex w-100'>
                         <span className={`icon-card-status ${statusClass}`}>
@@ -55,9 +56,22 @@ function CardPaciente({
 
 
                 <div className='d-grid mt-2 ms-2'>
-                    <p className='d-flex align-items-center gap-1'><i className='bi bi-heart fs-6 text-danger me-2'></i>Tipo: <span>{TipoSanguePaciente} {FatorRhPaciente}</span></p>
-                    <p className='d-flex align-items-center gap-1'><i className='bi bi-house fs-6 text-primary me-2'></i>Quarto <span>{QuartoPaciente} - Leito {LeitoPaciente}</span></p>
-                    <p className='d-flex align-items-center gap-1'><i className='bi bi-person-badge fs-6 text-success me-2'></i>Equipe <span>{EquipePaciente}</span></p>
+
+                    <p className='d-flex align-items-center gap-1'>
+                        <i className='bi bi-heart fs-6 text-danger me-2'></i>
+                        Tipo: <span>{TipoSanguePaciente} {FatorRhPaciente}</span>
+                    </p>
+
+                    <p className='d-flex align-items-center gap-1'>
+                        <i className='bi bi-house fs-6 text-primary me-2'></i>
+                        Quarto <span>{QuartoPaciente} - Leito {LeitoPaciente}</span>
+                    </p>
+
+                    <p className='d-flex align-items-center gap-1'>
+                        <i className='bi bi-person-badge fs-6 text-success me-2'></i>
+                        Equipe <span>{EquipePaciente}</span>
+                    </p>
+
                 </div>
                 <hr className="my-3 border-secondary opacity-25" />
 

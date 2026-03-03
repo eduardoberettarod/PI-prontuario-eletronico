@@ -19,7 +19,7 @@ const Registro = () => {
                     <div className='d-flex gap-4 align-items-center'>
                         <div className='container-img-register'>
                             <img src={Logo} alt="" className='position-absolute ms-4 mt-4' style={{width:'35px'}} />
-                            <img src={Medica} style={{height: '650px'}} className='object-fit-cover'/>
+                            <img src={Medica} style={{height: '625px'}} className='object-fit-cover'/>
                         </div>
 
                         <div className='d-flex flex-column'>
@@ -30,44 +30,49 @@ const Registro = () => {
                                 </p>
                             </div>
 
-                            <form className='row g-3'>
+                            <form className='row g-2'>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Primeiro Nome</label>
                                     <input type="text"
                                         className='form-control'
-                                    />
+                                        placeholder='Digite o seu primeiro nome'
+                                        />
                                 </div>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Sobrenome</label>
                                     <input type="text"
                                         className='form-control'
-                                    />
+                                        placeholder='Digite o seu sobrenome'
+                                        />
                                 </div>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Email</label>
                                     <input type="email"
                                         className='form-control'
-                                    />
+                                        placeholder='Digite o seu email'
+                                        />
                                 </div>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Senha</label>
                                     <input type="password"
                                         className='form-control'
-                                    />
+                                        placeholder='Digite a sua senha'
+                                        />
                                 </div>
 
                                 <div className='col-12'>
                                     <label className='form-label'>Confirme sua senha</label>
                                     <input type="password"
                                         className='form-control'
+                                        placeholder='Confirme a sua senha'
                                     />
                                 </div>
 
-                                <div>
+                                <div className='mt-4'>
                                     <button type='submit' className="btn btn-primary w-100 py-2">
                                         Registrar
                                     </button>

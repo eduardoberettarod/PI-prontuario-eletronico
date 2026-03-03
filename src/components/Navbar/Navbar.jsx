@@ -19,11 +19,6 @@ const navItems = [
         iconClass: "bi bi-people",
     },
     {
-        route: 'prontuarios',
-        label: 'Prontuários',
-        iconClass: "bi bi-file-earmark-medical",
-    },
-    {
         route: 'relatorios',
         label: 'Relatórios',
         iconClass: "bi bi-clipboard-data",
@@ -127,7 +122,7 @@ function Navbar() {
                         </button>
 
                         <ul className="dropdown-menu dropdown-menu-end">
-                            <li><a className="dropdown-item" href="#">Meu Perfil</a></li>
+                            <li><NavLink className="dropdown-item" to={'/perfil'}>Meu Perfil</NavLink></li>
                             <li><hr className="dropdown-divider" /></li>
                             <li>
                                 <button className="dropdown-item text-danger"
