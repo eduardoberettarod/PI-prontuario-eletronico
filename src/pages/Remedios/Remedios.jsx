@@ -213,8 +213,8 @@ function Remedios() {
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalCriarRemedio"
                             >
-                                Novo Medicamento
                                 <i className="bi bi-plus fs-5"></i>
+                                Novo Medicamento
                             </button>
                         </div>
                     </div>

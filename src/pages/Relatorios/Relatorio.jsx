@@ -236,8 +236,8 @@ Sugestões de estrutura:
                 data-bs-toggle="modal"
                 data-bs-target="#modalCriarRelatorio"
               >
-                Novo Relatório
                 <i className="bi bi-plus fs-5"></i>
+                Novo Relatório
               </button>
             </div>
           </div>

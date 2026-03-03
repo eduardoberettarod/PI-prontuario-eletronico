@@ -11,6 +11,7 @@ import Remedios from './pages/Remedios/Remedios.jsx';
 import Login from './pages/Login/Login.jsx';
 import Registro from './pages/Registro/Registro.jsx';
 import Perfil from './pages/Perfil/Perfil.jsx';
+import Prontuario from './pages/Prontuarios/Prontuario.jsx';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path='/index' element={<Index />} ></Route>
         <Route path='/pacientes' element={<Pacientes />} ></Route>
+        <Route path='/prontuario' element={<Prontuario />} ></Route>
         <Route path='/relatorios' element={<Relatorio />} ></Route>
         <Route path='/remedios' element={<Remedios />} ></Route>
         <Route path='/login' element={<Login />} ></Route>

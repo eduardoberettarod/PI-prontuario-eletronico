@@ -1,0 +1,117 @@
+#prontuario-page-section {
+    position: relative;
+    top: 0;
+    margin-top: 6rem;
+}
+
+.container-prontuario {
+    position: relative;
+    margin-inline: var(--mg-inline);
+    top: 11%;
+}
+
+.container-prontuario h2 {
+    font-size: 1.5rem;
+}
+
+.container-prontuario p {
+    font-size: 16px;
+}
+
+.icone-prontuario {
+    background-color: var(--warning-hover);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+#voltarPaciente {
+    width: max-content;
+}
+
+.prontuario-content {
+    margin-top: 2rem;
+}
+
+.icone-prontuario i {
+    font-size: 2rem;
+    color: var(--warning);
+}
+
+.tabs-container {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tab-content p {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+}
+
+.tab-content h6 {
+    margin-bottom: 0.35rem;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 14px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.tab-item:hover {
+  background-color: #f8f9fa;
+}
+
+.tab-item.active {
+  color: #0d6efd;
+  border-bottom: 3px solid #0d6efd;
+}
+
+.tab-content {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.card-prontuario {
+    border-top: 6px solid var(--warning);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width:1200px) {
+    .container-prontuario {
+        top: 12%;
+        margin-inline: var(--mg-inline-mobile);
+    }
+
+    .container-prontuario h2 {
+        font-size: 1.5rem;
+    }
+
+    .container-prontuario p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    .prontuario-content {
+        margin-top: 2rem;
+    }
+
+    #prontuario-page-section{
+        margin-top: 5rem;
+        padding-bottom: 5vh;
+    }
+}

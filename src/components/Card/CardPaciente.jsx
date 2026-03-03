@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { NavLink } from 'react-router-dom';
 import { useRef } from "react";
 import TagStatus from '../Tag/TagStatus.jsx'
 import './CardPaciente.css'
@@ -80,9 +80,9 @@ function CardPaciente({
                     <span className='opacity-50 mb-3'>Nome da Mãe: <span>{NomeMaePaciente}</span></span>
                 </div>
 
-                <button className='btn btn-primary w-100'>
+                <NavLink className='btn btn-primary w-100' to={'/prontuario'}>
                     Ver Prontuário
-                </button>
+                </NavLink>
             </div>
         </>
     )

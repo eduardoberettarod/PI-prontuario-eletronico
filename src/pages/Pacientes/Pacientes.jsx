@@ -352,8 +352,8 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                             data-bs-toggle="modal"
                             data-bs-target="#modalCriarPaciente"
                         >
-                            Novo Paciente
                             <i className="bi bi-plus fs-5"></i>
+                            Novo Paciente
                         </button>
                     </div>
                 </div>
