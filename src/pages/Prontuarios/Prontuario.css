@@ -28,6 +28,30 @@
     border-radius: 50%;
 }
 
+.icone-prontuario i {
+    font-size: 2rem;
+    color: var(--warning);
+}
+
+.icone-cuidados-registrados {
+    background-color: var(--bg-cor-primaria);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.icone-cuidados-registrados i {
+    font-size: 1rem;
+    color: var(--cor-primaria);
+}
+
+#descricao-cuidado {
+    font-size: 0.9rem;
+}
+
 #voltarPaciente {
     width: max-content;
 }
@@ -36,15 +60,10 @@
     margin-top: 2rem;
 }
 
-.icone-prontuario i {
-    font-size: 2rem;
-    color: var(--warning);
-}
-
 .tabs-container {
-  display: flex;
-  width: 100%;
-  border-bottom: 1px solid #dee2e6;
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #dee2e6;
 }
 
 .tab-content p {
@@ -57,27 +76,27 @@
 }
 
 .tab-item {
-  flex: 1;
-  padding: 14px 0;
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  font-weight: 500;
-  color: #6c757d;
-  transition: all 0.2s ease;
+    flex: 1;
+    padding: 14px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+    color: #6c757d;
+    transition: all 0.2s ease;
 }
 
 .tab-item:hover {
-  background-color: #f8f9fa;
+    background-color: #f8f9fa;
 }
 
 .tab-item.active {
-  color: #0d6efd;
-  border-bottom: 3px solid #0d6efd;
+    color: #0d6efd;
+    border-bottom: 3px solid #0d6efd;
 }
 
 .tab-content {
-  animation: fadeIn 0.2s ease-in-out;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
 .card-prontuario {
@@ -85,8 +104,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width:1200px) {
@@ -110,7 +136,7 @@
         margin-top: 2rem;
     }
 
-    #prontuario-page-section{
+    #prontuario-page-section {
         margin-top: 5rem;
         padding-bottom: 5vh;
     }

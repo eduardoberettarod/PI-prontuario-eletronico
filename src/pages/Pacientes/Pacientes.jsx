@@ -387,7 +387,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                     <div className="collapse" id="FormularioFiltro" ref={collapseRef}>
                         <form className="row g-3 form-control d-flex mt-3 m-0" ref={formFiltro}>
 
-                            <div className="col-md-4">
+                            <div className="col-md-6">
                                 <label className="form-label">Status do Paciente</label>
                                 <select className="form-select">
                                     <option value="">Todos os status</option>
@@ -397,17 +397,8 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 </select>
                             </div>
 
-                            <div className="col-md-4">
-                                <label className="form-label">Equipe</label>
-                                <select className="form-select">
-                                    <option value="">Todas as Equipes</option>
-                                    <option value="ClinicaMedica">Equipe Azul - Clínica Médica</option>
-                                    <option value="Cardologia">Equipe Verde - Cardologia</option>
-                                    <option value="UTI">Equipe Vermelha - UTI</option>
-                                </select>
-                            </div>
 
-                            <div className="col-md-4">
+                            <div className="col-md-6">
                                 <label className="form-label">Convênio</label>
                                 <select className="form-select">
                                     <option value="">Todos os convênios</option>

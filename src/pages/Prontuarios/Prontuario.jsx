@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+
+import * as bootstrap from 'bootstrap';
+
 import Navbar from '../../components/Navbar/Navbar'
 import TagStatus from '../../components/Tag/TagStatus'
 import './Prontuario.css'
-import { NavLink } from 'react-router-dom'
 
 const Prontuario = () => {
 
@@ -158,7 +161,7 @@ const Prontuario = () => {
                                                             {/* Lado esquerdo */}
                                                             <div className='row g-2'>
                                                                 <div className='col-12'>
-                                                                    <h6>Medicamento:  
+                                                                    <h6>Medicamento:
                                                                         <span className='text-muted fw-normal'> Dipirona</span>
                                                                     </h6>
                                                                 </div>
@@ -196,9 +199,54 @@ const Prontuario = () => {
 
                                     {activeTab === "cuidados" && (
                                         <div>
-                                            <h6>Cuidados de Enfermagem</h6>
-                                            <p>Monitorar pressão arterial</p>
-                                            <p>Controle de glicemia</p>
+                                            <div>
+                                                <button className='btn btn-primary d-flex align-items-center gap-2'>
+                                                    <i className='bi bi-plus fs-5'></i>
+                                                    Registrar Cuidado
+                                                </button>
+                                            </div>
+
+
+                                            {/* Usar essa div para caso nao tenha nenhum cuidado registrado */}
+
+                                            {/* <div className='mt-3 p-2 pb-3 text-muted'>
+
+                                                <span className='d-flex align-items-center gap-2 justify-content-center'>
+                                                    Nenhum cuidado registrado
+                                                    <i className="bi bi-heart-pulse"></i>
+                                                </span>
+
+                                            </div> */}
+
+                                            <div className='mt-3'>
+                                                <div className='border rounded-2 p-3'>
+
+                                                    <div className='d-flex justify-content-between align-items-center'>
+
+                                                        <div className='d-flex align-items-center gap-3'>
+                                                            <div>
+                                                                <span className='icone-cuidados-registrados'>
+                                                                    <i className="bi bi-heart-pulse"></i>
+                                                                </span>
+                                                            </div>
+
+                                                            <div className='w-75'>
+                                                                <h6>Tipo de cuidado</h6>
+                                                                <span id='descricao-cuidado' className='text-muted'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Placeat quaerat odio aperiam provident voluptatibus saepe voluptatum nemo quia, praesentium maxime ducimus rem cumque id explicabo quasi harum delectus ipsam dolorem?</span>
+                                                            </div>
+
+                                                        </div>
+
+
+                                                        <div className='w-100'>
+                                                            <p className='text-muted'>03/03/2026, 19:38</p>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
                                         </div>
                                     )}
 
