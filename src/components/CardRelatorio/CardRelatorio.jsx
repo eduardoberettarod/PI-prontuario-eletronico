@@ -42,6 +42,11 @@ function CardRelatorio({
                 </div>
 
                 <div className="position-absolute end-0 me-3 top-0 mt-3 gap-2 d-flex">
+
+                    <button className='btn'>
+                        <i className='bi bi-pencil-square text-success fs-5'></i>
+                    </button>
+
                     <button className="btn">
                         <i className="bi bi-printer text-primary fs-5"></i>
                     </button>

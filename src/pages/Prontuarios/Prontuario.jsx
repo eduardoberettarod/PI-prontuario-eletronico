@@ -10,6 +10,11 @@ import './Prontuario.css'
 const Prontuario = () => {
 
     const [activeTab, setActiveTab] = useState("dados");
+    const [validado, setValidado] = useState('validado1')
+
+    const handleChange = (event) => {
+        setValidado(event.target.value)
+    }
 
     return (
         <>
@@ -150,9 +155,50 @@ const Prontuario = () => {
 
                                             <div className='mt-3'>
                                                 <div className='border rounded-2 p-3'>
-                                                    <div>
-                                                        <h6>Prescrição criada por Dr. Eduardo Beretta</h6>
-                                                        <span>No dia 03/03/206, as 16:00</span>
+                                                    <div className='d-flex justify-content-between align'>
+                                                        <div>
+                                                            <h6>Prescrição criada por Dr. Eduardo Beretta</h6>
+                                                            <span>No dia 03/03/206, as 16:00</span>
+                                                        </div>
+
+                                                        <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                                            <input type="radio"
+                                                                className="btn-check"
+                                                                name="validadoOpcoes"
+                                                                id="btnradio1"
+                                                                value={'validado1'}
+                                                                checked={validado === 'validado1'}
+                                                                onChange={handleChange}
+                                                            />
+                                                            <label className="btn btn-outline-success d-flex align-items-center justify-content-center" htmlFor="btnradio1">
+                                                                <i className='bi bi-check2'></i>
+                                                            </label>
+
+                                                            <input type="radio"
+                                                                className="btn-check"
+                                                                name="validadoOpcoes"
+                                                                id="btnradio2"
+                                                                value={'validado2'}
+                                                                checked={validado === 'validado2'}
+                                                                onChange={handleChange}
+                                                            />
+                                                            <label className="btn btn-outline-warning d-flex align-items-center justify-content-center" htmlFor="btnradio2">
+                                                                <i className='bi bi-circle'></i>
+                                                            </label>
+
+                                                            <input type="radio"
+                                                                className="btn-check"
+                                                                name="validadoOpcoes"
+                                                                id="btnradio3"
+                                                                value={'validado3'}
+                                                                checked={validado === 'validado3'}
+                                                                onChange={handleChange}
+                                                            />
+                                                            <label className="btn btn-outline-danger d-flex align-items-center justify-content-center" htmlFor="btnradio3">
+                                                                <i className='bi bi-x-lg'></i>
+                                                            </label>
+                                                        </div>
+
                                                     </div>
 
                                                     <div className='border rounded-2 p-3 mt-3'>
