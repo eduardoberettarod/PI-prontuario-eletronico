@@ -40,7 +40,7 @@ const Prontuario = () => {
 
                                     <div className="d-flex flex-column">
                                         <h6 className='mb-0 mt-3'>Nome do Paciente</h6>
-                                        <p>17 anos <span>•</span> A+</p>
+                                        <p>Idade <span>•</span> Tipo Sanguíneo</p>
                                     </div>
                                 </div>
 
@@ -111,7 +111,7 @@ const Prontuario = () => {
                                                     <div className='row g-3'>
 
                                                         <div className='col-12'>
-                                                            <h6 className='fw-semibold'>Nome do Responsável</h6>
+                                                            <h6 className='fw-semibold'>Nome da Mãe</h6>
                                                             <span className='text-muted'>Maria da Silva Santos</span>
                                                         </div>
 
@@ -230,15 +230,15 @@ const Prontuario = () => {
                                                                 </span>
                                                             </div>
 
-                                                            <div className='w-75'>
+                                                            <div>
                                                                 <h6>Tipo de cuidado</h6>
-                                                                <span id='descricao-cuidado' className='text-muted'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Placeat quaerat odio aperiam provident voluptatibus saepe voluptatum nemo quia, praesentium maxime ducimus rem cumque id explicabo quasi harum delectus ipsam dolorem?</span>
+                                                                <span id='descricao-cuidado' className='text-muted'>Aplicar quando houver dor.</span>
                                                             </div>
 
                                                         </div>
 
 
-                                                        <div className='w-100'>
+                                                        <div>
                                                             <p className='text-muted'>03/03/2026, 19:38</p>
                                                         </div>
 
