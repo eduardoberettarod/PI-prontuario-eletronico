@@ -298,6 +298,16 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                     </div>
                                 </div>
 
+                                <div className="col-md-6">
+                                    <label className="form-label">Setor *</label>
+                                    <input type="text" className="form-control"
+                                        placeholder="Ex: Maternidade"
+                                         required />
+                                    <div className="invalid-feedback">
+                                        Informe o setor do paciente.
+                                    </div>
+                                </div>
+
                                 <div className="modal-footer mt-2">
                                     <button
                                         type="button"

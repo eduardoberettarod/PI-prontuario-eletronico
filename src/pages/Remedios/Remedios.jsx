@@ -99,7 +99,7 @@ function Remedios() {
 
     return (
         <>
-        <Navbar />
+            <Navbar />
             <section id='remedios-page-section'>
 
                 {/* Modal Criar Relatorio */}
@@ -169,7 +169,6 @@ function Remedios() {
                                             Cancelar
                                         </button>
 
-
                                         <button type="submit" className="btn btn-primary">
                                             Adicionar
                                         </button>
@@ -238,8 +237,8 @@ function Remedios() {
                                 <thead>
                                     <tr>
                                         <th className="ps-4 py-3">Medicamento</th>
-                                        <th className="px-4 py-3 d-none d-md-table-cell">Classe Terapêutica</th>
-                                        <th className='px-4 py-3'>Unidade</th>
+                                        <th className="px-3 py-3 d-none d-md-table-cell">Classe Terapêutica</th>
+                                        <th className="px-3 py-3">Unidade</th>
                                         <th className="pe-4 py-3 text-end">Ações</th>
                                     </tr>
                                 </thead>
@@ -255,7 +254,6 @@ function Remedios() {
                                     {medicamentos.map((med, index) => (
                                         <tr key={index} className="align-middle">
 
-                                            {/* Medicamento (ícone + nome) */}
                                             <td className="ps-4 py-3">
                                                 <div className="d-flex align-items-center gap-3">
                                                     <div className="icon-medicamento">
@@ -265,23 +263,28 @@ function Remedios() {
                                                 </div>
                                             </td>
 
-
-                                            {/* Classe terapêutica */}
-                                            <td className="py-3 px-3 d-none d-md-table-cell">{med.ClasseTerapeutica}</td>
-
-                                            {/* Unidade */}
-                                            <td className="py-3 px-3">{med.Unidade}</td>
-
-                                            {/* Ações */}
-                                            <td className="pe-4 py-3 text-end">
-                                                <button
-                                                    className="btn btn-sm text-danger p-1"
-                                                    onClick={() => removerMedicamento(index)}
-                                                >
-                                                    <i className="bi bi-trash fs-5"></i>
-                                                </button>
+                                            <td className="px-3 py-3 d-none d-md-table-cell">
+                                                {med.ClasseTerapeutica}
                                             </td>
 
+                                            <td className="px-3 py-3">
+                                                {med.Unidade}
+                                            </td>
+
+                                            <td className="pe-4 py-3 text-end">
+                                                <div className="d-inline-flex align-items-center gap-2">
+                                                    <button className="btn btn-sm text-success p-1">
+                                                        <i className="bi bi-pencil-square fs-5"></i>
+                                                    </button>
+
+                                                    <button
+                                                        className="btn btn-sm text-danger p-1"
+                                                        onClick={() => removerMedicamento(index)}
+                                                    >
+                                                        <i className="bi bi-trash fs-5"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
 
                                         </tr>
                                     ))}
