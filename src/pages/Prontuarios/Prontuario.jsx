@@ -102,30 +102,62 @@ const Prontuario = () => {
 
     const [prescricoesRegistradas, setprescricoesRegistradas] = useState([]);
 
+    function fnGerarHorarios(frequencia) {
+
+        const agora = new Date();
+        const horarios = [];
+
+        for (let i = frequencia; i <= 24; i += frequencia) {
+
+            const novaData = new Date(agora);
+
+            novaData.setHours(novaData.getHours() + i);
+
+            const dia = String(novaData.getDate()).padStart(2, "0");
+            const mes = String(novaData.getMonth() + 1).padStart(2, "0");
+            const ano = novaData.getFullYear();
+
+            const hora = String(novaData.getHours()).padStart(2, "0");
+            const minuto = String(novaData.getMinutes()).padStart(2, "0");
+
+            horarios.push({
+                data: `${dia}/${mes}/${ano}`,
+                hora: `${hora}:${minuto}`,
+                status: ""
+            });
+
+        }
+
+        return horarios;
+    }
+
     function fnAdicionarNovaPrescricao() {
 
+        const freq = parseInt(frequencia.current.value);
+
         const novaPrescricao = {
-            frequencia: frequencia.current.value,
+            frequencia: freq,
             medicamento: medicamento.current.value,
             dosagem: dosagem.current.value,
             unidade: unidade.current.value,
             via: via.current.value,
             observacaoPrescricao: observacaoPrescricao.current.value,
-            status: ""
+            horarios: fnGerarHorarios(freq)
         };
 
         setprescricoesRegistradas(prev => [...prev, novaPrescricao]);
     }
 
-    function alterarStatusPrescricao(index, status) {
+    function alterarStatusHorario(indexPrescricao, indexHorario, status) {
 
         setprescricoesRegistradas(prev => {
 
             const novas = [...prev];
 
-            novas[index].status = status;
+            novas[indexPrescricao].horarios[indexHorario].status = status;
 
             return novas;
+
         });
 
     }
@@ -338,6 +370,7 @@ const Prontuario = () => {
                                             onChange={(e) => setTipoCuidado(e.target.value)}>
                                             <option value="" disabled selected>Escolha um tipo de cuidado</option>
                                             <option value="outro">Outro</option>
+                                            <option value="teste">Teste</option>
                                         </select>
                                         <div className="invalid-feedback">
                                             Informe um cuidado.
@@ -554,48 +587,6 @@ const Prontuario = () => {
                                                                 <span>No dia 03/03/2026, às 16:00</span>
                                                             </div>
 
-                                                            <div className="grupo-validacao">
-
-                                                                <input
-                                                                    type="radio"
-                                                                    className="btn-check"
-                                                                    name={`validadoOpcoes-${index}`}
-                                                                    id={`validado-ok-${index}`}
-                                                                    checked={p.status === "ok"}
-                                                                    onChange={() => alterarStatusPrescricao(index, "ok")}
-                                                                />
-                                                                <label className="btn-validacao sucesso" htmlFor={`validado-ok-${index}`}>
-                                                                    <i className="bi bi-check2"></i>
-                                                                </label>
-
-
-                                                                <input
-                                                                    type="radio"
-                                                                    className="btn-check"
-                                                                    name={`validadoOpcoes-${index}`}
-                                                                    id={`validado-negadoPorPaciente-${index}`}
-                                                                    checked={p.status === "negadoPorPaciente"}
-                                                                    onChange={() => alterarStatusPrescricao(index, "negadoPorPaciente")}
-                                                                />
-                                                                <label className="btn-validacao negadoPorPaciente" htmlFor={`validado-negadoPorPaciente-${index}`}>
-                                                                    <i className="bi bi-circle"></i>
-                                                                </label>
-
-
-                                                                <input
-                                                                    type="radio"
-                                                                    className="btn-check"
-                                                                    name={`validadoOpcoes-${index}`}
-                                                                    id={`validado-negado-${index}`}
-                                                                    checked={p.status === "negado"}
-                                                                    onChange={() => alterarStatusPrescricao(index, "negado")}
-                                                                />
-                                                                <label className="btn-validacao negado" htmlFor={`validado-negado-${index}`}>
-                                                                    <i className="bi bi-x-lg"></i>
-                                                                </label>
-
-                                                            </div>
-
                                                         </div>
 
                                                         <div className='border rounded-2 p-3 mt-3'>
@@ -634,6 +625,66 @@ const Prontuario = () => {
                                                                 </div>
 
                                                             </div>
+
+                                                            <div className="mt-3">
+
+                                                                {p.horarios.map((h, i) => (
+
+                                                                    <div key={i} className="d-flex justify-content-between align-items-center border rounded p-2 mt-2">
+
+                                                                        <div className="d-flex flex-column">
+                                                                            <span className="fw-semibold">{h.hora}</span>
+                                                                            <span className="small text-muted">{h.data}</span>
+                                                                        </div>
+
+                                                                        <div className="grupo-validacao">
+
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="btn-check"
+                                                                                name={`horario-${index}-${i}`}
+                                                                                id={`ok-${index}-${i}`}
+                                                                                checked={h.status === "ok"}
+                                                                                onChange={() => alterarStatusHorario(index, i, "ok")}
+                                                                            />
+                                                                            <label className="btn-validacao sucesso" htmlFor={`ok-${index}-${i}`}>
+                                                                                <i className="bi bi-check2"></i>
+                                                                            </label>
+
+
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="btn-check"
+                                                                                name={`horario-${index}-${i}`}
+                                                                                id={`recusado-${index}-${i}`}
+                                                                                checked={h.status === "recusado"}
+                                                                                onChange={() => alterarStatusHorario(index, i, "recusado")}
+                                                                            />
+                                                                            <label className="btn-validacao negadoPorPaciente" htmlFor={`recusado-${index}-${i}`}>
+                                                                                <i className="bi bi-circle"></i>
+                                                                            </label>
+
+
+                                                                            <input
+                                                                                type="radio"
+                                                                                className="btn-check"
+                                                                                name={`horario-${index}-${i}`}
+                                                                                id={`negado-${index}-${i}`}
+                                                                                checked={h.status === "negado"}
+                                                                                onChange={() => alterarStatusHorario(index, i, "negado")}
+                                                                            />
+                                                                            <label className="btn-validacao negado" htmlFor={`negado-${index}-${i}`}>
+                                                                                <i className="bi bi-x-lg"></i>
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                ))}
+
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
