@@ -10,20 +10,7 @@ import './Prontuario.css'
 const Prontuario = () => {
 
     const [activeTab, setActiveTab] = useState("dados");
-    const [validado, setValidado] = useState('')
-    const [validadoCuidado, setValidadoCuidado] = useState('')
     const [tipoCuidado, setTipoCuidado] = useState("");
-
-    const handleChangeCuidado = (event) => {
-        setValidadoCuidado(event.target.value)
-    }
-
-    const handleChange = (event) => {
-        setValidado(event.target.value)
-    }
-
-    const modalCriarPrescricao = useRef(null)
-
 
     // Modal e crição de novos Cuidados
     const modalCriarCuidado = useRef(null)
@@ -36,10 +23,24 @@ const Prontuario = () => {
 
         const novoCuidado = {
             tipoCuidadoRegistrado: tipoCuidadoRegistrado.current.value,
-            observacao: observacao.current.value
+            observacao: observacao.current.value,
+            status: ""
         };
 
         setCuidadosRegistrados(prev => [...prev, novoCuidado]);
+    }
+
+    function alterarStatusCuidado(index, status) {
+
+        setCuidadosRegistrados(prev => {
+
+            const novos = [...prev];
+
+            novos[index].status = status;
+
+            return novos;
+        });
+
     }
 
     const formRefCuidados = useRef(null)
@@ -90,6 +91,90 @@ const Prontuario = () => {
         };
     }, []);
 
+    // Modal e crição de novas Prescrições
+    const modalCriarPrescricao = useRef(null)
+    const frequencia = useRef(null)
+    const medicamento = useRef(null)
+    const dosagem = useRef(null)
+    const unidade = useRef(null)
+    const via = useRef(null)
+    const observacaoPrescricao = useRef(null)
+
+    const [prescricoesRegistradas, setprescricoesRegistradas] = useState([]);
+
+    function fnAdicionarNovaPrescricao() {
+
+        const novaPrescricao = {
+            frequencia: frequencia.current.value,
+            medicamento: medicamento.current.value,
+            dosagem: dosagem.current.value,
+            unidade: unidade.current.value,
+            via: via.current.value,
+            observacaoPrescricao: observacaoPrescricao.current.value,
+            status: ""
+        };
+
+        setprescricoesRegistradas(prev => [...prev, novaPrescricao]);
+    }
+
+    function alterarStatusPrescricao(index, status) {
+
+        setprescricoesRegistradas(prev => {
+
+            const novas = [...prev];
+
+            novas[index].status = status;
+
+            return novas;
+        });
+
+    }
+
+    const formRefPrescricao = useRef(null)
+    function SubmitPrescricao(e) {
+
+        e.preventDefault();
+
+        const formPrescricao = formRefPrescricao.current
+
+        // validação bootstrap
+        if (!formPrescricao.checkValidity()) {
+            formPrescricao.classList.add("was-validated");
+            return
+        }
+
+        // adiciona o medicamento
+        fnAdicionarNovaPrescricao();
+
+        //fecha o modal
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(
+            modalCriarPrescricao.current
+        );
+        modalInstance.hide();
+
+        //remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
+        document.activeElement.blur();
+
+        formPrescricao.classList.remove("was-validated")
+    }
+
+    useEffect(() => {
+        if (!modalCriarPrescricao.current) return;
+
+        const modalEl = modalCriarPrescricao.current;
+
+        const handleHidden = () => {
+            formRefPrescricao.current?.reset();
+            formRefPrescricao.current?.classList.remove("was-validated");
+        };
+
+        modalEl.addEventListener("hidden.bs.modal", handleHidden);
+
+        return () => {
+            modalEl.removeEventListener("hidden.bs.modal", handleHidden);
+        };
+    }, []);
+
     return (
         <>
 
@@ -117,12 +202,15 @@ const Prontuario = () => {
 
                                 <form className="row g-3 needs-validation"
                                     noValidate
+                                    ref={formRefPrescricao}
+                                    onSubmit={SubmitPrescricao}
                                 >
 
                                     <div className="col-12">
                                         <label className="form-label">Medicamento *</label>
-                                        <select className='form-select' required>
+                                        <select className='form-select' required ref={medicamento}>
                                             <option value="" disabled selected>Escolha um medicamento</option>
+                                            <option value="Dipirona">Dipirona</option>
                                         </select>
                                         <div className="invalid-feedback">
                                             Informe um medicamento.
@@ -132,7 +220,7 @@ const Prontuario = () => {
                                     <div className="col-12">
                                         <label className="form-label">Dosagem *</label>
                                         <input type="number" className="form-control" required
-                                            placeholder='Ex: 500' />
+                                            placeholder='Ex: 500' ref={dosagem} />
                                         <div className="invalid-feedback">
                                             Informe a classe terapêutica.
                                         </div>
@@ -140,7 +228,7 @@ const Prontuario = () => {
 
                                     <div className="col-md-12">
                                         <label className="form-label">Unidade *</label>
-                                        <select className="form-select" required>
+                                        <select className="form-select" required ref={unidade}>
                                             <option value="" disabled selected>Escolha a unidade</option>
                                             <option value="mg">mg (miligramas)</option>
                                             <option value="g">g (gramas)</option>
@@ -156,12 +244,12 @@ const Prontuario = () => {
 
                                     <div className='col-12'>
                                         <label className='form-label'>Via *</label>
-                                        <input type="text" className='form-control' required placeholder='Ex: Oral' />
+                                        <input type="text" className='form-control' required placeholder='Ex: Oral' ref={via} />
                                     </div>
 
                                     <div className='col-12'>
                                         <label className='form-label'>Frequência *</label>
-                                        <select className="form-select" required>
+                                        <select className="form-select" required ref={frequencia}>
                                             <option value="" disabled selected>Escolha a frequência</option>
                                             <option value="1">1/1hr</option>
                                             <option value="2">2/2hr</option>
@@ -188,6 +276,11 @@ const Prontuario = () => {
                                             <option value="23">23/23hr</option>
                                             <option value="24">24/24hr</option>
                                         </select>
+                                    </div>
+
+                                    <div className='col-12'>
+                                        <label className='form-label'>Observação</label>
+                                        <input type="text" className='form-control' ref={observacaoPrescricao} placeholder='Ex: Se houver dor ou febre.' />
                                     </div>
 
                                     <div className="modal-footer mt-2">
@@ -440,100 +533,112 @@ const Prontuario = () => {
                                                 </button>
                                             </div>
 
-                                            <div className='mt-3'>
-                                                <div className='border rounded-2 p-3'>
-                                                    <div className='d-flex justify-content-between align'>
-                                                        <div>
-                                                            <h6>Prescrição criada por Dr. Eduardo Beretta</h6>
-                                                            <span>No dia 03/03/2026, às 16:00</span>
-                                                        </div>
+                                            {prescricoesRegistradas.length === 0 && (
+                                                <div className='mt-3 p-2 pb-3 text-muted'>
 
-                                                        <div className="grupo-validacao">
+                                                    <span className='d-flex align-items-center gap-2 justify-content-center'>
+                                                        Nenhuma prescrição registrada
+                                                        <i className="bi bi-file-medical"></i>
+                                                    </span>
 
-                                                            <input
-                                                                type="radio"
-                                                                className="btn-check"
-                                                                name="validadoOpcoes"
-                                                                id="validado-ok"
-                                                                value="validado1"
-                                                                checked={validado === 'validado1'}
-                                                                onChange={handleChange}
-                                                            />
-                                                            <label className="btn-validacao sucesso" htmlFor="validado-ok">
-                                                                <i className="bi bi-check2"></i>
-                                                            </label>
+                                                </div>
+                                            )}
 
+                                            {prescricoesRegistradas.map((p, index) => (
 
-                                                            <input
-                                                                type="radio"
-                                                                className="btn-check"
-                                                                name="validadoOpcoes"
-                                                                id="validado-pendente"
-                                                                value="validado2"
-                                                                checked={validado === 'validado2'}
-                                                                onChange={handleChange}
-                                                            />
-                                                            <label className="btn-validacao pendente" htmlFor="validado-pendente">
-                                                                <i className="bi bi-circle"></i>
-                                                            </label>
-
-
-                                                            <input
-                                                                type="radio"
-                                                                className="btn-check"
-                                                                name="validadoOpcoes"
-                                                                id="validado-negado"
-                                                                value="validado3"
-                                                                checked={validado === 'validado3'}
-                                                                onChange={handleChange}
-                                                            />
-                                                            <label className="btn-validacao negado" htmlFor="validado-negado">
-                                                                <i className="bi bi-x-lg"></i>
-                                                            </label>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                    <div className='border rounded-2 p-3 mt-3'>
-                                                        <div className='d-flex flex-column flex-md-row justify-content-between'>
-
-                                                            {/* Lado esquerdo */}
-                                                            <div className='row g-2'>
-                                                                <div className='col-12'>
-                                                                    <h6>Medicamento:
-                                                                        <span className='text-muted fw-normal'> Dipirona</span>
-                                                                    </h6>
-                                                                </div>
-
-                                                                <div className='col-12'>
-                                                                    <h6>Dosagem:
-                                                                        <span className='text-muted fw-normal'> 500 / mg</span>
-                                                                    </h6>
-                                                                </div>
-
-                                                                <div className='col-12'>
-                                                                    <h6>Via:
-                                                                        <span className='text-muted fw-normal'> Oral</span>
-                                                                    </h6>
-                                                                </div>
-
-                                                                <div className='col-12'>
-                                                                    <h6>Observações:
-                                                                        <span className='text-muted fw-normal'> Se houver dor ou febre</span>
-                                                                    </h6>
-                                                                </div>
+                                                <div className='mt-3' key={index}>
+                                                    <div className='border rounded-2 p-3'>
+                                                        <div className='d-flex justify-content-between align'>
+                                                            <div>
+                                                                <h6>Prescrição criada por Dr. Eduardo Beretta</h6>
+                                                                <span>No dia 03/03/2026, às 16:00</span>
                                                             </div>
 
-                                                            {/* Lado direito */}
-                                                            <div className='mt-3 mt-md-0 text-md-end'>
-                                                                <h6>Frequência: <span className='text-muted fw-normal'>24/24h</span></h6>
+                                                            <div className="grupo-validacao">
+
+                                                                <input
+                                                                    type="radio"
+                                                                    className="btn-check"
+                                                                    name={`validadoOpcoes-${index}`}
+                                                                    id={`validado-ok-${index}`}
+                                                                    checked={p.status === "ok"}
+                                                                    onChange={() => alterarStatusPrescricao(index, "ok")}
+                                                                />
+                                                                <label className="btn-validacao sucesso" htmlFor={`validado-ok-${index}`}>
+                                                                    <i className="bi bi-check2"></i>
+                                                                </label>
+
+
+                                                                <input
+                                                                    type="radio"
+                                                                    className="btn-check"
+                                                                    name={`validadoOpcoes-${index}`}
+                                                                    id={`validado-negadoPorPaciente-${index}`}
+                                                                    checked={p.status === "negadoPorPaciente"}
+                                                                    onChange={() => alterarStatusPrescricao(index, "negadoPorPaciente")}
+                                                                />
+                                                                <label className="btn-validacao negadoPorPaciente" htmlFor={`validado-negadoPorPaciente-${index}`}>
+                                                                    <i className="bi bi-circle"></i>
+                                                                </label>
+
+
+                                                                <input
+                                                                    type="radio"
+                                                                    className="btn-check"
+                                                                    name={`validadoOpcoes-${index}`}
+                                                                    id={`validado-negado-${index}`}
+                                                                    checked={p.status === "negado"}
+                                                                    onChange={() => alterarStatusPrescricao(index, "negado")}
+                                                                />
+                                                                <label className="btn-validacao negado" htmlFor={`validado-negado-${index}`}>
+                                                                    <i className="bi bi-x-lg"></i>
+                                                                </label>
+
                                                             </div>
 
+                                                        </div>
+
+                                                        <div className='border rounded-2 p-3 mt-3'>
+                                                            <div className='d-flex flex-column flex-md-row justify-content-between'>
+
+
+                                                                <div className='row g-2'>
+                                                                    <div className='col-12'>
+                                                                        <h6>Medicamento:
+                                                                            <span className='text-muted fw-normal'> {p.medicamento}</span>
+                                                                        </h6>
+                                                                    </div>
+
+                                                                    <div className='col-12'>
+                                                                        <h6>Dosagem:
+                                                                            <span className='text-muted fw-normal'> {p.dosagem} / {p.unidade}</span>
+                                                                        </h6>
+                                                                    </div>
+
+                                                                    <div className='col-12'>
+                                                                        <h6>Via:
+                                                                            <span className='text-muted fw-normal'> {p.via}</span>
+                                                                        </h6>
+                                                                    </div>
+
+                                                                    <div className='col-12'>
+                                                                        <h6>Observações:
+                                                                            <span className='text-muted fw-normal'> {p.observacaoPrescricao}</span>
+                                                                        </h6>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <div className='mt-3 mt-md-0 text-md-end'>
+                                                                    <h6>Frequência: <span className='text-muted fw-normal'>{p.frequencia}/{p.frequencia}hr</span></h6>
+                                                                </div>
+
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
+
                                         </div>
                                     )}
 
@@ -594,13 +699,15 @@ const Prontuario = () => {
                                                                     <input
                                                                         type="radio"
                                                                         className="btn-check"
-                                                                        name="validadoOpcoesCuidado"
-                                                                        id="validado-okCuidado"
-                                                                        value="validadoCuidado1"
-                                                                        checked={validadoCuidado === 'validadoCuidado1'}
-                                                                        onChange={handleChangeCuidado}
+                                                                        name={`validadoOpcoesCuidado-${index}`}
+                                                                        id={`validado-okCuidado-${index}`}
+                                                                        checked={cuiRe.status === "ok"}
+                                                                        onChange={() => alterarStatusCuidado(index, "ok")}
                                                                     />
-                                                                    <label className="btn-validacao sucesso" htmlFor="validado-okCuidado">
+                                                                    <label
+                                                                        className="btn-validacao sucesso"
+                                                                        htmlFor={`validado-okCuidado-${index}`}
+                                                                    >
                                                                         <i className="bi bi-check2"></i>
                                                                     </label>
 
@@ -608,13 +715,15 @@ const Prontuario = () => {
                                                                     <input
                                                                         type="radio"
                                                                         className="btn-check"
-                                                                        name="validadoOpcoesCuidado"
-                                                                        id="validado-pendenteCuidado"
-                                                                        value="validadoCuidado2"
-                                                                        checked={validadoCuidado === 'validadoCuidado2'}
-                                                                        onChange={handleChangeCuidado}
+                                                                        name={`validadoOpcoesCuidado-${index}`}
+                                                                        id={`validado-negadoPorPacienteCuidado-${index}`}
+                                                                        checked={cuiRe.status === "negadoPorPaciente"}
+                                                                        onChange={() => alterarStatusCuidado(index, "negadoPorPaciente")}
                                                                     />
-                                                                    <label className="btn-validacao pendente" htmlFor="validado-pendenteCuidado">
+                                                                    <label
+                                                                        className="btn-validacao negadoPorPaciente"
+                                                                        htmlFor={`validado-negadoPorPacienteCuidado-${index}`}
+                                                                    >
                                                                         <i className="bi bi-circle"></i>
                                                                     </label>
 
@@ -622,13 +731,15 @@ const Prontuario = () => {
                                                                     <input
                                                                         type="radio"
                                                                         className="btn-check"
-                                                                        name="validadoOpcoesCuidado"
-                                                                        id="validado-negadoCuidado"
-                                                                        value="validadoCuidado3"
-                                                                        checked={validadoCuidado === 'validadoCuidado3'}
-                                                                        onChange={handleChangeCuidado}
+                                                                        name={`validadoOpcoesCuidado-${index}`}
+                                                                        id={`validado-negadoCuidado-${index}`}
+                                                                        checked={cuiRe.status === "negado"}
+                                                                        onChange={() => alterarStatusCuidado(index, "negado")}
                                                                     />
-                                                                    <label className="btn-validacao negado" htmlFor="validado-negadoCuidado">
+                                                                    <label
+                                                                        className="btn-validacao negado"
+                                                                        htmlFor={`validado-negadoCuidado-${index}`}
+                                                                    >
                                                                         <i className="bi bi-x-lg"></i>
                                                                     </label>
 

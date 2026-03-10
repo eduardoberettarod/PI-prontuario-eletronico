@@ -144,7 +144,7 @@
     color:#198754;
 }
 
-.btn-check:checked + .btn-validacao.pendente{
+.btn-check:checked + .btn-validacao.negadoPorPaciente{
     background:#fff6e5;
     border-color:#ffc107;
     color:#ffc107;
