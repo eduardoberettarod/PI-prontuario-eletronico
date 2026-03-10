@@ -104,18 +104,17 @@ function Navbar() {
                 </div>
                 {/* Botões à direita */}
                 <div className="d-flex align-items-center me-2">
-
-                    <div className="me-4">
-                        <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
-                        <p className="mb-0 small text-muted text-end">Docente</p>
-                    </div>
-                    <div className="dropdown">
+                    <div className="dropdown dropdown-navbar-desk">
                         <button
-                            className="btn icon-button shadow-none focus-ring-0 p-0 me-3 dropdown-toggle d-flex align-items-center"
+                            className="btn d-flex gap-3 align-items-center"
                             type="button"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
+                            <div>
+                                <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
+                                <p className="mb-0 small text-muted text-end">Docente</p>
+                            </div>
                             <span className="dropdown-icon">
                                 <i className="bi bi-person fs-6"></i>
                             </span>
