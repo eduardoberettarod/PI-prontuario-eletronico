@@ -12,31 +12,51 @@ const navItems = [
         route: 'index',
         label: 'Página Inicial',
         iconClass: "bi bi-house",
+        desktop: true,
+        mobile: true
     },
     {
         route: 'pacientes',
         label: 'Pacientes',
         iconClass: "bi bi-people",
+        desktop: true,
+        mobile: true
     },
     {
         route: 'relatorios',
         label: 'Relatórios',
         iconClass: "bi bi-clipboard-data",
+        desktop: true,
+        mobile: true
     },
     {
         route: 'remedios',
         label: 'Remédios',
         iconClass: "bi bi-capsule",
+        desktop: true,
+        mobile: true
     },
     {
         route: 'usuarios',
         label: 'Usuários',
         iconClass: "bi bi-person-gear",
+        desktop: true,
+        mobile: true
     },
     {
         route: 'cuidados',
         label: 'Cuidados',
         iconClass: "bi bi-heart-pulse",
+        desktop: true,
+        mobile: true
+    },
+
+    {
+        route: 'perfil',
+        label: 'Perfil',
+        iconClass: "bi bi-person",
+        desktop: false,
+        mobile: true
     }
 ];
 
@@ -99,18 +119,20 @@ function Navbar() {
 
                 {/* Botões centralizados */}
                 <div className="position-absolute top-50 start-50 translate-middle d-flex container-button-navbar">
-                    {navItems.map((item) => (
-                        <NavLink
-                            key={item.route}
-                            to={`/${item.route}`}
-                            className={({ isActive }) =>
-                                `btn btn-link text-decoration-none d-flex align-items-center gap-1 p-0
+                    {navItems
+                        .filter(item => item.desktop)
+                        .map((item) => (
+                            <NavLink
+                                key={item.route}
+                                to={`/${item.route}`}
+                                className={({ isActive }) =>
+                                    `btn btn-link text-decoration-none d-flex align-items-center gap-1 p-0
      ${isActive ? 'nav-active text-primary fw-semibold' : 'text-dark'}`}>
-                            <i className={`${item.iconClass} fs-6 me-1`} />
-                            <span className="fs-6">{item.label}</span>
-                        </NavLink>
+                                <i className={`${item.iconClass} fs-6 me-1`} />
+                                <span className="fs-6">{item.label}</span>
+                            </NavLink>
 
-                    ))}
+                        ))}
                 </div>
                 {/* Botões à direita */}
                 <div className="d-flex align-items-center me-2">
@@ -187,13 +209,15 @@ function Navbar() {
                             <div className="d-flex align-items-center mt-3">
 
                                 {/* Botão de perfil */}
-                                <button href='' className="btn btn-link icon-button shadow-none focus-ring-0 p-0 ms-2 me-3">
-                                    <i className='bi bi-person fs-6 mx-auto text-white'></i>
-                                </button>
-                                <div className="me-4">
-                                    <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
-                                    <p className="mb-0 small text-muted text-start">Docente</p>
-                                </div>
+                                <NavLink to={'/perfil'} className={'d-flex align-items-center text-decoration-none'} id='navlink-perfil'>
+                                    <span href='' className="icon-button me-3">
+                                        <i className='bi bi-person fs-6 mx-auto text-primary'></i>
+                                    </span>
+                                    <div className="me-4">
+                                        <h1 className="mb-0 fs-6 fw-semibold text-dark">Eduardo Beretta</h1>
+                                        <p className="mb-0 small text-muted text-start">Docente</p>
+                                    </div>
+                                </NavLink>
                             </div>
                             <button type="button" className="btn-close me-1 mb-2" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                         </div>
@@ -201,16 +225,17 @@ function Navbar() {
                         <div className="offcanvas-body">
                             <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
-                                {navItems.map((item) => (
-                                    <NavLink
-                                        key={item.route}
-                                        to={`/${item.route}`}
-                                        className='nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
-                                        <i className={`${item.iconClass} fs-6 me-3`} />
-                                        <span className="fs-6">{item.label}</span>
-                                    </NavLink>
-                                ))}
-                                {/* Botão de configuração */}
+                                {navItems
+                                    .filter(item => item.mobile)
+                                    .map((item) => (
+                                        <NavLink
+                                            key={item.route}
+                                            to={`/${item.route}`}
+                                            className='nav-item ms-2 btn btn-slide-navbar d-flex mb-1 rounded-2 p-2'>
+                                            <i className={`${item.iconClass} fs-6 me-3`} />
+                                            <span className="fs-6">{item.label}</span>
+                                        </NavLink>
+                                    ))}
                             </ul>
                             <hr className="my-3 border-secondary opacity-25" />
                             <div className='navbar-nav position-relative'>

@@ -34,7 +34,7 @@
 }
 
 .cuidados-table tbody tr:hover {
-    background-color: rgba(0,0,0,0.03);
+    background-color: rgba(0, 0, 0, 0.03);
 }
 
 .icon-cuidados {
@@ -56,6 +56,12 @@
 }
 
 @media (max-width:1200px) {
+
+    #th-cuidado,
+    #td-cuidado {
+        padding-left: 0;
+    }
+
     .container-cuidados {
         top: 12%;
         margin-inline: var(--mg-inline-mobile);

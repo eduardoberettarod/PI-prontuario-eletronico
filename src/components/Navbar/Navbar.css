@@ -30,8 +30,26 @@
     transition: all 0.5 ease;
 }
 
-.icon-button i {
-    color: black;
+.icon-button{
+    width: 35px;
+    height: 35px;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary-hover);
+    justify-items: center;
+    border-radius: 50%;
+    display: flex;
+}
+
+#navlink-perfil {
+    transition: 0.5 all ease;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+#navlink-perfil:hover {
+    transition: 0.5 all ease;
+    background-color: var(--bg-hover-button);
 }
 
 .container-button-navbar {
