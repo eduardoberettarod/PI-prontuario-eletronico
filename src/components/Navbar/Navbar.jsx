@@ -28,6 +28,16 @@ const navItems = [
         label: 'Remédios',
         iconClass: "bi bi-capsule",
     },
+    {
+        route: 'usuarios',
+        label: 'Usuários',
+        iconClass: "bi bi-person-gear",
+    },
+    {
+        route: 'cuidados',
+        label: 'Cuidados',
+        iconClass: "bi bi-heart-pulse",
+    }
 ];
 
 

@@ -12,6 +12,8 @@ import Login from './pages/Login/Login.jsx';
 import Registro from './pages/Registro/Registro.jsx';
 import Perfil from './pages/Perfil/Perfil.jsx';
 import Prontuario from './pages/Prontuarios/Prontuario.jsx';
+import Usuarios from './pages/Usuarios/Usuarios.jsx';
+import Cuidados from './pages/Cuidados/Cuidados.jsx';
 
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
         <Route path='/login' element={<Login />} ></Route>
         <Route path='/registro' element={<Registro />} ></Route>
         <Route path='/perfil' element={<Perfil />} ></Route>
+        <Route path='/usuarios' element={<Usuarios />} ></Route>
+        <Route path='/cuidados' element={<Cuidados />} ></Route>
 
         {/* rota padrão */}
         <Route path="/" element={<Login />} />
