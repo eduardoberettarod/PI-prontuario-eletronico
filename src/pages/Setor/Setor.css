@@ -1,0 +1,57 @@
+#setor-page-section {
+    position: relative;
+    top: 0;
+    margin-top: 5rem;
+}
+
+.container-setor {
+    position: relative;
+    margin-inline: var(--mg-inline);
+    top: 11%;
+}
+
+.container-setor h2 {
+    font-size: 1.5rem;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.container-setor p {
+    font-size: 16px;
+}
+
+
+@media (max-width:1200px) {
+    .container-setor {
+        top: 12%;
+        margin-inline: var(--mg-inline-mobile);
+    }
+
+    .container-setor h2 {
+        font-size: 1.5rem;
+    }
+
+    .container-setor p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .table thead th {
+        font-size: 0.85rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
+
+
+@media (max-width: 575.98px) {
+
+    #setor-page-section {
+        margin-top: 5rem;
+    }
+}

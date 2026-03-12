@@ -17,6 +17,7 @@ import Perfil from './pages/Perfil/Perfil.jsx';
 import Prontuario from './pages/Prontuarios/Prontuario.jsx';
 import Usuarios from './pages/Usuarios/Usuarios.jsx';
 import Cuidados from './pages/Cuidados/Cuidados.jsx';
+import Setor from './pages/Setor/Setor.jsx';
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path='/perfil' element={<Perfil />} ></Route>
         <Route path='/usuarios' element={<Usuarios />} ></Route>
         <Route path='/cuidados' element={<Cuidados />} ></Route>
+        <Route path='/setor' element={<Setor />} ></Route>
 
         {/* rota padrão */}
         <Route path="/" element={<Login loading={loading} />} />

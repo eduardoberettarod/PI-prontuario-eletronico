@@ -68,6 +68,7 @@ const Pacientes = () => {
     const ConvenioPaciente = useRef(null);
     const QuartoPaciente = useRef(null);
     const LeitoPaciente = useRef(null);
+    const setor = useRef(null);
     const modalRefPaciente = useRef(null);
 
     const [pacientes, setPacientes] = useState([]);
@@ -85,6 +86,7 @@ const Pacientes = () => {
             ConvenioPaciente: ConvenioPaciente.current.value,
             QuartoPaciente: QuartoPaciente.current.value,
             LeitoPaciente: LeitoPaciente.current.value,
+            setor: setor.current.value
         };
 
         setPacientes(prev => [...prev, novoPaciente]);
@@ -300,9 +302,9 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
 
                                 <div className="col-md-6">
                                     <label className="form-label">Setor *</label>
-                                    <input type="text" className="form-control"
-                                        placeholder="Ex: Maternidade"
-                                         required />
+                                    <select className="form-select" required ref={setor}>
+                                        <option value="Maternidade">Maternidade</option>
+                                    </select>
                                     <div className="invalid-feedback">
                                         Informe o setor do paciente.
                                     </div>
@@ -451,6 +453,7 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
                                 LeitoPaciente={p.LeitoPaciente}
                                 EquipePaciente={p.EquipePaciente}
                                 ConvenioPaciente={p.ConvenioPaciente}
+                                setor={p.setor}
                             />
                         </div>
                     ))}

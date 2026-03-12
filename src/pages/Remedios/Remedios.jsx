@@ -58,6 +58,7 @@ function Remedios() {
 
         fetch(`${urlServer}/medicamentos`, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -113,7 +114,10 @@ function Remedios() {
 
     function fnCarregarDados() {
 
-        fetch(`${urlServer}/medicamentos`)
+        fetch(`${urlServer}/medicamentos`,{
+            method: "GET",
+            credentials: "include"
+        })
             .then(res => res.json())
             .then(dados => {
                 setMedicamentos(dados)

@@ -57,6 +57,13 @@ const navItems = [
         iconClass: "bi bi-person",
         desktop: false,
         mobile: true
+    },
+    {
+        route: 'setor',
+        label: 'Setor',
+        iconClass: "bi bi-hospital",
+        desktop: true,
+        mobile: true
     }
 ];
 

@@ -15,6 +15,7 @@ function CardPaciente({
     EquipePaciente,
     ConvenioPaciente,
     NomeMaePaciente,
+    setor,
 }) {
 
     const statusClass = `status-${StatusPaciente}`
@@ -77,6 +78,7 @@ function CardPaciente({
 
                 <div className='d-grid info-card-paciente'>
                     <span className='opacity-50 mb-0'>Convênio: <span>{ConvenioPaciente}</span></span>
+                    <span className='opacity-50 mb-0'>Setor: <span>{setor}</span></span>
                     <span className='opacity-50 mb-3'>Nome da Mãe: <span>{NomeMaePaciente}</span></span>
                 </div>
 
