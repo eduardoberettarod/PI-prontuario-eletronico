@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import * as bootstrap from 'bootstrap'
 import './Remedios.css'
 import Navbar from '../../components/Navbar/Navbar';
+import { urlServer } from '../../../config';
 
 function Remedios() {
 
@@ -19,19 +20,19 @@ function Remedios() {
     }, [])
 
     // FORM DO MODAL DE REMEDIOS / ADICIONAR MEDICAMENTO
-    const NomeMedicamento = useRef(null)
+    const nome_medicamento = useRef(null)
     const modalRefRemedios = useRef(null);
-    const ClasseTerapeutica = useRef(null)
-    const Unidade = useRef(null)
+    const classe_terapeutica = useRef(null)
+    const unidade = useRef(null)
 
     const [medicamentos, setMedicamentos] = useState([]);
 
     function fnAdicionarMedicamento() {
 
         const novoMedicamento = {
-            NomeMedicamento: NomeMedicamento.current.value,
-            ClasseTerapeutica: ClasseTerapeutica.current.value,
-            Unidade: Unidade.current.value
+            NomeMedicamento: nome_medicamento.current.value,
+            ClasseTerapeutica: classe_terapeutica.current.value,
+            Unidade: unidade.current.value
         };
 
         setMedicamentos(prev => [...prev, novoMedicamento]);
@@ -44,30 +45,45 @@ function Remedios() {
 
         const formRemedios = formRefRemedios.current
 
-        // validação bootstrap
         if (!formRemedios.checkValidity()) {
             formRemedios.classList.add("was-validated");
             return
         }
 
-        // adiciona o medicamento
-        fnAdicionarMedicamento();
+        const novoMedicamento = {
+            nome_medicamento: nome_medicamento.current.value,
+            classe_terapeutica: classe_terapeutica.current.value,
+            unidade: unidade.current.value
+        }
 
-        //fecha o modal
-        const modalInstance = bootstrap.Modal.getOrCreateInstance(
-            modalRefRemedios.current
-        );
-        modalInstance.hide();
+        fetch(`${urlServer}/medicamentos`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(novoMedicamento)
+        })
+            .then(res => res.json())
+            .then(() => {
 
+                // recarrega tabela
+                fnCarregarDados()
 
-        //remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
-        document.activeElement.blur();
+                // fecha modal
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                    modalRefRemedios.current
+                );
+                modalInstance.hide();
 
-        // 3️ mostra o toast
-        toastInstanceRemedios.current?.show();
+                document.activeElement.blur();
 
+                toastInstanceRemedios.current?.show();
 
-        formRemedios.classList.remove("was-validated")
+                formRemedios.classList.remove("was-validated")
+
+            })
+            .catch(erro => console.log(erro))
+
     }
 
     useEffect(() => {
@@ -95,6 +111,20 @@ function Remedios() {
         );
     }
 
+    function fnCarregarDados() {
+
+        fetch(`${urlServer}/medicamentos`)
+            .then(res => res.json())
+            .then(dados => {
+                setMedicamentos(dados)
+            })
+            .catch(erro => console.log(erro.message))
+
+    }
+
+    useEffect(() => {
+        fnCarregarDados()
+    }, [])
 
 
     return (
@@ -129,7 +159,7 @@ function Remedios() {
 
                                     <div className="col-12">
                                         <label className="form-label">Nome do Medicamento *</label>
-                                        <input type="text" className="form-control" ref={NomeMedicamento} required />
+                                        <input type="text" className="form-control" ref={nome_medicamento} required />
                                         <div className="invalid-feedback">
                                             Informe o nome do medicamento.
                                         </div>
@@ -137,7 +167,7 @@ function Remedios() {
 
                                     <div className="col-12">
                                         <label className="form-label">Classe Terapêutica *</label>
-                                        <input type="text" className="form-control" ref={ClasseTerapeutica} required
+                                        <input type="text" className="form-control" ref={classe_terapeutica} required
                                             placeholder='Ex: Avaliação Inicial, Evolução Clínica, etc.' />
                                         <div className="invalid-feedback">
                                             Informe a classe terapêutica.
@@ -146,13 +176,13 @@ function Remedios() {
 
                                     <div className="col-md-12">
                                         <label className="form-label">Unidade *</label>
-                                        <select className="form-select" ref={Unidade} required>
+                                        <select className="form-select" ref={unidade} required>
                                             <option value="">Escolha a unidade</option>
                                             <option value="mg">mg (miligramas)</option>
                                             <option value="g">g (gramas)</option>
                                             <option value="mcg">mcg (microgramas)</option>
-                                            <option value="mL">mL (mililitros)</option>
-                                            <option value="UI">UI (unidades internacionais)</option>
+                                            <option value="ml">mL (mililitros)</option>
+                                            <option value="ui">UI (unidades internacionais)</option>
                                             <option value="%">% (percentual)</option>
                                         </select>
                                         <div className="invalid-feedback">
@@ -259,16 +289,16 @@ function Remedios() {
                                                     <div className="icon-medicamento">
                                                         <i className="bi bi-capsule fs-5"></i>
                                                     </div>
-                                                    <span>{med.NomeMedicamento}</span>
+                                                    <span>{med.nome_medicamento}</span>
                                                 </div>
                                             </td>
 
                                             <td className="px-3 py-3 d-none d-md-table-cell">
-                                                {med.ClasseTerapeutica}
+                                                {med.classe_terapeutica}
                                             </td>
 
                                             <td className="px-3 py-3">
-                                                {med.Unidade}
+                                                {med.unidade}
                                             </td>
 
                                             <td className="pe-4 py-3 text-end">

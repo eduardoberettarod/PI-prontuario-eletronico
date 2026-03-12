@@ -1,7 +1,8 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import './Login.css'
 import logo from '/image/logo.svg'
+import { urlServer } from '../../../config'
 
 const Login = () => {
 
@@ -24,7 +25,7 @@ const Login = () => {
             style={{ minHeight: '100vh' }}
         >
             <img src={logo} alt="logo" className='icon-logo-login' />
-
+            
             <div className='card card-login p-4'>
                 <div className='d-flex align-items-center justify-content-center flex-column py-5'>
                     <h1 className='text-center card-title fs-2'>Prontuário Eletrônico</h1>

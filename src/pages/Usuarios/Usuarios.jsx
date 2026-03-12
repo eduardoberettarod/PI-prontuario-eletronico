@@ -1,8 +1,27 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './Usuarios.css'
 import Navbar from '../../components/Navbar/Navbar'
+import { urlServer } from '../../../config'
 
 const Usuarios = () => {
+
+    const [usuarios, setUsuarios] = useState([])
+
+    function fnCarregarDados() {
+
+        fetch(`${urlServer}/usuarios`)
+            .then(res => res.json())
+            .then(dados => {
+                setUsuarios(dados)
+            })
+            .catch(erro => console.log(erro.message))
+
+    }
+
+    useEffect(() => {
+        fnCarregarDados()
+    }, [])
+
     return (
         <>
             <Navbar />
@@ -47,39 +66,40 @@ const Usuarios = () => {
                                 </thead>
                                 <tbody>
 
-                                        <tr className="align-middle">
+                                    {usuarios.map((usuario) => (
+
+                                        <tr key={usuario.id} className="align-middle">
 
                                             <td className="ps-4 py-3">
-                                                213
+                                                {usuario.id}
                                             </td>
 
                                             <td className="px-3 py-3">
-                                                Eduardo
+                                                {usuario.primeiro_nome}
                                             </td>
-                                            
+
                                             <td className="px-3 py-3">
-                                                Beretta
+                                                {usuario.sobrenome}
                                             </td>
 
                                             <td className="px-3 py-3 d-none d-md-table-cell">
-                                                eduardo.berettarod@gmail.com
+                                                {usuario.email}
                                             </td>
 
                                             <td className="pe-4 py-3 text-end">
                                                 <div className="d-inline-flex align-items-center gap-2">
-                                                    <button className="btn btn-sm text-success p-1">
-                                                        <i className="bi bi-pencil-square fs-5"></i>
-                                                    </button>
 
-                                                    <button
-                                                        className="btn btn-sm text-danger p-1"
-                                                    >
+                                                    <button className="btn btn-sm text-danger p-1">
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>
+
                                                 </div>
                                             </td>
 
                                         </tr>
+
+                                    ))}
+
                                 </tbody>
 
                             </table>
