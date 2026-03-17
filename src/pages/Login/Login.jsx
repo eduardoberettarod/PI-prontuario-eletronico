@@ -6,16 +6,39 @@ import { urlServer } from '../../../config'
 
 const Login = () => {
 
-    const EmailUsuario = useRef(null)
-    const SenhaUsuario = useRef(null)
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
 
-    function handleSubmitLogin(e) {
-        e.preventDefault()
 
-        // redireciona para /index
-        navigate('/index')
+    async function fazerLogin(e) {
+        e.preventDefault();
+
+        const resposta = await fetch(`${urlServer}/auth/login`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            alert(dados.erro);
+            return;
+        }
+
+        // login ok
+        const respostaMe = await fetch(`${urlServer}/auth/me`, {
+            credentials: "include"
+        })
+
+        const usuario = await respostaMe.json()
+
+        navigate("/index", { replace: true })
     }
 
     return (
@@ -25,7 +48,7 @@ const Login = () => {
             style={{ minHeight: '100vh' }}
         >
             <img src={logo} alt="logo" className='icon-logo-login' />
-            
+
             <div className='card card-login p-4'>
                 <div className='d-flex align-items-center justify-content-center flex-column py-5'>
                     <h1 className='text-center card-title fs-2'>Prontuário Eletrônico</h1>
@@ -35,7 +58,7 @@ const Login = () => {
                 </div>
 
                 <form className='row g-3'
-                    onSubmit={handleSubmitLogin}>
+                    onSubmit={fazerLogin}>
                     <div className='col-12'>
                         <label className='form-label'>Email</label>
                         <div className='container-input-login'>
@@ -43,7 +66,8 @@ const Login = () => {
                                 type="email"
                                 className='form-control px-3'
                                 placeholder='seu.email@senacsp.edu.br'
-                                ref={EmailUsuario}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                             <i className='bi bi-person fs-5'></i>
                         </div>
@@ -56,7 +80,8 @@ const Login = () => {
                                 type="password"
                                 className='form-control h-50 px-3'
                                 placeholder='Senha'
-                                ref={SenhaUsuario}
+                                value={senha}
+                                onChange={(e) => setSenha(e.target.value)}
                             />
                             <i className='bi bi-lock fs-5'></i>
                         </div>

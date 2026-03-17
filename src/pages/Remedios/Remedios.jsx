@@ -114,13 +114,32 @@ function Remedios() {
 
     function fnCarregarDados() {
 
-        fetch(`${urlServer}/medicamentos`,{
+        fetch(`${urlServer}/medicamentos`, {
             method: "GET",
             credentials: "include"
         })
-            .then(res => res.json())
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
             .then(dados => {
-                setMedicamentos(dados)
+                if (Array.isArray(dados)) {
+                    setMedicamentos(dados);
+                } else {
+                    setMedicamentos([]);
+                }
+            })
+            .catch(erro => {
+                console.log(erro.message)
+                setMedicamentos([])
             })
             .catch(erro => console.log(erro.message))
 
@@ -180,7 +199,7 @@ function Remedios() {
 
                                     <div className="col-md-12">
                                         <label className="form-label">Unidade *</label>
-                                        <select className="form-select" ref={unidade} required>
+                                        <select defaultValue="" className="form-select" ref={unidade} required>
                                             <option value="">Escolha a unidade</option>
                                             <option value="mg">mg (miligramas)</option>
                                             <option value="g">g (gramas)</option>
