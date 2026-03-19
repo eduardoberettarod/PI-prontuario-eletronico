@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react'
 import * as bootstrap from 'bootstrap'
 import './Cuidados.css'
 import Navbar from '../../components/Navbar/Navbar';
+import { useNavigate } from 'react-router-dom';
+import { urlServer } from '../../../config';
 
 function Cuidados() {
 
@@ -19,7 +21,7 @@ function Cuidados() {
     }, [])
 
     // FORM DO MODAL DE Cuidados / ADICIONAR Cuidados
-    const tipoCuidado = useRef(null)
+    const tipo_cuidado = useRef(null)
     const modalRefCuidados = useRef(null)
 
     const [cuidados, setCuidados] = useState([]);
@@ -33,6 +35,7 @@ function Cuidados() {
         setCuidados(prev => [...prev, novoCuidado]);
     }
 
+
     const formRefCuidados = useRef(null)
     function SubmitCuidados(e) {
 
@@ -40,31 +43,46 @@ function Cuidados() {
 
         const formCuidados = formRefCuidados.current
 
-        // validação bootstrap
         if (!formCuidados.checkValidity()) {
             formCuidados.classList.add("was-validated");
             return
         }
 
-        // adiciona o medicamento
-        fnAdicionarCuidado();
+        const novoCuidado = {
+            tipo_cuidado: tipo_cuidado.current.value
+        };
 
-        //fecha o modal
-        const modalInstance = bootstrap.Modal.getOrCreateInstance(
-            modalRefCuidados.current
-        );
-        modalInstance.hide();
+        fetch(`${urlServer}/cuidados`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(novoCuidado)
+        })
+            .then(res => res.json())
+            .then(() => {
 
+                // recarrega tabela
+                fnCarregarDados()
 
-        //remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
-        document.activeElement.blur();
+                // fecha modal
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                    modalRefCuidados.current
+                );
+                modalInstance.hide();
 
-        // 3️ mostra o toast
-        toastInstanceCuidados.current?.show();
+                document.activeElement.blur();
 
+                toastInstanceCuidados.current?.show();
 
-        formCuidados.classList.remove("was-validated")
+                formCuidados.classList.remove("was-validated")
+
+            })
+            .catch(erro => console.log(erro))
+
     }
+
 
     useEffect(() => {
         if (!modalRefCuidados.current) return;
@@ -85,13 +103,66 @@ function Cuidados() {
 
     //EXCLUIR O MEDICAMENTO
 
-    function removerCuidado(index) {
-        setCuidados(prev =>
-            prev.filter((_, i) => i !== index)
-        );
+    function fnDeletarCuidado(id) {
+
+        if (!confirm("Tem certeza que deseja deletar este cuidado?")) return
+
+        fetch(`${urlServer}/cuidados/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(dados => {
+                console.log(dados)
+                fnCarregarDados() // recarrega tabela
+            })
+            .catch(erro => console.log(erro))
+
     }
 
+    const navigate = useNavigate()
 
+    function fnCarregarDados() {
+
+        fetch(`${urlServer}/cuidados`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    navigate('/login')
+                    return
+                }
+
+                if (res.status === 403) {
+                    alert("Sem permissão")
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Erro na requisição")
+                }
+                return res.json();
+            })
+            .then(dados => {
+                if (Array.isArray(dados)) {
+                    setCuidados(dados);
+                } else {
+                    setCuidados([]);
+                }
+            })
+            .catch(erro => {
+                console.log(erro.message)
+                setCuidados([])
+            })
+            .catch(erro => console.log(erro.message))
+
+    }
+
+    useEffect(() => {
+        fnCarregarDados()
+    }, [])
 
     return (
         <>
@@ -125,7 +196,7 @@ function Cuidados() {
 
                                     <div className="col-12">
                                         <label className="form-label">Nome do Cuidado *</label>
-                                        <input type="text" className="form-control" ref={tipoCuidado} required />
+                                        <input type="text" className="form-control" ref={tipo_cuidado} required />
                                         <div className="invalid-feedback">
                                             Informe o nome do cuidado.
                                         </div>
@@ -238,7 +309,7 @@ function Cuidados() {
                                             <td className="py-3" id='td-cuidado'>
                                                 <div className="d-flex align-items-center gap-2">
                                                     <i className="icon-cuidados bi bi-heart-pulse"></i>
-                                                    <span>{cui.tipoCuidado}</span>
+                                                    <span>{cui.tipo_cuidado}</span>
                                                 </div>
                                             </td>
 
@@ -251,7 +322,7 @@ function Cuidados() {
 
                                                     <button
                                                         className="btn btn-sm text-danger p-1"
-                                                        onClick={() => removerCuidado(index)}
+                                                        onClick={() => fnDeletarCuidado(cui.id)}
                                                     >
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>
