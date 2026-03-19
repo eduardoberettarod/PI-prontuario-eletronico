@@ -1,11 +1,17 @@
 import { Navigate } from "react-router-dom";
 
-function ProtectedRoute({ usuario, children }) {
+function ProtectedRoute({ usuario, verificandoAuth, children }) {
 
-  if (usuario === null) {
-    return <Navigate to="/login" />
+  if (verificandoAuth) {
+    return null
   }
 
+  // 🔒 NÃO logado
+  if (!usuario) {
+    return <Navigate to="/login" replace />
+  }
+
+  // ✅ OK
   return children
 }
 

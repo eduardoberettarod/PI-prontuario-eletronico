@@ -14,11 +14,11 @@
     width: 420px;
 }
 
-.card-login-footer p{
+.card-login-footer p {
     font-size: 15px;
 }
 
-.icon-logo-login{
+.icon-logo-login {
     position: absolute;
     top: 0;
     left: 0;
@@ -26,15 +26,18 @@
     margin-top: 2rem;
 }
 
-.container-input-login{
+.container-input-login,
+.container-input-login-senha {
     position: relative;
 }
 
-.container-input-login input{
+.container-input-login input,
+.container-input-login-senha input {
     padding: 13px 0;
 }
 
-.container-input-login i{
+.container-input-login i,
+.container-input-login button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -43,12 +46,24 @@
     pointer-events: none;
 }
 
-@media (max-width: 575.98px) { /* mobile do Bootstrap */
-    .card-login{
+.container-input-login-senha i,
+.container-input-login-senha button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 5px;
+    opacity: 0.6;
+    border: none;
+}
+
+@media (max-width: 575.98px) {
+
+    /* mobile do Bootstrap */
+    .card-login {
         width: 350px;
     }
 
-    .icon-logo-login{
+    .icon-logo-login {
         margin-left: 1rem;
         margin-top: 1rem;
     }

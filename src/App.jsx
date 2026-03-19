@@ -24,36 +24,35 @@ function App() {
 
   const [loading, setLoading] = useState(true)
   const [usuario, setUsuario] = useState(null)
+  const [verificandoAuth, setVerificandoAuth] = useState(true)
 
   const navigate = useNavigate()
 
   useEffect(() => {
 
-    fetch(`${urlServer}/auth/me`, {
-      credentials: "include"
+  fetch(`${urlServer}/auth/me`, {
+    credentials: "include"
+  })
+    .then(res => {
+
+      if (res.status === 401) {
+        setUsuario(null)
+        setVerificandoAuth(false)
+        return
+      }
+
+      return res.json()
     })
-      .then(res => {
+    .then(dados => {
 
-        if (res.status === 401) {
-          setUsuario(null)
-          setLoading(false)
-          return
-        }
+      if (dados) {
+        setUsuario(dados)
+      }
 
-        return res.json()
+      setVerificandoAuth(false)
+    })
 
-      })
-      .then(dados => {
-
-        if (dados) {
-          setUsuario(dados)
-        }
-
-        setLoading(false)
-
-      })
-
-  }, [])
+}, [])
 
   return (
     <>
@@ -65,7 +64,7 @@ function App() {
         <Route
           path='/index'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Index />
             </ProtectedRoute>
           }
@@ -74,7 +73,7 @@ function App() {
         <Route
           path='/pacientes'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Pacientes />
             </ProtectedRoute>
           }
@@ -83,16 +82,16 @@ function App() {
         <Route
           path='/prontuario'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Prontuario />
             </ProtectedRoute>
           }
         />
 
         <Route
-          path='/relatorio'
+          path='/relatorios'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Relatorio />
             </ProtectedRoute>
           }
@@ -101,7 +100,7 @@ function App() {
         <Route
           path='/remedios'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Remedios />
             </ProtectedRoute>
           }
@@ -110,7 +109,7 @@ function App() {
         <Route
           path='/perfil'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Perfil />
             </ProtectedRoute>
           }
@@ -119,7 +118,7 @@ function App() {
         <Route
           path='/usuarios'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Usuarios />
             </ProtectedRoute>
           }
@@ -128,7 +127,7 @@ function App() {
         <Route
           path='/cuidados'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Cuidados />
             </ProtectedRoute>
           }
@@ -137,7 +136,7 @@ function App() {
         <Route
           path='/setor'
           element={
-            <ProtectedRoute usuario={usuario}>
+            <ProtectedRoute usuario={usuario} verificandoAuth={verificandoAuth}>
               <Setor />
             </ProtectedRoute>
           }

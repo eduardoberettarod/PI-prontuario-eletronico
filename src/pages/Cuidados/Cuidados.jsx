@@ -207,13 +207,13 @@ function Cuidados() {
                             <table className="table table-hover align-middle mx-auto cuidados-table">
                                 <thead>
                                     <tr>
-                                        <th className="ps-4 py-3 text-muted small">ID</th>
+                                        <th className="ps-4 py-3 fw-bold">ID</th>
 
-                                        <th className="py-3" id='th-cuidado'>
+                                        <th className="py-3 fw-bold" id='th-cuidado'>
                                             Tipo de Cuidado
                                         </th>
 
-                                        <th className="pe-4 py-3 text-end text-muted small">
+                                        <th className="pe-4 py-3 text-end fw-bold">
                                             Ações
                                         </th>
                                     </tr>

@@ -10,35 +10,53 @@ const Login = () => {
 
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const formRef = useRef(null)
 
 
     async function fazerLogin(e) {
         e.preventDefault();
 
-        const resposta = await fetch(`${urlServer}/auth/login`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ email, senha })
-        });
+        const form = formRef.current
 
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-            alert(dados.erro);
+        if (!form.checkValidity()) {
+            form.classList.add("was-validated");
             return;
+        } else {
+            const resposta = await fetch(`${urlServer}/auth/login`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, senha })
+            });
+
+            const dados = await resposta.json();
+
+            if (!resposta.ok) {
+                alert(dados.erro);
+                return;
+            }
+
+            // login ok
+            const respostaMe = await fetch(`${urlServer}/auth/me`, {
+                credentials: "include"
+            })
+
+            const usuario = await respostaMe.json()
+
         }
-
-        // login ok
-        const respostaMe = await fetch(`${urlServer}/auth/me`, {
-            credentials: "include"
-        })
-
-        const usuario = await respostaMe.json()
-
+        
         navigate("/index", { replace: true })
+
+    }
+
+    const [textPassword, setTextPassword] = useState("password")
+
+    function fnMudarTextoSenha() {
+        setTextPassword(prev =>
+            prev === "password" ? "text" : "password"
+        )
     }
 
     return (
@@ -57,8 +75,10 @@ const Login = () => {
                     </p>
                 </div>
 
-                <form className='row g-3'
-                    onSubmit={fazerLogin}>
+                <form className='row g-3 needs-validation'
+                    onSubmit={fazerLogin}
+                    noValidate
+                    ref={formRef}>
                     <div className='col-12'>
                         <label className='form-label'>Email</label>
                         <div className='container-input-login'>
@@ -68,22 +88,32 @@ const Login = () => {
                                 placeholder='seu.email@senacsp.edu.br'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                required
                             />
                             <i className='bi bi-person fs-5'></i>
+                        </div>
+                        <div className='invalid-feedback'>
+                            Informe um email válido.
                         </div>
                     </div>
 
                     <div className='col-12'>
                         <label className='form-label'>Senha</label>
-                        <div className='container-input-login'>
+                        <div className='container-input-login-senha'>
                             <input
-                                type="password"
+                                type={textPassword}
                                 className='form-control h-50 px-3'
                                 placeholder='Senha'
                                 value={senha}
                                 onChange={(e) => setSenha(e.target.value)}
+                                required
                             />
-                            <i className='bi bi-lock fs-5'></i>
+                            <button type='button' onClick={fnMudarTextoSenha}>
+                                <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>
+                            </button>
+                        </div>
+                        <div className='invalid-feedback'>
+                            Informe uma senha válida
                         </div>
                     </div>
 

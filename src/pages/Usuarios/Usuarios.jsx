@@ -9,7 +9,10 @@ const Usuarios = () => {
 
     function fnCarregarDados() {
 
-        fetch(`${urlServer}/usuarios`)
+        fetch(`${urlServer}/usuarios`, {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(res => res.json())
             .then(dados => {
                 setUsuarios(dados)
@@ -21,6 +24,41 @@ const Usuarios = () => {
     useEffect(() => {
         fnCarregarDados()
     }, [])
+
+    function fnDeletarUsuario(id) {
+
+        if (!confirm("Tem certeza que deseja deletar este usuário?")) return
+
+        fetch(`${urlServer}/usuarios/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(dados => {
+                console.log(dados)
+                fnCarregarDados() // recarrega tabela
+            })
+            .catch(erro => console.log(erro))
+
+    }
+    
+    function fnDeletarAlunos() {
+
+        if (!confirm("Tem certeza que deseja deletar TODOS os alunos?")) return
+
+        fetch(`${urlServer}/usuarios/alunos`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(dados => {
+                console.log(dados)
+                alert(dados.mensagem)
+                fnCarregarDados() 
+            })
+            .catch(erro => console.log(erro))
+
+    }
 
     return (
         <>
@@ -35,6 +73,13 @@ const Usuarios = () => {
                         <div className="text-start mb-2 mb-md-0">
                             <h2 className="fw-bold">Tabela de Usuários</h2>
                             <p>Gerencie e administre os usuários do sistema.</p>
+                        </div>
+
+                        <div>
+                            <button className='btn btn-danger align-items-center d-flex gap-2 py-2 px-3'
+                                onClick={fnDeletarAlunos}>
+                                Deletar todos os usuários <i className='bi bi-trash'></i>
+                            </button>
                         </div>
 
                     </div>
@@ -89,7 +134,8 @@ const Usuarios = () => {
                                             <td className="pe-4 py-3 text-end">
                                                 <div className="d-inline-flex align-items-center gap-2">
 
-                                                    <button className="btn btn-sm text-danger p-1">
+                                                    <button className="btn btn-sm text-danger p-1"
+                                                        onClick={() => fnDeletarUsuario(usuario.id)}>
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>
 
