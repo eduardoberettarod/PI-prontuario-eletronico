@@ -32,7 +32,7 @@ function CardPaciente({
 
     return (
         <>
-            <div className={`card rounded-2 p-3 card-paciente ${statusClass}`}>
+            <div className={`card rounded-2 p-3 card-paciente h-100 ${statusClass}`}>
                 
                 <div className='d-flex pt-2 justify-content-between align-items-center'>
                     <div className='d-flex w-100'>

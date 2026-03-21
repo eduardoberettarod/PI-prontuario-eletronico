@@ -27,16 +27,6 @@ function Remedios() {
 
     const [medicamentos, setMedicamentos] = useState([]);
 
-    function fnAdicionarMedicamento() {
-
-        const novoMedicamento = {
-            NomeMedicamento: nome_medicamento.current.value,
-            ClasseTerapeutica: classe_terapeutica.current.value,
-            Unidade: unidade.current.value
-        };
-
-        setMedicamentos(prev => [...prev, novoMedicamento]);
-    }
 
     const formRefRemedios = useRef(null)
     function SubmitRemedios(e) {

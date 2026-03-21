@@ -3,6 +3,8 @@ import './Pacientes.css';
 import CardPaciente from '../../components/Card/CardPaciente';
 import * as bootstrap from 'bootstrap';
 import Navbar from '../../components/Navbar/Navbar';
+import { urlServer } from "../../../config";
+import { useNavigate } from "react-router-dom";
 
 const Pacientes = () => {
 
@@ -11,6 +13,8 @@ const Pacientes = () => {
     ============================ */
     const collapseRef = useRef(null);
     const [aberto, setAberto] = useState(false);
+
+    const [listaSetores, setListaSetores] = useState([]);
 
     useEffect(() => {
         if (!collapseRef.current) return;
@@ -68,50 +72,28 @@ const Pacientes = () => {
     const ConvenioPaciente = useRef(null);
     const QuartoPaciente = useRef(null);
     const LeitoPaciente = useRef(null);
-    const setor = useRef(null);
+    const setorSelecionado = useRef(null);
     const modalRefPaciente = useRef(null);
 
     const [pacientes, setPacientes] = useState([]);
 
-    function fnCriarPaciente() {
-
-        const novoPaciente = {
-            NomePaciente: NomePaciente.current.value,
-            NomeMaePaciente: NomeMaePaciente.current.value,
-            NascPaciente: NascPaciente.current.value,
-            TipoSanguePaciente: TipoSanguePaciente.current.value,
-            FatorRhPaciente: FatorRhPaciente.current.value,
-            EquipePaciente: EquipePaciente.current.value,
-            StatusPaciente: StatusPaciente.current.value,
-            ConvenioPaciente: ConvenioPaciente.current.value,
-            QuartoPaciente: QuartoPaciente.current.value,
-            LeitoPaciente: LeitoPaciente.current.value,
-            setor: setor.current.value
-        };
-
-        setPacientes(prev => [...prev, novoPaciente]);
-    }
-
     const NascInvalido = useRef(null);
-    /* ============================
-VALIDAÇÃO PARA O FORM CRIAR PACIENTE
-============================ */
+
     const formRef = useRef(null);
     function handleSubmit(e) {
+
         e.preventDefault();
 
         const form = formRef.current;
 
-        // 🔥 1. validação bootstrap PRIMEIRO
         if (!form.checkValidity()) {
             form.classList.add("was-validated");
             return;
         }
 
-        // limpa erro manual
+
         NascInvalido.current.style.display = "none";
 
-        // 🔥 2. validação manual (agora segura)
         const hoje = new Date();
         const anoAtual = hoje.getFullYear();
 
@@ -123,30 +105,65 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
             return;
         }
 
-        // cria o paciente
-        fnCriarPaciente();
+        const idSetor = setorSelecionado.current.value;
 
-        const modal = bootstrap.Modal.getOrCreateInstance(modalRefPaciente.current);
-        modal.hide();
+        const setorObj = listaSetores.find(s => s.id == idSetor);
 
-        document.activeElement.blur();
-        toastInstance.current.show();
+        const novoPaciente = {
+            nome_paciente: NomePaciente.current.value,
+            mae_paciente: NomeMaePaciente.current.value,
+            data_nasc: NascPaciente.current.value,
+            tipo_sanguineo: TipoSanguePaciente.current.value,
+            fator_rh: FatorRhPaciente.current.value,
+            equipe: EquipePaciente.current.value,
+            status_paciente: StatusPaciente.current.value,
+            convenio: ConvenioPaciente.current.value,
+            quarto: QuartoPaciente.current.value,
+            leito: LeitoPaciente.current.value,
+            id_setor: idSetor
+        };
 
-        form.reset();
-        form.classList.remove("was-validated");
+        fetch(`${urlServer}/pacientes`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(novoPaciente)
+        })
+            .then(res => res.json())
+            .then(() => {
+
+
+                fnCarregarDados()
+
+
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                    modalRefPaciente.current
+                );
+                modalInstance.hide();
+
+                document.activeElement.blur();
+
+                toastInstance.current?.show();
+
+                form.reset();
+
+                form.classList.remove("was-validated")
+
+            })
+            .catch(erro => console.log(erro))
+
     }
 
-
-    /* ============================
-       RESET AUTOMÁTICO DO FORM AO FECHAR O MODAL
-    ============================ */
     useEffect(() => {
         if (!modalRefPaciente.current) return;
 
         const modalEl = modalRefPaciente.current;
 
         const handleHidden = () => {
-            modalEl.querySelector("form").reset();
+            formRef.current?.reset();
+            formRef.current?.classList.remove("was-validated");
         };
 
         modalEl.addEventListener("hidden.bs.modal", handleHidden);
@@ -154,314 +171,392 @@ VALIDAÇÃO PARA O FORM CRIAR PACIENTE
         return () => {
             modalEl.removeEventListener("hidden.bs.modal", handleHidden);
         };
-
     }, []);
 
+    function fnCarregarDados() {
+
+        fetch(`${urlServer}/pacientes`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                if (Array.isArray(dados)) {
+                    setPacientes(dados);
+                } else {
+                    setPacientes([]);
+                }
+            })
+            .catch(erro => {
+                console.log(erro.message)
+                setPacientes([])
+            })
+            .catch(erro => console.log(erro.message))
+
+    }
+
+    useEffect(() => {
+        fnCarregarDados()
+    }, [])
+
+    const navigate = useNavigate()
+
+    function fnCarregarSetores() {
+        fetch(`${urlServer}/setores`, {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    navigate('/login')
+                    return
+                }
+
+                if (res.status === 403) {
+                    alert("Sem permissão")
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Erro na requisição")
+                }
+
+                return res.json();
+            })
+            .then(dados => {
+                setListaSetores(dados);
+            })
+            .catch((erro) => {
+                console.log(erro)
+            })
+    }
+
+    useEffect(() => {
+        fnCarregarSetores()
+    }, [])
 
 
     return (
         <>
-        <Navbar />
-        <section id="pacientes-page-section">
+            <Navbar />
+            <section id="pacientes-page-section">
 
-            {/* Modal Criar Paciente */}
-            <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden="true" ref={modalRefPaciente}>
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                    <div className="modal-content">
+                {/* Modal Criar Paciente */}
+                <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden="true" ref={modalRefPaciente}>
+                    <div className="modal-dialog modal-dialog-centered modal-lg">
+                        <div className="modal-content">
 
-                        <div className="modal-header">
-                            <div className="p-2">
-                                <h5 className="modal-title">Novo Paciente</h5>
-                                <p className="small opacity-75">Preencha os dados do paciente para fins educacionais</p>
+                            <div className="modal-header">
+                                <div className="p-2">
+                                    <h5 className="modal-title">Novo Paciente</h5>
+                                    <p className="small opacity-75">Preencha os dados do paciente para fins educacionais</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-close mb-5"
+                                    data-bs-dismiss="modal"
+                                ></button>
                             </div>
-                            <button
-                                type="button"
-                                className="btn-close mb-5"
-                                data-bs-dismiss="modal"
-                            ></button>
+
+                            <div className="modal-body">
+
+                                <form className="row g-3 needs-validation"
+                                    noValidate
+                                    ref={formRef}
+                                    onSubmit={handleSubmit} >
+
+                                    <div className="col-12">
+                                        <label className="form-label">Nome do Paciente *</label>
+                                        <input type="text" className="form-control" ref={NomePaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe o nome do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-12">
+                                        <label className="form-label">Nome da Mãe *</label>
+                                        <input type="text" className="form-control" ref={NomeMaePaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe o nome da mãe do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <label className="form-label">Data de Nascimento *</label>
+                                        <input type="date" className="form-control" ref={NascPaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe a data de nascimento do paciente.
+                                        </div>
+                                        <div className="small text-danger nascInvalido" ref={NascInvalido}>
+                                            Informe uma data de nascimento válida para o paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-4">
+                                        <label className="form-label">Tipo Sanguíneo *</label>
+                                        <select className="form-select" ref={TipoSanguePaciente} required>
+                                            <option value=""></option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="AB">AB</option>
+                                            <option value="O">O</option>
+                                        </select>
+                                        <div className="invalid-feedback">
+                                            Informe o tipo sanguíneo do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-2">
+                                        <label className="form-label">Fator RH *</label>
+                                        <select className="form-select" ref={FatorRhPaciente} required>
+                                            <option value=""></option>
+                                            <option value="+">+</option>
+                                            <option value="-">-</option>
+                                        </select>
+                                        <div className="invalid-feedback">
+                                            Informe o fator RH do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-12">
+                                        <label className="form-label">Equipe *</label>
+                                        <input type="text" className="form-control"
+                                            placeholder="Ex: Equipe Azul - Clínica Médica"
+                                            ref={EquipePaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe a equipe responsável pelo paciente.
+                                        </div>
+                                        <p className="small mt-1 opacity-50">
+                                            A equipe representa o grupo multiprofissional responsável pelo cuidado ao paciente
+                                        </p>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <label className="form-label">Status do Paciente *</label>
+                                        <select className="form-select" ref={StatusPaciente} required>
+                                            <option value=""></option>
+                                            <option value="estavel">Estável</option>
+                                            <option value="observacao">Em Observação</option>
+                                            <option value="critico">Crítico</option>
+                                        </select>
+                                        <div className="invalid-feedback">
+                                            Informe o status do paciente.
+                                        </div>
+                                        <p className="small mt-1 opacity-50">
+                                            Define o nível de atenção necessário para o paciente
+                                        </p>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <label className="form-label">Convênio *</label>
+                                        <input type="text" className="form-control"
+                                            placeholder="Ex: SUS, Unimed, etc."
+                                            ref={ConvenioPaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe o convênio do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-3">
+                                        <label className="form-label">Quarto *</label>
+                                        <input type="text" className="form-control"
+                                            placeholder="Ex: 201"
+                                            ref={QuartoPaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe o quarto do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-3">
+                                        <label className="form-label">Leito *</label>
+                                        <input type="text" className="form-control"
+                                            placeholder="Ex: A"
+                                            ref={LeitoPaciente} required />
+                                        <div className="invalid-feedback">
+                                            Informe o leito do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="col-md-6">
+                                        <label className="form-label">Setor *</label>
+                                        <select className="form-select" required ref={setorSelecionado}>
+                                            <option value="">Selecione um setor</option>
+
+                                            {listaSetores.map(s => (
+                                                <option key={s.id} value={s.id}>
+                                                    {s.nome_setor}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="invalid-feedback">
+                                            Informe o setor do paciente.
+                                        </div>
+                                    </div>
+
+                                    <div className="modal-footer mt-2">
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline-danger"
+                                            data-bs-dismiss="modal"
+                                        >
+                                            Cancelar
+                                        </button>
+
+                                        <button type="submit" className="btn btn-primary">
+                                            Criar Paciente
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* Toast */}
+                <div className="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div ref={toastRef} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div className="toast-header toast-color">
+                            <strong className="me-auto d-flex align-items-center text-success">
+                                Paciente Criado <i className="bi bi-check fs-5 ms-1"></i>
+                            </strong>
+                            <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                         </div>
 
-                        <div className="modal-body">
+                        <div className="toast-body">
+                            Paciente criado com sucesso!
+                        </div>
+                    </div>
+                </div>
 
-                            <form className="row g-3 needs-validation"
-                                noValidate
-                                ref={formRef}
-                                onSubmit={handleSubmit} >
 
-                                <div className="col-12">
-                                    <label className="form-label">Nome do Paciente *</label>
-                                    <input type="text" className="form-control" ref={NomePaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe o nome do paciente.
-                                    </div>
-                                </div>
+                {/* Conteúdo principal */}
+                <div className="container-pacientes">
 
-                                <div className="col-12">
-                                    <label className="form-label">Nome da Mãe *</label>
-                                    <input type="text" className="form-control" ref={NomeMaePaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe o nome da mãe do paciente.
-                                    </div>
-                                </div>
+                    <div className="d-flex flex-column flex-md-row mb-3 align-items-start align-items-md-center justify-content-md-between">
 
-                                <div className="col-md-6">
-                                    <label className="form-label">Data de Nascimento *</label>
-                                    <input type="date" className="form-control" ref={NascPaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe a data de nascimento do paciente.
-                                    </div>
-                                    <div className="small text-danger nascInvalido" ref={NascInvalido}>
-                                        Informe uma data de nascimento válida para o paciente.
-                                    </div>
-                                </div>
+                        <div className="text-start mb-2 mb-md-0">
+                            <h2 className="fw-bold">Gestão de Pacientes</h2>
+                            <p>Crie e gerencie pacientes fictícios para o aprendizado</p>
+                        </div>
 
-                                <div className="col-md-4">
-                                    <label className="form-label">Tipo Sanguíneo *</label>
-                                    <select className="form-select" ref={TipoSanguePaciente} required>
-                                        <option value=""></option>
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="AB">AB</option>
-                                        <option value="O">O</option>
-                                    </select>
-                                    <div className="invalid-feedback">
-                                        Informe o tipo sanguíneo do paciente.
-                                    </div>
-                                </div>
+                        <div className="d-flex justify-content-md-end container-action-btn">
+                            <button className="btn btn-primary d-flex align-items-center gap-2 header-action-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalCriarPaciente"
+                            >
+                                <i className="bi bi-plus fs-5"></i>
+                                Novo Paciente
+                            </button>
+                        </div>
+                    </div>
 
-                                <div className="col-md-2">
-                                    <label className="form-label">Fator RH *</label>
-                                    <select className="form-select" ref={FatorRhPaciente} required>
-                                        <option value=""></option>
-                                        <option value="+">+</option>
-                                        <option value="-">-</option>
-                                    </select>
-                                    <div className="invalid-feedback">
-                                        Informe o fator RH do paciente.
-                                    </div>
-                                </div>
 
-                                <div className="col-12">
-                                    <label className="form-label">Equipe *</label>
-                                    <input type="text" className="form-control"
-                                        placeholder="Ex: Equipe Azul - Clínica Médica"
-                                        ref={EquipePaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe a equipe responsável pelo paciente.
-                                    </div>
-                                    <p className="small mt-1 opacity-50">
-                                        A equipe representa o grupo multiprofissional responsável pelo cuidado ao paciente
-                                    </p>
-                                </div>
+                    {/* Filtros */}
+                    <div>
+                        <form className="d-flex flex-column flex-md-row gap-3" role="search">
+
+                            <div className="position-relative w-100 d-flex">
+                                <i className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+                                <input
+                                    type="text"
+                                    className="form-control input-search"
+                                    placeholder="Buscar por nome, equipe ou quarto..."
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                className={`btn btn-filter ${aberto ? "bg-primary text-white" : "btn-outline-primary text-dark"}`}
+                                data-bs-toggle="collapse"
+                                data-bs-target="#FormularioFiltro"
+                            >
+                                <i className="bi bi-funnel fs-5 me-1"></i>
+                                Filtros
+                            </button>
+                        </form>
+
+
+                        <div className="collapse" id="FormularioFiltro" ref={collapseRef}>
+                            <form className="row g-3 form-control d-flex mt-3 m-0" ref={formFiltro}>
 
                                 <div className="col-md-6">
-                                    <label className="form-label">Status do Paciente *</label>
-                                    <select className="form-select" ref={StatusPaciente} required>
-                                        <option value=""></option>
+                                    <label className="form-label">Status do Paciente</label>
+                                    <select className="form-select">
+                                        <option value="">Todos os status</option>
                                         <option value="estavel">Estável</option>
                                         <option value="observacao">Em Observação</option>
                                         <option value="critico">Crítico</option>
                                     </select>
-                                    <div className="invalid-feedback">
-                                        Informe o status do paciente.
-                                    </div>
-                                    <p className="small mt-1 opacity-50">
-                                        Define o nível de atenção necessário para o paciente
-                                    </p>
                                 </div>
+
 
                                 <div className="col-md-6">
-                                    <label className="form-label">Convênio *</label>
-                                    <input type="text" className="form-control"
-                                        placeholder="Ex: SUS, Unimed, etc."
-                                        ref={ConvenioPaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe o convênio do paciente.
-                                    </div>
-                                </div>
-
-                                <div className="col-md-3">
-                                    <label className="form-label">Quarto *</label>
-                                    <input type="text" className="form-control"
-                                        placeholder="Ex: 201"
-                                        ref={QuartoPaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe o quarto do paciente.
-                                    </div>
-                                </div>
-
-                                <div className="col-md-3">
-                                    <label className="form-label">Leito *</label>
-                                    <input type="text" className="form-control"
-                                        placeholder="Ex: A"
-                                        ref={LeitoPaciente} required />
-                                    <div className="invalid-feedback">
-                                        Informe o leito do paciente.
-                                    </div>
-                                </div>
-
-                                <div className="col-md-6">
-                                    <label className="form-label">Setor *</label>
-                                    <select className="form-select" required ref={setor}>
-                                        <option value="Maternidade">Maternidade</option>
+                                    <label className="form-label">Convênio</label>
+                                    <select className="form-select">
+                                        <option value="">Todos os convênios</option>
+                                        <option value="SUS">SUS</option>
+                                        <option value="Unimed">Unimed</option>
+                                        <option value="Particular">Particular</option>
+                                        <option value="Outros">Outros</option>
                                     </select>
-                                    <div className="invalid-feedback">
-                                        Informe o setor do paciente.
-                                    </div>
                                 </div>
 
-                                <div className="modal-footer mt-2">
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Cancelar
-                                    </button>
-
-                                    <button type="submit" className="btn btn-primary">
-                                        Criar Paciente
-                                    </button>
-                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-Limparfiltro text-primary w-auto mt-3 mb-2"
+                                    onClick={fnLimparFiltro}
+                                >
+                                    Limpar filtros
+                                </button>
                             </form>
                         </div>
-
-
-                    </div>
-                </div>
-            </div>
-
-
-            {/* Toast */}
-            <div className="toast-container position-fixed bottom-0 end-0 p-3">
-                <div ref={toastRef} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div className="toast-header toast-color">
-                        <strong className="me-auto d-flex align-items-center text-success">
-                            Paciente Criado <i className="bi bi-check fs-5 ms-1"></i>
-                        </strong>
-                        <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                     </div>
 
-                    <div className="toast-body">
-                        Paciente criado com sucesso!
-                    </div>
-                </div>
-            </div>
-
-
-            {/* Conteúdo principal */}
-            <div className="container-pacientes">
-
-                <div className="d-flex flex-column flex-md-row mb-3 align-items-start align-items-md-center justify-content-md-between">
-
-                    <div className="text-start mb-2 mb-md-0">
-                        <h2 className="fw-bold">Gestão de Pacientes</h2>
-                        <p>Crie e gerencie pacientes fictícios para o aprendizado</p>
+                    {/* Contador */}
+                    <div className="mt-4">
+                        <p className="opacity-75 small">{pacientes.length} pacientes encontrados</p>
                     </div>
 
-                    <div className="d-flex justify-content-md-end container-action-btn">
-                        <button className="btn btn-primary d-flex align-items-center gap-2 header-action-btn"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalCriarPaciente"
-                        >
-                            <i className="bi bi-plus fs-5"></i>
-                            Novo Paciente
-                        </button>
-                    </div>
-                </div>
 
-
-                {/* Filtros */}
-                <div>
-                    <form className="d-flex flex-column flex-md-row gap-3" role="search">
-
-                        <div className="position-relative w-100 d-flex">
-                            <i className="bi bi-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
-                            <input
-                                type="text"
-                                className="form-control input-search"
-                                placeholder="Buscar por nome, equipe ou quarto..."
-                            />
-                        </div>
-
-                        <button
-                            type="button"
-                            className={`btn btn-filter ${aberto ? "bg-primary text-white" : "btn-outline-primary text-dark"}`}
-                            data-bs-toggle="collapse"
-                            data-bs-target="#FormularioFiltro"
-                        >
-                            <i className="bi bi-funnel fs-5 me-1"></i>
-                            Filtros
-                        </button>
-                    </form>
-
-
-                    <div className="collapse" id="FormularioFiltro" ref={collapseRef}>
-                        <form className="row g-3 form-control d-flex mt-3 m-0" ref={formFiltro}>
-
-                            <div className="col-md-6">
-                                <label className="form-label">Status do Paciente</label>
-                                <select className="form-select">
-                                    <option value="">Todos os status</option>
-                                    <option value="estavel">Estável</option>
-                                    <option value="observacao">Em Observação</option>
-                                    <option value="critico">Crítico</option>
-                                </select>
+                    {/* Cards */}
+                    <div className="row g-2">
+                        {pacientes.map((p, index) => (
+                            <div className="col-12 col-md-4 card-pacientes" key={index}>
+                                <CardPaciente
+                                    NomePaciente={p.nome_paciente}
+                                    NomeMaePaciente={p.mae_paciente}
+                                    NascPaciente={p.data_nasc}
+                                    StatusPaciente={p.status_paciente}
+                                    TipoSanguePaciente={p.tipo_sanguineo}
+                                    FatorRhPaciente={p.fator_rh}
+                                    QuartoPaciente={p.quarto}
+                                    LeitoPaciente={p.leito}
+                                    EquipePaciente={p.equipe}
+                                    ConvenioPaciente={p.convenio}
+                                    setor={p.nome_setor}
+                                />
                             </div>
-
-
-                            <div className="col-md-6">
-                                <label className="form-label">Convênio</label>
-                                <select className="form-select">
-                                    <option value="">Todos os convênios</option>
-                                    <option value="SUS">SUS</option>
-                                    <option value="Unimed">Unimed</option>
-                                    <option value="Particular">Particular</option>
-                                    <option value="Outros">Outros</option>
-                                </select>
-                            </div>
-
-                            <button
-                                type="button"
-                                className="btn-Limparfiltro text-primary w-auto mt-3 mb-2"
-                                onClick={fnLimparFiltro}
-                            >
-                                Limpar filtros
-                            </button>
-                        </form>
+                        ))}
                     </div>
+
                 </div>
 
-                {/* Contador */}
-                <div className="mt-4">
-                    <p className="opacity-75 small">{pacientes.length} pacientes encontrados</p>
-                </div>
-
-
-                {/* Cards */}
-                <div className="row g-2">
-                    {pacientes.map((p, index) => (
-                        <div className="col-12 col-md-4 card-pacientes" key={index}>
-                            <CardPaciente
-                                NomePaciente={p.NomePaciente}
-                                NomeMaePaciente={p.NomeMaePaciente}
-                                NascPaciente={p.NascPaciente}
-                                StatusPaciente={p.StatusPaciente}
-                                TipoSanguePaciente={p.TipoSanguePaciente}
-                                FatorRhPaciente={p.FatorRhPaciente}
-                                QuartoPaciente={p.QuartoPaciente}
-                                LeitoPaciente={p.LeitoPaciente}
-                                EquipePaciente={p.EquipePaciente}
-                                ConvenioPaciente={p.ConvenioPaciente}
-                                setor={p.setor}
-                            />
-                        </div>
-                    ))}
-                </div>
-
-            </div>
-
-        </section>
+            </section>
         </>
     );
 };
