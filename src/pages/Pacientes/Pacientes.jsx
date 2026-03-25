@@ -76,12 +76,20 @@ const Pacientes = () => {
     const modalRefPaciente = useRef(null);
 
     const [pacientes, setPacientes] = useState([]);
+    const [modoEdicao, setModoEdicao] = useState(false);
+    const [pacienteEditando, setPacienteEditando] = useState(null);
 
     const NascInvalido = useRef(null);
 
     const formRef = useRef(null);
-    function handleSubmit(e) {
 
+    const [toastMsg, setToastMsg] = useState({
+        titulo: "",
+        mensagem: "",
+        tipo: "success"
+    });
+
+    function handleSubmit(e) {
         e.preventDefault();
 
         const form = formRef.current;
@@ -91,25 +99,7 @@ const Pacientes = () => {
             return;
         }
 
-
-        NascInvalido.current.style.display = "none";
-
-        const hoje = new Date();
-        const anoAtual = hoje.getFullYear();
-
-        const nascimento = new Date(NascPaciente.current.value);
-        const anoNascimento = nascimento.getFullYear();
-
-        if (anoNascimento > anoAtual) {
-            NascInvalido.current.style.display = "block";
-            return;
-        }
-
-        const idSetor = setorSelecionado.current.value;
-
-        const setorObj = listaSetores.find(s => s.id == idSetor);
-
-        const novoPaciente = {
+        const dadosPaciente = {
             nome_paciente: NomePaciente.current.value,
             mae_paciente: NomeMaePaciente.current.value,
             data_nasc: NascPaciente.current.value,
@@ -120,23 +110,43 @@ const Pacientes = () => {
             convenio: ConvenioPaciente.current.value,
             quarto: QuartoPaciente.current.value,
             leito: LeitoPaciente.current.value,
-            id_setor: idSetor
+            id_setor: setorSelecionado.current.value
         };
 
-        fetch(`${urlServer}/pacientes`, {
-            method: "POST",
+
+        const url = modoEdicao
+            ? `${urlServer}/pacientes/${pacienteEditando.id}`
+            : `${urlServer}/pacientes`;
+
+        const method = modoEdicao ? "PUT" : "POST";
+
+        fetch(url, {
+            method,
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(novoPaciente)
+            body: JSON.stringify(dadosPaciente)
         })
             .then(res => res.json())
             .then(() => {
 
+                fnCarregarDados();
 
-                fnCarregarDados()
-
+                // define o toast
+                if (modoEdicao) {
+                    setToastMsg({
+                        titulo: "Paciente Editado",
+                        mensagem: "Paciente editado com sucesso!",
+                        tipo: "success"
+                    });
+                } else {
+                    setToastMsg({
+                        titulo: "Paciente Criado",
+                        mensagem: "Paciente criado com sucesso!",
+                        tipo: "success"
+                    });
+                }
 
                 const modalInstance = bootstrap.Modal.getOrCreateInstance(
                     modalRefPaciente.current
@@ -148,12 +158,13 @@ const Pacientes = () => {
                 toastInstance.current?.show();
 
                 form.reset();
+                form.classList.remove("was-validated");
 
-                form.classList.remove("was-validated")
-
+                // reseta o modo
+                setModoEdicao(false);
+                setPacienteEditando(null);
             })
-            .catch(erro => console.log(erro))
-
+            .catch(erro => console.log(erro));
     }
 
     useEffect(() => {
@@ -247,6 +258,46 @@ const Pacientes = () => {
         fnCarregarSetores()
     }, [])
 
+    function deletarPaciente(id) {
+
+        if (!confirm("Tem certeza que deseja excluir este paciente?")) return;
+
+        fetch(`${urlServer}/pacientes/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao deletar paciente");
+                return res.json();
+            })
+            .then(() => {
+                fnCarregarDados(); // recarrega lista
+            })
+            .catch(err => console.log(err));
+    }
+
+    function editarPaciente(paciente) {
+
+        setModoEdicao(true);
+        setPacienteEditando(paciente);
+
+        // preenche os campos
+        NomePaciente.current.value = paciente.nome_paciente;
+        NomeMaePaciente.current.value = paciente.mae_paciente;
+        NascPaciente.current.value = paciente.data_nasc?.split("T")[0];
+        TipoSanguePaciente.current.value = paciente.tipo_sanguineo;
+        FatorRhPaciente.current.value = paciente.fator_rh;
+        EquipePaciente.current.value = paciente.equipe;
+        StatusPaciente.current.value = paciente.status_paciente;
+        ConvenioPaciente.current.value = paciente.convenio;
+        QuartoPaciente.current.value = paciente.quarto;
+        LeitoPaciente.current.value = paciente.leito;
+        setorSelecionado.current.value = paciente.id_setor;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalRefPaciente.current);
+        modal.show();
+    }
+
 
     return (
         <>
@@ -260,7 +311,9 @@ const Pacientes = () => {
 
                             <div className="modal-header">
                                 <div className="p-2">
-                                    <h5 className="modal-title">Novo Paciente</h5>
+                                    <h5 className="modal-title">
+                                        {modoEdicao ? "Editar Paciente" : "Novo Paciente"}
+                                    </h5>
                                     <p className="small opacity-75">Preencha os dados do paciente para fins educacionais</p>
                                 </div>
                                 <button
@@ -415,7 +468,7 @@ const Pacientes = () => {
                                         </button>
 
                                         <button type="submit" className="btn btn-primary">
-                                            Criar Paciente
+                                            {modoEdicao ? "Salvar Alterações" : "Criar Paciente"}
                                         </button>
                                     </div>
                                 </form>
@@ -429,16 +482,17 @@ const Pacientes = () => {
 
                 {/* Toast */}
                 <div className="toast-container position-fixed bottom-0 end-0 p-3">
-                    <div ref={toastRef} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div ref={toastRef} className="toast" role="alert">
                         <div className="toast-header toast-color">
                             <strong className="me-auto d-flex align-items-center text-success">
-                                Paciente Criado <i className="bi bi-check fs-5 ms-1"></i>
+                                {toastMsg.titulo}
+                                <i className="bi bi-check fs-5 ms-1"></i>
                             </strong>
                             <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                         </div>
 
                         <div className="toast-body">
-                            Paciente criado com sucesso!
+                            {toastMsg.mensagem}
                         </div>
                     </div>
                 </div>
@@ -538,6 +592,7 @@ const Pacientes = () => {
                         {pacientes.map((p, index) => (
                             <div className="col-12 col-md-4 card-pacientes" key={index}>
                                 <CardPaciente
+                                    key={p.id}
                                     id={p.id}
                                     NomePaciente={p.nome_paciente}
                                     NomeMaePaciente={p.mae_paciente}
@@ -550,6 +605,9 @@ const Pacientes = () => {
                                     EquipePaciente={p.equipe}
                                     ConvenioPaciente={p.convenio}
                                     setor={p.nome_setor}
+                                    id_setor={p.id_setor}
+                                    onExcluir={deletarPaciente}
+                                    onEditar={editarPaciente}
                                 />
                             </div>
                         ))}

@@ -72,6 +72,24 @@ const Prontuario = () => {
             })
     }
 
+    function deletarCuidado(id) {
+
+        if (!confirm("Tem certeza que deseja excluir este cuidado?")) return;
+
+        fetch(`${urlServer}/paciente-cuidados/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Erro ao deletar");
+                return res.json();
+            })
+            .then(() => {
+                fnCarregarCuidadosPaciente(); // recarrega lista
+            })
+            .catch(err => console.log(err));
+    }
+
     useEffect(() => {
         fnCarregarDados()
     }, [])
@@ -906,7 +924,12 @@ const Prontuario = () => {
 
 
                                                                 </div>
-                                                                <button type='button' className='btn btn-sm' title="Deletar cuidado">
+                                                                <button
+                                                                    type='button'
+                                                                    className='btn btn-sm'
+                                                                    title="Deletar cuidado"
+                                                                    onClick={() => deletarCuidado(cuiRe.id)}
+                                                                >
                                                                     <i className='bi bi-trash text-danger'></i>
                                                                 </button>
                                                             </div>

@@ -1,38 +1,40 @@
 .card-paciente {
     border-left: 5px solid var(--success);
 }
-
+ 
 .info-card-paciente {
     font-size: 0.75rem;
 }
-
+ 
 .icon-card-status {
     width: 45px;
     height: 45px;
+    /* Garante que o círculo nunca encolhe em flex containers */
+    min-width: 45px;
+    min-height: 45px;
     background-color: var(--success-hover);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
 }
-
+ 
 .status-observacao.card-paciente {
     border-left-color: var(--warning);
 }
-
+ 
 .status-observacao.icon-card-status {
     background-color: var(--warning-hover);
 }
-
+ 
 .status-critico.card-paciente {
     border-left-color: var(--danger);
 }
-
+ 
 .status-critico.icon-card-status {
     background-color: var(--danger-hover);
 }
-
-
+ 
 .status-card-paciente {
     position: relative;
 }

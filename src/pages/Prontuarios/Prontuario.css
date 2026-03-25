@@ -126,6 +126,10 @@
     color: var(--danger);
 }
 
+.status-observacao.card-prontuario {
+    border-top-color: var(--warning);
+}
+
 .tab-content {
     animation: fadeIn 0.2s ease-in-out;
 }
