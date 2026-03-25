@@ -5,13 +5,15 @@ import Navbar from '../../components/Navbar/Navbar';
 
 //componentes
 import CardRelatorio from '../../components/CardRelatorio/CardRelatorio';
+import { urlServer } from '../../../config';
 
 const Relatorio = () => {
   //EXCLUIR RELATORIO 
   const [relatorioParaExcluir, setRelatorioParaExcluir] = useState(null);
+  const [pacientes, setPacientes] = useState([]);
 
-  function pedirConfirmacaoDelete(index) {
-    setRelatorioParaExcluir(index);
+  function pedirConfirmacaoDelete(id) {
+    setRelatorioParaExcluir(id);
 
     const modal = bootstrap.Modal.getOrCreateInstance(
       document.getElementById('modalConfirmarDeleteRelatorio')
@@ -34,6 +36,14 @@ const Relatorio = () => {
     modal.hide();
   }
 
+  async function fnCarregarPacientes() {
+    const response = await fetch(`${urlServer}/pacientes`, {
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+    setPacientes(data);
+  }
 
 
   // TOAST RELATORIO
@@ -58,15 +68,41 @@ const Relatorio = () => {
 
   const [relatorios, setRelatorios] = useState([]);
 
-  function fnCriarRelatorio() {
-
+  async function fnCriarRelatorio() {
     const novoRelatorio = {
-      PacienteSelecionado: PacienteSelecionado.current.value,
-      TituloRelatorio: TituloRelatorio.current.value,
-      ConteudoRelatorio: ConteudoRelatorio.current.value
+      paciente_id: PacienteSelecionado.current.value,
+      titulo: TituloRelatorio.current.value,
+      conteudo: ConteudoRelatorio.current.value
     };
 
-    setRelatorios(prev => [...prev, novoRelatorio]);
+    const response = await fetch(`${urlServer}/relatorios`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(novoRelatorio)
+    });
+
+    if (response.ok) {
+      // recarregar lista depois
+      fnCarregarRelatorios();
+    }
+  }
+
+  async function fnCarregarRelatorios() {
+    const response = await fetch(`${urlServer}/relatorios`, {
+      credentials: 'include'
+    });
+
+    const data = await response.json();
+
+    if (Array.isArray(data)) {
+      setRelatorios(data);
+    } else {
+      console.error("Erro vindo do backend:", data);
+      setRelatorios([]);
+    }
   }
 
   const formRefRelatorio = useRef(null)
@@ -115,11 +151,14 @@ const Relatorio = () => {
     };
   }, []);
 
-
+  useEffect(() => {
+    fnCarregarRelatorios();
+    fnCarregarPacientes();
+  }, []);
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <section id='relatorio-page-section'>
 
         {/* Modal Criar Relatorio */}
@@ -148,10 +187,16 @@ const Relatorio = () => {
 
                   <div className="col-12">
                     <label className="form-label">Paciente *</label>
-                    <select type="text" className="form-select" ref={PacienteSelecionado} required>
-                      <option value="" selected disabled>Selecione um paciente</option>
-                      <option value="João da Silva">João da Silva - Quarto 201/A</option>
+
+                    <select className="form-select" ref={PacienteSelecionado} required>
+                      <option value="">Selecione um paciente</option>
+                      {pacientes.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.nome} - {p.quarto}
+                        </option>
+                      ))}
                     </select>
+
                     <div className="invalid-feedback">
                       Selecione um paciente.
                     </div>
@@ -259,10 +304,10 @@ Sugestões de estrutura:
             {relatorios.map((r, index) => (
               <div className='col-12' key={index}>
                 <CardRelatorio
-                  PacienteSelecionado={r.PacienteSelecionado}
-                  TituloRelatorio={r.TituloRelatorio}
-                  ConteudoRelatorio={r.ConteudoRelatorio}
-                  onDelete={() => pedirConfirmacaoDelete(index)}
+                  PacienteSelecionado={r.nome_paciente}
+                  TituloRelatorio={r.titulo}
+                  ConteudoRelatorio={r.conteudo}
+                  onDelete={() => pedirConfirmacaoDelete(r.id)}
                 />
 
               </div>

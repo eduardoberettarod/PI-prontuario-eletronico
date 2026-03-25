@@ -5,6 +5,7 @@ function CardRelatorio({
     TituloRelatorio,
     ConteudoRelatorio,
     PacienteSelecionado,
+    usuario_nome,
     onDelete
 }) {
 
@@ -30,7 +31,7 @@ function CardRelatorio({
                         <p className="fw-medium fs-6 mb-1 mt-2">{TituloRelatorio}</p>
                         <p className="mb-0">Paciente: {PacienteSelecionado}</p>
                         <p className="mb-0">
-                            Criado por Dr. Eduardo Rodrigues em {data}, {hora}
+                            Criado por {usuario_nome} em {data}, {hora}
                         </p>
 
                     </div>
