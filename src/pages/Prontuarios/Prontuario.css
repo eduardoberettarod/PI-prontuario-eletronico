@@ -157,6 +157,7 @@
 
 /* icone */
 .btn-validacao i {
+    color: black !important;
     font-size: 14px;
 }
 

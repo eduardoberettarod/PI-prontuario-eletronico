@@ -21,6 +21,7 @@ const Prontuario = () => {
 
     const [cuidadosRegistrados, setCuidadosRegistrados] = useState([]);
     const [listaCuidados, setListaCuidados] = useState([]);
+    const [cuidadosPaciente, setCuidadosPaciente] = useState([])
 
     function fnCarregarDados() {
         const parametros = new URLSearchParams(window.location.search)
@@ -48,9 +49,45 @@ const Prontuario = () => {
             .catch(erro => console.log(erro.message))
     }
 
+    function fnAdicionarNovoCuidado() {
+
+        const paciente_id = new URLSearchParams(window.location.search).get("id");
+
+        const novoCuidado = {
+            paciente_id,
+            cuidado_id: tipoCuidadoRegistrado.current.value,
+            observacao: observacao.current.value
+        };
+
+        fetch(`${urlServer}/paciente-cuidados`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(novoCuidado)
+        })
+            .then(() => {
+                fnCarregarCuidadosPaciente()
+            })
+    }
+
     useEffect(() => {
         fnCarregarDados()
     }, [])
+
+    function alterarStatusCuidado(id, status_id) {
+
+        fetch(`${urlServer}/paciente-cuidados/${id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ status_id })
+        })
+            .then(() => fnCarregarCuidadosPaciente())
+    }
 
     function fnCarregarCuidados() {
         fetch(`${urlServer}/cuidados`, {
@@ -62,33 +99,28 @@ const Prontuario = () => {
             .catch(err => console.log(err))
     }
 
+    function fnCarregarCuidadosPaciente() {
+        const id = new URLSearchParams(window.location.search).get("id");
+
+        fetch(`${urlServer}/paciente-cuidados/${id}`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(dados => {
+                if (Array.isArray(dados)) {
+                    setCuidadosPaciente(dados)
+                } else {
+                    console.error("Resposta não é array:", dados)
+                    setCuidadosPaciente([])
+                }
+            })
+    }
+
     useEffect(() => {
-        fnCarregarCuidados();
-    }, []);
-
-    function fnAdicionarNovoCuidado() {
-
-        const novoCuidado = {
-            tipoCuidadoRegistrado: tipoCuidadoRegistrado.current.value,
-            observacao: observacao.current.value,
-            status: ""
-        };
-
-        setCuidadosRegistrados(prev => [...prev, novoCuidado]);
-    }
-
-    function alterarStatusCuidado(index, status) {
-
-        setCuidadosRegistrados(prev => {
-
-            const novos = [...prev];
-
-            novos[index].status = status;
-
-            return novos;
-        });
-
-    }
+        fnCarregarCuidados()
+        fnCarregarCuidadosPaciente()
+    }, [])
 
     const formRefCuidados = useRef(null)
     function SubmitCuidado(e) {
@@ -315,7 +347,7 @@ const Prontuario = () => {
                                     <div className="col-12">
                                         <label className="form-label">Medicamento *</label>
                                         <select className='form-select' required ref={medicamento}>
-                                            <option value="" disabled selected>Escolha um medicamento</option>
+                                            <option value="">Escolha um medicamento</option>
                                             <option value="Dipirona">Dipirona</option>
                                         </select>
                                         <div className="invalid-feedback">
@@ -335,7 +367,7 @@ const Prontuario = () => {
                                     <div className="col-md-12">
                                         <label className="form-label">Unidade *</label>
                                         <select className="form-select" required ref={unidade}>
-                                            <option value="" disabled selected>Escolha a unidade</option>
+                                            <option value="">Escolha a unidade</option>
                                             <option value="mg">mg (miligramas)</option>
                                             <option value="g">g (gramas)</option>
                                             <option value="mcg">mcg (microgramas)</option>
@@ -356,7 +388,7 @@ const Prontuario = () => {
                                     <div className='col-12'>
                                         <label className='form-label'>Frequência *</label>
                                         <select className="form-select" required ref={frequencia}>
-                                            <option value="" disabled selected>Escolha a frequência</option>
+                                            <option value="">Escolha a frequência</option>
                                             <option value="1">1/1hr</option>
                                             <option value="2">2/2hr</option>
                                             <option value="3">3/3hr</option>
@@ -442,13 +474,13 @@ const Prontuario = () => {
                                             value={tipoCuidado}
                                             ref={tipoCuidadoRegistrado}
                                             onChange={(e) => setTipoCuidado(e.target.value)}>
-                                            <option value="" disabled selected>Escolha um tipo de cuidado</option>
-                                            <option value="outro">Outro</option>
+                                            <option value="">Escolha um tipo de cuidado</option>
                                             {listaCuidados.map(c => (
                                                 <option key={c.id} value={c.id}>
-                                                    {c.nome_cuidado}
+                                                    {c.tipo_cuidado}
                                                 </option>
                                             ))}
+
                                         </select>
                                         <div className="invalid-feedback">
                                             Informe um cuidado.
@@ -778,7 +810,7 @@ const Prontuario = () => {
                                             </div>
 
 
-                                            {cuidadosRegistrados.length === 0 && (
+                                            {cuidadosPaciente.length === 0 && (
 
                                                 <div className='mt-3 p-2 pb-3 text-muted'>
 
@@ -791,7 +823,7 @@ const Prontuario = () => {
                                             )}
 
 
-                                            {cuidadosRegistrados.map((cuiRe, index) => (
+                                            {cuidadosPaciente.map((cuiRe, index) => (
                                                 <div className='mt-3' key={index}>
                                                     <div className="border rounded-2 p-3">
 
@@ -801,11 +833,11 @@ const Prontuario = () => {
                                                             <div className="d-flex align-items-start gap-3">
 
                                                                 <span className="icone-cuidados-registrados">
-                                                                    <i className="bi bi-heart-pulse"></i>
+                                                                    <i className="bi bi-heart-pulse text-primary"></i>
                                                                 </span>
 
                                                                 <div>
-                                                                    <h6 className="mb-1">{cuiRe.tipoCuidadoRegistrado}</h6>
+                                                                    <h6 className="mb-1">{cuiRe.tipo_cuidado}</h6>
                                                                     <span id="descricao-cuidado" className="text-muted small">
                                                                         {cuiRe.observacao}
                                                                     </span>
@@ -813,65 +845,70 @@ const Prontuario = () => {
 
                                                             </div>
 
-
                                                             {/* Lado direito */}
-                                                            <div className="d-flex flex-column align-items-end gap-2">
+                                                            <div className='d-flex align-items-start justify-content-end gap-3'>
+                                                                <div className="d-flex flex-column align-items-end gap-2">
 
-                                                                <div className="grupo-validacao">
+                                                                    <div className="grupo-validacao">
 
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="btn-check"
-                                                                        name={`validadoOpcoesCuidado-${index}`}
-                                                                        id={`validado-okCuidado-${index}`}
-                                                                        checked={cuiRe.status === "ok"}
-                                                                        onChange={() => alterarStatusCuidado(index, "ok")}
-                                                                    />
-                                                                    <label
-                                                                        className="btn-validacao sucesso"
-                                                                        htmlFor={`validado-okCuidado-${index}`}
-                                                                    >
-                                                                        <i className="bi bi-check2"></i>
-                                                                    </label>
-
-
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="btn-check"
-                                                                        name={`validadoOpcoesCuidado-${index}`}
-                                                                        id={`validado-negadoPorPacienteCuidado-${index}`}
-                                                                        checked={cuiRe.status === "negadoPorPaciente"}
-                                                                        onChange={() => alterarStatusCuidado(index, "negadoPorPaciente")}
-                                                                    />
-                                                                    <label
-                                                                        className="btn-validacao negadoPorPaciente"
-                                                                        htmlFor={`validado-negadoPorPacienteCuidado-${index}`}
-                                                                    >
-                                                                        <i className="bi bi-circle"></i>
-                                                                    </label>
+                                                                        <input
+                                                                            type="radio"
+                                                                            className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-okCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 2}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 2)}
+                                                                        />
+                                                                        <label
+                                                                            className="btn-validacao sucesso"
+                                                                            htmlFor={`validado-okCuidado-${index}`}
+                                                                        >
+                                                                            <i className="bi bi-check2"></i>
+                                                                        </label>
 
 
-                                                                    <input
-                                                                        type="radio"
-                                                                        className="btn-check"
-                                                                        name={`validadoOpcoesCuidado-${index}`}
-                                                                        id={`validado-negadoCuidado-${index}`}
-                                                                        checked={cuiRe.status === "negado"}
-                                                                        onChange={() => alterarStatusCuidado(index, "negado")}
-                                                                    />
-                                                                    <label
-                                                                        className="btn-validacao negado"
-                                                                        htmlFor={`validado-negadoCuidado-${index}`}
-                                                                    >
-                                                                        <i className="bi bi-x-lg"></i>
-                                                                    </label>
+                                                                        <input
+                                                                            type="radio"
+                                                                            className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-negadoPorPacienteCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 4}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 4)}
+                                                                        />
+                                                                        <label
+                                                                            className="btn-validacao negadoPorPaciente"
+                                                                            htmlFor={`validado-negadoPorPacienteCuidado-${index}`}
+                                                                        >
+                                                                            <i className="bi bi-circle"></i>
+                                                                        </label>
+
+
+                                                                        <input
+                                                                            type="radio"
+                                                                            className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-negadoCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 3}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 3)}
+                                                                        />
+                                                                        <label
+                                                                            className="btn-validacao negado"
+                                                                            htmlFor={`validado-negadoCuidado-${index}`}
+                                                                        >
+                                                                            <i className="bi bi-x-lg"></i>
+                                                                        </label>
+
+                                                                    </div>
+
+                                                                    <span className="text-muted small">
+                                                                        {formatarDataBR(cuiRe.created_at)}
+                                                                    </span>
+
 
                                                                 </div>
-
-                                                                <span className="text-muted small">
-                                                                    03/03/2026, 19:38
-                                                                </span>
-
+                                                                <button type='button' className='btn btn-sm' title="Deletar cuidado">
+                                                                    <i className='bi bi-trash text-danger'></i>
+                                                                </button>
                                                             </div>
 
                                                         </div>
