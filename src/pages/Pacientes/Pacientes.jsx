@@ -538,6 +538,7 @@ const Pacientes = () => {
                         {pacientes.map((p, index) => (
                             <div className="col-12 col-md-4 card-pacientes" key={index}>
                                 <CardPaciente
+                                    id={p.id}
                                     NomePaciente={p.nome_paciente}
                                     NomeMaePaciente={p.mae_paciente}
                                     NascPaciente={p.data_nasc}

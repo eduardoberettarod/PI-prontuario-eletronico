@@ -6,11 +6,13 @@ import * as bootstrap from 'bootstrap';
 import Navbar from '../../components/Navbar/Navbar'
 import TagStatus from '../../components/Tag/TagStatus'
 import './Prontuario.css'
+import { urlServer } from '../../../config';
 
 const Prontuario = () => {
 
     const [activeTab, setActiveTab] = useState("dados");
     const [tipoCuidado, setTipoCuidado] = useState("");
+    const [paciente, setPaciente] = useState(null)
 
     // Modal e crição de novos Cuidados
     const modalCriarCuidado = useRef(null)
@@ -18,6 +20,51 @@ const Prontuario = () => {
     const tipoCuidadoRegistrado = useRef(null)
 
     const [cuidadosRegistrados, setCuidadosRegistrados] = useState([]);
+    const [listaCuidados, setListaCuidados] = useState([]);
+
+    function fnCarregarDados() {
+        const parametros = new URLSearchParams(window.location.search)
+        const id = parametros.get('id')
+
+        fetch(`${urlServer}/pacientes/` + id, {
+            method: 'GET',
+            credentials: 'include',
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                setPaciente(dados);
+            })
+            .catch(erro => console.log(erro.message))
+    }
+
+    useEffect(() => {
+        fnCarregarDados()
+    }, [])
+
+    function fnCarregarCuidados() {
+        fetch(`${urlServer}/cuidados`, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(res => res.json())
+            .then(dados => setListaCuidados(dados))
+            .catch(err => console.log(err))
+    }
+
+    useEffect(() => {
+        fnCarregarCuidados();
+    }, []);
 
     function fnAdicionarNovoCuidado() {
 
@@ -148,6 +195,14 @@ const Prontuario = () => {
         setprescricoesRegistradas(prev => [...prev, novaPrescricao]);
     }
 
+    function formatarDataBR(data) {
+        if (!data) return "";
+
+        const novaData = new Date(data);
+
+        return novaData.toLocaleDateString("pt-BR");
+    }
+
     function alterarStatusHorario(indexPrescricao, indexHorario, status) {
 
         setprescricoesRegistradas(prev => {
@@ -206,6 +261,25 @@ const Prontuario = () => {
             modalEl.removeEventListener("hidden.bs.modal", handleHidden);
         };
     }, []);
+
+    const statusClass = `status-${paciente?.status_paciente}`
+
+    const nascimento = new Date(paciente?.data_nasc);
+    const hoje = new Date();
+
+    let idade = "";
+
+    if (paciente?.data_nasc) {
+        const nascimento = new Date(paciente.data_nasc);
+        const hoje = new Date();
+
+        idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+    }
 
     return (
         <>
@@ -370,7 +444,11 @@ const Prontuario = () => {
                                             onChange={(e) => setTipoCuidado(e.target.value)}>
                                             <option value="" disabled selected>Escolha um tipo de cuidado</option>
                                             <option value="outro">Outro</option>
-                                            <option value="teste">Teste</option>
+                                            {listaCuidados.map(c => (
+                                                <option key={c.id} value={c.id}>
+                                                    {c.nome_cuidado}
+                                                </option>
+                                            ))}
                                         </select>
                                         <div className="invalid-feedback">
                                             Informe um cuidado.
@@ -435,25 +513,25 @@ const Prontuario = () => {
 
                     <div className='prontuario-content'>
 
-                        <div className='card card-prontuario'>
+                        <div className={`card card-prontuario ${statusClass}`}>
 
                             <div className='card-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-md-between py-3 px-4'>
 
                                 <div className='d-flex align-items-center gap-3'>
                                     <div>
-                                        <span className='icone-prontuario'>
+                                        <span className={`icone-prontuario ${statusClass}`}>
                                             <i className='bi bi-person'></i>
                                         </span>
                                     </div>
 
                                     <div className="d-flex flex-column">
-                                        <h6 className='mb-0 mt-3'>Nome do Paciente</h6>
-                                        <p>Idade <span>•</span> Tipo Sanguíneo</p>
+                                        <h6 className='mb-0 mt-3'>{paciente?.nome_paciente}</h6>
+                                        <p>{idade} <span>•</span> {paciente?.tipo_sanguineo} {paciente?.fator_rh}</p>
                                     </div>
                                 </div>
 
                                 <div className='mt-3 mt-md-0'>
-                                    <TagStatus status={'observacao'} />
+                                    <TagStatus status={paciente?.status_paciente} />
                                 </div>
                             </div>
 
@@ -494,23 +572,23 @@ const Prontuario = () => {
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Nome Completo</h6>
-                                                            <span className='text-muted'>Nome do Paciente</span>
+                                                            <span className='text-muted'>{paciente?.nome_paciente}</span>
                                                         </div>
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Data de Nascimento</h6>
-                                                            <span className='text-muted'>12/04/2008 • (17 anos)</span>
+                                                            <span className='text-muted'>{formatarDataBR(paciente?.data_nasc)} • {idade} anos</span>
                                                         </div>
 
                                                         <div className='col-12 mt-md-5'>
                                                             <h6>Equipe Responsável</h6>
-                                                            <span className='text-muted'>Equipe Azul - Clínica Médica</span>
+                                                            <span className='text-muted'>{paciente?.equipe}</span>
                                                             <p className='text-muted'>Equipe multiprofissional responsável pelo cuidado integral.</p>
                                                         </div>
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Localização</h6>
-                                                            <span className='text-muted'>Quarto 201 - Leito A</span>
+                                                            <span className='text-muted'>Quarto {paciente?.quarto} - Leito {paciente?.leito}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -520,30 +598,24 @@ const Prontuario = () => {
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Nome da Mãe</h6>
-                                                            <span className='text-muted'>Maria da Silva Santos</span>
+                                                            <span className='text-muted'>{paciente?.mae_paciente}</span>
                                                         </div>
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Tipo Sanguíneo / RH</h6>
-                                                            <span className='text-muted'>A +</span>
+                                                            <span className='text-muted'>{paciente?.tipo_sanguineo} {paciente?.fator_rh}</span>
                                                             <p className='text-muted'>Importante para transfusões e compatibilidade sanguínea.</p>
                                                         </div>
 
                                                         <div className='col-12'>
                                                             <h6 className='fw-semibold'>Setor</h6>
-                                                            <span className='text-muted'>Maternidade</span>
+                                                            <span className='text-muted'>{paciente?.nome_setor}</span>
                                                         </div>
 
-                                                        <div className='col-12'>
+                                                        <div className='col-12 mt-5'>
                                                             <h6>Convênio</h6>
-                                                            <span className='text-muted'>SUS</span>
+                                                            <span className='text-muted'>{paciente?.convenio}</span>
 
-                                                        </div>
-
-                                                        <div className='col-12 text-end small'>
-                                                            <span className='fw-semibold'> Cadastrado por:
-                                                                <span className='text-muted fw-normal'> Dr. Eduardo Beretta</span>
-                                                            </span>
                                                         </div>
 
                                                     </div>
@@ -561,7 +633,7 @@ const Prontuario = () => {
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalCriarPrescricao"
                                                 >
-                                                    <i className='bi bi-plus fs-5'></i>
+                                                    <i className='bi bi-plus fs-5 text-white'></i>
                                                     Nova Prescrição
                                                 </button>
                                             </div>
@@ -571,7 +643,7 @@ const Prontuario = () => {
 
                                                     <span className='d-flex align-items-center gap-2 justify-content-center'>
                                                         Nenhuma prescrição registrada
-                                                        <i className="bi bi-file-medical"></i>
+                                                        <i className="bi bi-file-medical text-muted"></i>
                                                     </span>
 
                                                 </div>
@@ -700,7 +772,7 @@ const Prontuario = () => {
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalCriarCuidado"
                                                 >
-                                                    <i className='bi bi-plus fs-5'></i>
+                                                    <i className='bi bi-plus fs-5 text-white'></i>
                                                     Registrar Cuidado
                                                 </button>
                                             </div>
@@ -712,7 +784,7 @@ const Prontuario = () => {
 
                                                     <span className='d-flex align-items-center gap-2 justify-content-center'>
                                                         Nenhum cuidado registrado
-                                                        <i className="bi bi-heart-pulse"></i>
+                                                        <i className="bi bi-heart-pulse text-muted"></i>
                                                     </span>
 
                                                 </div>

@@ -5,6 +5,7 @@ import TagStatus from '../Tag/TagStatus.jsx'
 import './CardPaciente.css'
 
 function CardPaciente({
+    id,
     NomePaciente,
     NascPaciente,
     StatusPaciente,
@@ -33,7 +34,7 @@ function CardPaciente({
     return (
         <>
             <div className={`card rounded-2 p-3 card-paciente h-100 ${statusClass}`}>
-                
+
                 <div className='d-flex pt-2 justify-content-between align-items-center'>
                     <div className='d-flex w-100'>
                         <span className={`icon-card-status ${statusClass}`}>
@@ -82,7 +83,7 @@ function CardPaciente({
                     <span className='opacity-50 mb-3'>Nome da Mãe: <span>{NomeMaePaciente}</span></span>
                 </div>
 
-                <NavLink className='btn btn-primary w-100' to={'/prontuario'}>
+                <NavLink className='btn btn-primary w-100' to={`/prontuario?id=${id}`}>
                     Ver Prontuário
                 </NavLink>
             </div>

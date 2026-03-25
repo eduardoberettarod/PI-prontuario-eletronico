@@ -19,7 +19,7 @@
 }
 
 .icone-prontuario {
-    background-color: var(--warning-hover);
+    background-color: var(--success-hover);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,7 +30,7 @@
 
 .icone-prontuario i {
     font-size: 2rem;
-    color: var(--warning);
+    color: var(--success);
 }
 
 .icone-cuidados-registrados {
@@ -94,66 +94,90 @@
 }
 
 .tab-item.active {
-    color: #0d6efd;
-    border-bottom: 3px solid #0d6efd;
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+}
+
+.card-prontuario {
+    border-top: 5px solid var(--success);
+}
+
+.status-observacao.icone-prontuario {
+    border-top-color: var(--warning);
+}
+
+.status-observacao.icone-prontuario i{
+    color: var(--warning);
+}
+
+.status-observacao.icone-prontuario {
+    background-color: var(--warning-hover);
+}
+
+.status-critico.icone-prontuario {
+    background-color: var(--danger-hover);
+}
+
+.status-critico.card-prontuario {
+    border-top-color: var(--danger);
+}
+
+.status-critico.card-prontuario i{
+    color: var(--danger);
 }
 
 .tab-content {
     animation: fadeIn 0.2s ease-in-out;
 }
 
-.card-prontuario {
-    border-top: 6px solid var(--warning);
-}
-
-.grupo-validacao{
-    display:flex;
-    gap:6px;
+.grupo-validacao {
+    display: flex;
+    gap: 6px;
 }
 
 /* botão base */
-.btn-validacao{
-    width:34px;
-    height:34px;
-    border-radius:8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border:1px solid #dee2e6;
-    color:#6c757d;
-    background:white;
-    cursor:pointer;
-    transition:0.15s;
+.btn-validacao {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dee2e6;
+    color: #6c757d;
+    background: white;
+    cursor: pointer;
+    transition: 0.15s;
 }
 
 /* hover leve */
-.btn-validacao:hover{
-    background:#f8f9fa;
+.btn-validacao:hover {
+    background: #f8f9fa;
 }
 
 /* icone */
-.btn-validacao i{
-    font-size:14px;
+.btn-validacao i {
+    font-size: 14px;
 }
 
 
 /* quando selecionado */
-.btn-check:checked + .btn-validacao.sucesso{
-    background:#e9f9ee;
-    border-color:#198754;
-    color:#198754;
+.btn-check:checked+.btn-validacao.sucesso {
+    background: #e9f9ee;
+    border-color: #198754;
+    color: #198754;
 }
 
-.btn-check:checked + .btn-validacao.negadoPorPaciente{
-    background:#fff6e5;
-    border-color:#ffc107;
-    color:#ffc107;
+.btn-check:checked+.btn-validacao.negadoPorPaciente {
+    background: #fff6e5;
+    border-color: #ffc107;
+    color: #ffc107;
 }
 
-.btn-check:checked + .btn-validacao.negado{
-    background:#fdeaea;
-    border-color:#dc3545;
-    color:#dc3545;
+.btn-check:checked+.btn-validacao.negado {
+    background: #fdeaea;
+    border-color: #dc3545;
+    color: #dc3545;
 }
 
 @keyframes fadeIn {
