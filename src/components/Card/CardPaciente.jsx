@@ -96,7 +96,7 @@ function CardPaciente({
                     </NavLink>
 
                     <button
-                        className='btn btn-outline-success'
+                        className='btn btn-outline-success d-flex align-items-center justify-content-center'
                         title='Editar paciente'
                         onClick={() => onEditar({
                             id,

@@ -6,13 +6,18 @@ function CardRelatorio({
     ConteudoRelatorio,
     PacienteSelecionado,
     usuario_nome,
-    onDelete
+    created_at,
+    onDelete,
+    onEdit
 }) {
 
-    const hoje = new Date();
+    function formatarDataBR(data) {
+        if (!data) return "";
 
-    const data = hoje.toLocaleDateString('pt-BR');
-    const hora = hoje.toLocaleTimeString('pt-BR');
+        const novaData = new Date(data);
+
+        return novaData.toLocaleDateString("pt-BR");
+    }
 
 
     return (
@@ -31,7 +36,7 @@ function CardRelatorio({
                         <p className="fw-medium fs-6 mb-1 mt-2">{TituloRelatorio}</p>
                         <p className="mb-0">Paciente: {PacienteSelecionado}</p>
                         <p className="mb-0">
-                            Criado por {usuario_nome} em {data}, {hora}
+                            Criado por {usuario_nome} em {formatarDataBR(created_at)}
                         </p>
 
                     </div>
@@ -44,16 +49,21 @@ function CardRelatorio({
 
                 <div className="position-absolute end-0 me-3 top-0 mt-3 gap-2 d-flex">
 
-                    <button className='btn'>
-                        <i className='bi bi-pencil-square text-success fs-5'></i>
+                    <button className='btn btn-outline-success'
+                    title='Editar relatório'
+                    onClick={onEdit}>
+                        <i className='bi bi-pencil-square fs-6'></i>
                     </button>
 
-                    <button className="btn">
-                        <i className="bi bi-printer text-primary fs-5"></i>
+                    <button className="btn btn-outline-primary"
+                    title='Imprimir relatório'>
+                        <i className="bi bi-printer fs-6"></i>
                     </button>
 
-                    <button className="btn" onClick={onDelete}>
-                        <i className="bi bi-trash text-danger fs-5"></i>
+                    <button className="btn btn-outline-danger" 
+                    title='Excluir relatório'
+                    onClick={onDelete}>
+                        <i className="bi bi-trash fs-6"></i>
                     </button>
 
                 </div>

@@ -19,6 +19,14 @@ function Remedios() {
         }
     }, [])
 
+    const [medicamentoEditando, setMedicamentoEditando] = useState(null);
+
+    const [toastMsg, setToastMsg] = useState({
+        titulo: "",
+        mensagem: "",
+        tipo: "success"
+    });
+
     // FORM DO MODAL DE REMEDIOS / ADICIONAR MEDICAMENTO
     const nome_medicamento = useRef(null)
     const modalRefRemedios = useRef(null);
@@ -29,52 +37,95 @@ function Remedios() {
 
 
     const formRefRemedios = useRef(null)
-    function SubmitRemedios(e) {
-
+    async function SubmitRemedios(e) {
         e.preventDefault();
 
-        const formRemedios = formRefRemedios.current
+        const formRemedios = formRefRemedios.current;
 
         if (!formRemedios.checkValidity()) {
             formRemedios.classList.add("was-validated");
-            return
+            return;
         }
 
-        const novoMedicamento = {
+        const dados = {
             nome_medicamento: nome_medicamento.current.value,
             classe_terapeutica: classe_terapeutica.current.value,
             unidade: unidade.current.value
+        };
+
+        const url = medicamentoEditando
+            ? `${urlServer}/medicamentos/${medicamentoEditando.id}`
+            : `${urlServer}/medicamentos`;
+
+        const method = medicamentoEditando ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.erro || "Erro");
+
+            fnCarregarDados();
+
+            // 🔥 TOAST DINÂMICO
+            if (medicamentoEditando) {
+                setToastMsg({
+                    titulo: "Medicamento Editado",
+                    mensagem: "Medicamento atualizado com sucesso!",
+                    tipo: "success"
+                });
+            } else {
+                setToastMsg({
+                    titulo: "Medicamento Criado",
+                    mensagem: "Medicamento adicionado com sucesso!",
+                    tipo: "success"
+                });
+            }
+
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                modalRefRemedios.current
+            );
+            modalInstance.hide();
+
+            document.activeElement.blur();
+
+            toastInstanceRemedios.current?.show();
+
+            formRemedios.reset();
+            formRemedios.classList.remove("was-validated");
+
+            setMedicamentoEditando(null);
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao salvar medicamento",
+                tipo: "danger"
+            });
+
+            toastInstanceRemedios.current?.show();
         }
+    }
 
-        fetch(`${urlServer}/medicamentos`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(novoMedicamento)
-        })
-            .then(res => res.json())
-            .then(() => {
+    function abrirModalEditar(med) {
+        setMedicamentoEditando(med);
 
-                // recarrega tabela
-                fnCarregarDados()
+        nome_medicamento.current.value = med.nome_medicamento;
+        classe_terapeutica.current.value = med.classe_terapeutica;
+        unidade.current.value = med.unidade;
 
-                // fecha modal
-                const modalInstance = bootstrap.Modal.getOrCreateInstance(
-                    modalRefRemedios.current
-                );
-                modalInstance.hide();
-
-                document.activeElement.blur();
-
-                toastInstanceRemedios.current?.show();
-
-                formRemedios.classList.remove("was-validated")
-
-            })
-            .catch(erro => console.log(erro))
-
+        const modal = bootstrap.Modal.getOrCreateInstance(modalRefRemedios.current);
+        modal.show();
     }
 
     useEffect(() => {
@@ -96,10 +147,69 @@ function Remedios() {
 
     //EXCLUIR O MEDICAMENTO
 
-    function removerMedicamento(index) {
-        setMedicamentos(prev =>
-            prev.filter((_, i) => i !== index)
+    const [medicamentoParaExcluir, setMedicamentoParaExcluir] = useState(null);
+
+    function pedirConfirmacaoDelete(id) {
+        setMedicamentoParaExcluir(id);
+
+        const modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('modalConfirmarDeleteMedicamento')
         );
+
+        modal.show();
+    }
+
+    async function confirmarDelete() {
+        if (!medicamentoParaExcluir) return;
+
+        await removerMedicamento(medicamentoParaExcluir);
+
+        setMedicamentoParaExcluir(null);
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalConfirmarDeleteMedicamento')
+        );
+
+        modal.hide();
+    }
+
+    async function removerMedicamento(id) {
+
+        try {
+            const response = await fetch(`${urlServer}/medicamentos/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.erro || "Erro ao deletar");
+            }
+
+            // 🔥 recarrega do banco (melhor prática)
+            fnCarregarDados();
+
+            // 🔥 toast dinâmico
+            setToastMsg({
+                titulo: "Medicamento removido",
+                mensagem: "Medicamento excluído com sucesso!",
+                tipo: "success"
+            });
+
+            toastInstanceRemedios.current?.show();
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao excluir medicamento",
+                tipo: "danger"
+            });
+
+            toastInstanceRemedios.current?.show();
+        }
     }
 
     function fnCarregarDados() {
@@ -145,6 +255,45 @@ function Remedios() {
             <Navbar />
             <section id='remedios-page-section'>
 
+                {/* Modal para Deletar o Remedios */}
+                <div
+                    className="modal fade"
+                    id="modalConfirmarDeleteMedicamento"
+                    tabIndex="-1"
+                    aria-hidden="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
+                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div className="modal-body">
+                                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este remédio?</p>
+                                <p className="small text-muted">
+                                    Essa ação não pode ser desfeita.
+                                </p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={confirmarDelete}
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 {/* Modal Criar Relatorio */}
                 <div className="modal fade" id="modalCriarRemedio"
                     tabIndex="-1" aria-hidden="true" ref={modalRefRemedios}>
@@ -153,7 +302,7 @@ function Remedios() {
 
                             <div className="modal-header">
                                 <div className="p-2">
-                                    <h5 className="modal-title">Novo Medicamento</h5>
+                                    <h5 className="modal-title">{medicamentoEditando ? "Editar Medicamento" : "Novo Medicamento"}</h5>
                                     <p className="small opacity-75">Adicione um novo medicamento à tabela</p>
                                 </div>
                                 <button
@@ -213,7 +362,7 @@ function Remedios() {
                                         </button>
 
                                         <button type="submit" className="btn btn-primary">
-                                            Adicionar
+                                            {medicamentoEditando ? "Salvar Alterações" : "Adicionar"}
                                         </button>
                                     </div>
                                 </form>
@@ -226,14 +375,14 @@ function Remedios() {
                 <div className="toast-container position-fixed bottom-0 end-0 p-3">
                     <div ref={toastRefRemedios} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
                         <div className="toast-header toast-color">
-                            <strong className="me-auto d-flex align-items-center text-success">
-                                Medicamento adicionado <i className="bi bi-check fs-5 ms-1"></i>
+                            <strong className={`me-auto d-flex align-items-center text-${toastMsg.tipo}`}>
+                                {toastMsg.titulo}
                             </strong>
                             <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                         </div>
 
                         <div className="toast-body">
-                            Medicamento adicionado com sucesso!
+                            {toastMsg.mensagem}
                         </div>
                     </div>
                 </div>
@@ -316,13 +465,16 @@ function Remedios() {
 
                                             <td className="pe-4 py-3 text-end">
                                                 <div className="d-inline-flex align-items-center gap-2">
-                                                    <button className="btn btn-sm text-success p-1">
+                                                    <button
+                                                        className="btn btn-sm text-success p-1"
+                                                        onClick={() => abrirModalEditar(med)}
+                                                    >
                                                         <i className="bi bi-pencil-square fs-5"></i>
                                                     </button>
 
                                                     <button
                                                         className="btn btn-sm text-danger p-1"
-                                                        onClick={() => removerMedicamento(index)}
+                                                        onClick={() => pedirConfirmacaoDelete(med.id)}
                                                     >
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>

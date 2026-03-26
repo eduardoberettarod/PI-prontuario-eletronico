@@ -78,6 +78,7 @@ const Pacientes = () => {
     const [pacientes, setPacientes] = useState([]);
     const [modoEdicao, setModoEdicao] = useState(false);
     const [pacienteEditando, setPacienteEditando] = useState(null);
+    
 
     const NascInvalido = useRef(null);
 

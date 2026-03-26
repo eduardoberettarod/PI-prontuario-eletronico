@@ -10,6 +10,7 @@ import { urlServer } from '../../../config';
 const Relatorio = () => {
   //EXCLUIR RELATORIO 
   const [relatorioParaExcluir, setRelatorioParaExcluir] = useState(null);
+  const [relatorioEditando, setRelatorioEditando] = useState(null);
   const [pacientes, setPacientes] = useState([]);
 
   function pedirConfirmacaoDelete(id) {
@@ -22,10 +23,20 @@ const Relatorio = () => {
     modal.show();
   }
 
-  function confirmarDeleteRelatorio() {
-    setRelatorios(prev =>
-      prev.filter((_, index) => index !== relatorioParaExcluir)
-    );
+  async function confirmarDeleteRelatorio() {
+    if (!relatorioParaExcluir) return;
+
+    const response = await fetch(`${urlServer}/relatorios/${relatorioParaExcluir}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+
+    if (response.ok) {
+
+      fnCarregarRelatorios();
+    } else {
+      console.error('Erro ao deletar');
+    }
 
     setRelatorioParaExcluir(null);
 
@@ -67,6 +78,11 @@ const Relatorio = () => {
   const ConteudoRelatorio = useRef(null)
 
   const [relatorios, setRelatorios] = useState([]);
+  const [toastMsg, setToastMsg] = useState({
+    titulo: "",
+    mensagem: "",
+    tipo: "success"
+  });
 
   async function fnCriarRelatorio() {
     const novoRelatorio = {
@@ -92,7 +108,8 @@ const Relatorio = () => {
 
   async function fnCarregarRelatorios() {
     const response = await fetch(`${urlServer}/relatorios`, {
-      credentials: 'include'
+      credentials: 'include',
+      method: 'GET'
     });
 
     const data = await response.json();
@@ -105,34 +122,72 @@ const Relatorio = () => {
     }
   }
 
-  const formRefRelatorio = useRef(null)
-  function SubmitRelatorio(e) {
+  async function fnEditarRelatorio() {
+    const dadosAtualizados = {
+      paciente_id: PacienteSelecionado.current.value,
+      titulo: TituloRelatorio.current.value,
+      conteudo: ConteudoRelatorio.current.value
+    };
 
+    const response = await fetch(
+      `${urlServer}/relatorios/${relatorioEditando.id}`,
+      {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dadosAtualizados)
+      }
+    );
+
+    if (response.ok) {
+      fnCarregarRelatorios();
+    } else {
+      console.error('Erro ao editar');
+    }
+  }
+
+  const formRefRelatorio = useRef(null)
+  async function SubmitRelatorio(e) {
     e.preventDefault();
 
-    const formRelatorio = formRefRelatorio.current
+    const formRelatorio = formRefRelatorio.current;
 
-    // validação bootstrap
     if (!formRelatorio.checkValidity()) {
       formRelatorio.classList.add("was-validated");
-      return
+      return;
     }
 
-    // cria o relatorio
-    fnCriarRelatorio();
+    if (relatorioEditando) {
+      await fnEditarRelatorio();
+    } else {
+      await fnCriarRelatorio();
+    }
 
-    //fecha o modal
     const modalRelatorio = bootstrap.Modal.getOrCreateInstance(modalRefRelatorio.current);
     modalRelatorio.hide();
 
-    //remove foco do botão antes do modal fechar (EVITA TRAVAMENTO DO BACKDROP)
     document.activeElement.blur();
 
-    // 3️ mostra o toast
+    if (relatorioEditando) {
+      setToastMsg({
+        titulo: "Relatório Atualizado",
+        mensagem: "Relatório editado com sucesso!",
+        tipo: "success"
+      });
+    } else {
+      setToastMsg({
+        titulo: "Relatório Criado",
+        mensagem: "Relatório criado com sucesso!",
+        tipo: "success"
+      });
+    }
+
     toastInstanceRelatorio.current?.show();
 
-
-    formRelatorio.classList.remove("was-validated")
+    formRelatorio.classList.remove("was-validated");
+    setRelatorioEditando(null);
   }
 
   useEffect(() => {
@@ -142,12 +197,13 @@ const Relatorio = () => {
 
     const handleHidden = () => {
       modalElRelatorio.querySelector('form').reset();
-    }
+      setRelatorioEditando(null);
+    };
 
     modalElRelatorio.addEventListener("hidden.bs.modal", handleHidden);
 
     return () => {
-      modalElRelatorio.removeEventListener("hidden.bs.modal", handleHidden)
+      modalElRelatorio.removeEventListener("hidden.bs.modal", handleHidden);
     };
   }, []);
 
@@ -155,6 +211,21 @@ const Relatorio = () => {
     fnCarregarRelatorios();
     fnCarregarPacientes();
   }, []);
+
+  function abrirModalEditar(relatorio) {
+    setRelatorioEditando(relatorio);
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalRefRelatorio.current);
+    modal.show();
+
+    setTimeout(() => {
+      if (PacienteSelecionado.current) {
+        PacienteSelecionado.current.value = relatorio.paciente_id;
+        TituloRelatorio.current.value = relatorio.titulo;
+        ConteudoRelatorio.current.value = relatorio.conteudo;
+      }
+    }, 100);
+  }
 
   return (
     <>
@@ -168,7 +239,7 @@ const Relatorio = () => {
 
               <div className="modal-header">
                 <div className="p-2">
-                  <h5 className="modal-title">Novo Relatório</h5>
+                  <h5 className="modal-title">{relatorioEditando ? "Editar Relatório" : "Novo Relatório"}</h5>
                   <p className="small opacity-75">Preencha os dados do paciente para fins educacionais</p>
                 </div>
                 <button
@@ -192,7 +263,7 @@ const Relatorio = () => {
                       <option value="">Selecione um paciente</option>
                       {pacientes.map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.nome} - {p.quarto}
+                          {p.nome_paciente} - {p.quarto}
                         </option>
                       ))}
                     </select>
@@ -241,7 +312,7 @@ Sugestões de estrutura:
 
 
                     <button type="submit" className="btn btn-primary">
-                      Criar Relatório
+                      {relatorioEditando ? "Salvar Alterações" : "Criar Relatório"}
                     </button>
                   </div>
                 </form>
@@ -254,14 +325,14 @@ Sugestões de estrutura:
         <div className="toast-container position-fixed bottom-0 end-0 p-3">
           <div ref={toastRefRelatorio} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div className="toast-header toast-color">
-              <strong className="me-auto d-flex align-items-center text-success">
-                Relatório Criado <i className="bi bi-check fs-5 ms-1"></i>
+              <strong className={`me-auto d-flex align-items-center text-${toastMsg.tipo}`}>
+                {toastMsg.titulo}
               </strong>
               <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
             </div>
 
             <div className="toast-body">
-              Relatório criado com sucesso!
+              {toastMsg.mensagem}
             </div>
           </div>
         </div>
@@ -305,9 +376,12 @@ Sugestões de estrutura:
               <div className='col-12' key={index}>
                 <CardRelatorio
                   PacienteSelecionado={r.nome_paciente}
+                  usuario_nome={r.usuario_nome}
+                  created_at={r.created_at}
                   TituloRelatorio={r.titulo}
                   ConteudoRelatorio={r.conteudo}
                   onDelete={() => pedirConfirmacaoDelete(r.id)}
+                  onEdit={() => abrirModalEditar(r)}
                 />
 
               </div>
