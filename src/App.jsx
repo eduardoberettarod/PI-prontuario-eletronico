@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { urlServer } from '../config'
 
 //Componentes
+import { urlServer } from '../config'
 import Loader from './components/Loader/Loader.jsx';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
+import { useAuth } from './components/AuthContext/AuthContext.jsx';
 
 //Páginas
 import Index from './pages/Home/Index.jsx';
@@ -23,36 +24,7 @@ import Setor from './pages/Setor/Setor.jsx';
 function App() {
 
   const [loading, setLoading] = useState(true)
-  const [usuario, setUsuario] = useState(null)
-  const [verificandoAuth, setVerificandoAuth] = useState(true)
-
-  const navigate = useNavigate()
-
-  useEffect(() => {
-
-  fetch(`${urlServer}/auth/me`, {
-    credentials: "include"
-  })
-    .then(res => {
-
-      if (res.status === 401) {
-        setUsuario(null)
-        setVerificandoAuth(false)
-        return
-      }
-
-      return res.json()
-    })
-    .then(dados => {
-
-      if (dados) {
-        setUsuario(dados)
-      }
-
-      setVerificandoAuth(false)
-    })
-
-}, [])
+  const { usuario, verificandoAuth } = useAuth();
 
   return (
     <>
@@ -144,8 +116,8 @@ function App() {
 
         <Route path='/login' element={<Login />} />
         <Route path='/registro' element={<Registro />} />
-
         <Route path="/" element={<Login />} />
+
       </Routes>
 
     </>

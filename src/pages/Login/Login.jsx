@@ -3,11 +3,12 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import './Login.css'
 import logo from '/image/logo.svg'
 import { urlServer } from '../../../config'
+import { useAuth } from '../../components/AuthContext/AuthContext'
 
 const Login = () => {
 
     const navigate = useNavigate();
-
+    const { setUsuario } = useAuth();
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const formRef = useRef(null)
@@ -21,34 +22,36 @@ const Login = () => {
         if (!form.checkValidity()) {
             form.classList.add("was-validated");
             return;
-        } else {
-            const resposta = await fetch(`${urlServer}/auth/login`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, senha })
-            });
-
-            const dados = await resposta.json();
-
-            if (!resposta.ok) {
-                alert(dados.erro);
-                return;
-            }
-
-            // login ok
-            const respostaMe = await fetch(`${urlServer}/auth/me`, {
-                credentials: "include"
-            })
-
-            const usuario = await respostaMe.json()
-
         }
-        
-        navigate("/index", { replace: true })
 
+        const resposta = await fetch(`${urlServer}/auth/login`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, senha })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            alert(dados.erro);
+            return;
+        }
+
+        //  pega usuário logado
+        const respostaMe = await fetch(`${urlServer}/auth/me`, {
+            credentials: "include"
+        });
+
+        const usuario = await respostaMe.json();
+
+        //  salva no contexto
+        setUsuario(usuario);
+
+        // redireciona
+        navigate("/index", { replace: true });
     }
 
     const [textPassword, setTextPassword] = useState("password")

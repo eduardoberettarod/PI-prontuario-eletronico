@@ -6,6 +6,8 @@ import './Navbar.css'
 import logo from '/image/logo.svg';
 import { NavLink } from "react-router-dom";
 import { useNavigate } from 'react-router-dom'
+import { urlServer } from '../../../config'
+import { useAuth } from '../AuthContext/AuthContext'
 
 const navItems = [
     {
@@ -70,10 +72,25 @@ const navItems = [
 
 function Navbar() {
 
+    const { setUsuario } = useAuth();
+
     const navigate = useNavigate()
 
-    function fnSairLogin() {
-        navigate('/login')
+    async function fnSairLogin() {
+        try {
+            const response = await fetch("http://localhost:3000/auth/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                setUsuario(null);
+                navigate('/login');
+            }
+
+        } catch (erro) {
+            console.error(erro);
+        }
     }
 
     const location = useLocation()
