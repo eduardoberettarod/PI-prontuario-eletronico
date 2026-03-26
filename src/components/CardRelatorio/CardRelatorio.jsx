@@ -44,25 +44,27 @@ function CardRelatorio({
                 </div>
 
                 <div className="bg-body-secondary p-2 mt-3 rounded-2 d-flex align-items-center" style={{ overflow: 'hidden' }}>
-                    <p className="mb-0">{ConteudoRelatorio}</p>
+                    <p className="mb-0 text-truncate-multiline">
+                        {ConteudoRelatorio}
+                    </p>
                 </div>
 
                 <div className="position-absolute end-0 me-3 top-0 mt-3 gap-2 d-flex">
 
                     <button className='btn btn-outline-success'
-                    title='Editar relatório'
-                    onClick={onEdit}>
+                        title='Editar relatório'
+                        onClick={onEdit}>
                         <i className='bi bi-pencil-square fs-6'></i>
                     </button>
 
                     <button className="btn btn-outline-primary"
-                    title='Imprimir relatório'>
+                        title='Imprimir relatório'>
                         <i className="bi bi-printer fs-6"></i>
                     </button>
 
-                    <button className="btn btn-outline-danger" 
-                    title='Excluir relatório'
-                    onClick={onDelete}>
+                    <button className="btn btn-outline-danger"
+                        title='Excluir relatório'
+                        onClick={onDelete}>
                         <i className="bi bi-trash fs-6"></i>
                     </button>
 
