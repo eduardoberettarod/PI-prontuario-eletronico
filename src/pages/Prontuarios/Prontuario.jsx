@@ -39,6 +39,10 @@ const Prontuario = () => {
     const [itens, setItens] = useState([itemVazio()]);
     const [prescricoesRegistradas, setprescricoesRegistradas] = useState([]);
 
+    // ─── Edição de prescrição ──────────────────────────────────────────────────
+    const modalEditarPrescricao = useRef(null)
+    const [prescricaoEditando, setPrescricaoEditando] = useState({ id: null, observacao: "" })
+
     // ─── Funções de dados ─────────────────────────────────────────────────────
 
     function fnCarregarDados() {
@@ -84,9 +88,7 @@ const Prontuario = () => {
             return;
         }
 
-        // Valida os campos de cada item — horários NÃO são enviados,
-        // pois são gerados automaticamente no backend com base em
-        // data_prescricao + frequência (intervalo em horas)
+        // Valida campos — horários NÃO são enviados (gerados no backend)
         try {
             itens.forEach((item, idx) => {
                 if (!item.medicamento_id) {
@@ -107,7 +109,6 @@ const Prontuario = () => {
             return;
         }
 
-        // Payload sem horarios — geração é responsabilidade do backend
         const payload = {
             paciente_id: parseInt(paciente_id),
             observacao: observacaoPrescricao.trim(),
@@ -126,12 +127,8 @@ const Prontuario = () => {
             body: JSON.stringify(payload),
         })
             .then(res => {
-                if (res.status === 201 || res.status === 200) {
-                    return res.json();
-                }
-                return res.json().then(err => {
-                    throw new Error(err.erro || "Erro ao salvar prescrição");
-                });
+                if (res.status === 201 || res.status === 200) return res.json();
+                return res.json().then(err => { throw new Error(err.erro || "Erro ao salvar prescrição") });
             })
             .then(dados => {
                 console.log("✅ Prescrição salva:", dados);
@@ -144,7 +141,43 @@ const Prontuario = () => {
             });
     }
 
+    // ─── Editar prescrição ─────────────────────────────────────────────────────
+
+    function abrirEdicaoPrescricao(prescricao) {
+        setPrescricaoEditando({
+            id: prescricao.id,
+            observacao: prescricao.observacao || ""
+        });
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEditarPrescricao.current);
+        modalInstance.show();
+    }
+
+    function fnSalvarEdicaoPrescricao() {
+        if (!prescricaoEditando.id) return;
+
+        fetch(`${urlServer}/prescricoes/${prescricaoEditando.id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ observacao: prescricaoEditando.observacao })
+        })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.erro || "Erro ao editar prescrição") });
+                return res.json();
+            })
+            .then(() => {
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEditarPrescricao.current);
+                modalInstance.hide();
+                fnCarregarPrescricoes();
+            })
+            .catch(err => {
+                console.error("Erro ao editar prescrição:", err);
+                alert("❌ " + err.message);
+            });
+    }
+
     // ─── Deletar prescrição ────────────────────────────────────────────────────
+
     function deletarPrescricao(prescricao_id, numeroPrescricao) {
         if (!confirm(`Tem certeza que deseja excluir a Prescrição #${numeroPrescricao}?\n\nEsta ação também removerá todos os medicamentos e horários vinculados.`)) {
             return;
@@ -158,9 +191,7 @@ const Prontuario = () => {
                 if (!res.ok) return res.json().then(err => { throw new Error(err.erro || "Erro ao deletar prescrição") });
                 return res.json();
             })
-            .then(() => {
-                fnCarregarPrescricoes();
-            })
+            .then(() => fnCarregarPrescricoes())
             .catch(err => {
                 console.error("Erro ao deletar prescrição:", err);
                 alert("❌ " + err.message);
@@ -168,8 +199,7 @@ const Prontuario = () => {
     }
 
     // ─── Alterar status de horário ─────────────────────────────────────────────
-    // Mapeamento de status_id:
-    //   1 = pendente | 2 = finalizado (ok) | 3 = nao_feito (negado) | 4 = negado_paciente (recusado)
+    // 1 = pendente | 2 = finalizado | 3 = nao_feito | 4 = negado_paciente
     function alterarStatusHorario(horario_id, status_id) {
         fetch(`${urlServer}/prescricoes/horario/${horario_id}`, {
             method: "PUT",
@@ -204,7 +234,7 @@ const Prontuario = () => {
         ));
     }
 
-    // ─── Submit do modal de prescrição ────────────────────────────────────────
+    // ─── Submit modal criar prescrição ────────────────────────────────────────
     function SubmitPrescricao(e) {
         e.preventDefault();
 
@@ -219,11 +249,10 @@ const Prontuario = () => {
         const modalInstance = bootstrap.Modal.getOrCreateInstance(modalCriarPrescricao.current);
         modalInstance.hide();
         document.activeElement.blur();
-
         form.classList.remove("was-validated");
     }
 
-    // Reset completo ao fechar o modal
+    // Reset ao fechar o modal de criar
     useEffect(() => {
         if (!modalCriarPrescricao.current) return;
         const modalEl = modalCriarPrescricao.current;
@@ -232,6 +261,19 @@ const Prontuario = () => {
             formRefPrescricao.current?.classList.remove("was-validated");
             setObservacaoPrescricao("");
             setItens([itemVazio()]);
+        };
+
+        modalEl.addEventListener("hidden.bs.modal", handleHidden);
+        return () => modalEl.removeEventListener("hidden.bs.modal", handleHidden);
+    }, []);
+
+    // Reset ao fechar o modal de editar
+    useEffect(() => {
+        if (!modalEditarPrescricao.current) return;
+        const modalEl = modalEditarPrescricao.current;
+
+        const handleHidden = () => {
+            setPrescricaoEditando({ id: null, observacao: "" });
         };
 
         modalEl.addEventListener("hidden.bs.modal", handleHidden);
@@ -318,6 +360,22 @@ const Prontuario = () => {
         return new Date(data).toLocaleDateString("pt-BR");
     }
 
+    // Formata o DATETIME do horário de prescrição para exibição.
+    // O backend envia "YYYY-MM-DD HH:MM:SS" (string sem fuso).
+    // Exibe como "DD/MM/YYYY HH:MM" sem conversão de fuso.
+    function formatarHorarioPrescricao(horario) {
+        if (!horario) return "";
+        const str = String(horario);
+        // Aceita "YYYY-MM-DD HH:MM:SS" ou "YYYY-MM-DDTHH:MM:SS"
+        const partes = str.replace('T', ' ').split(' ');
+        if (partes.length < 2) return str;
+        const [datePart, timePart] = partes;
+        const [y, m, d] = datePart.split('-');
+        const [h, mi] = timePart.split(':');
+        if (!y || !m || !d || !h || !mi) return str;
+        return `${d}/${m}/${y} ${h}:${mi}`;
+    }
+
     const statusClass = `status-${paciente?.status_paciente}`
 
     let idade = "";
@@ -330,8 +388,7 @@ const Prontuario = () => {
     }
 
     // ─── Opções de frequência (intervalo em horas) ────────────────────────────
-    // Valor = intervalo em horas | Label = "n/n h" (a cada n horas)
-    // Exemplos: 1/1 h = a cada 1h | 4/4 h = a cada 4h | 24/24 h = a cada 24h
+    // n/n h = a cada n horas | ex: 4/4 h = a cada 4 horas
     const opcoesFrequencia = Array.from({ length: 24 }, (_, i) => i + 1);
 
     function fnCarregarPrescricoes() {
@@ -345,9 +402,7 @@ const Prontuario = () => {
                 if (!res.ok) throw new Error("Erro ao carregar prescrições");
                 return res.json();
             })
-            .then(dados => {
-                setprescricoesRegistradas(dados);
-            })
+            .then(dados => setprescricoesRegistradas(dados))
             .catch(err => console.log(err));
     }
 
@@ -356,12 +411,11 @@ const Prontuario = () => {
             <Navbar />
             <section id='prontuario-page-section'>
 
-                {/* ── Modal Prescrição ──────────────────────────────────────── */}
+                {/* ── Modal Criar Prescrição ───────────────────────────────── */}
                 <div className="modal fade" id="modalCriarPrescricao"
                     tabIndex="-1" aria-hidden="true" ref={modalCriarPrescricao}>
                     <div className="modal-dialog modal-dialog-centered modal-lg">
                         <div className="modal-content">
-
                             <div className="modal-header">
                                 <div className="p-2">
                                     <h5 className="modal-title">Nova Prescrição</h5>
@@ -377,7 +431,6 @@ const Prontuario = () => {
                                     ref={formRefPrescricao}
                                     onSubmit={SubmitPrescricao}
                                 >
-
                                     <div className="col-12">
                                         <label className="form-label">Observação Geral</label>
                                         <input
@@ -465,7 +518,7 @@ const Prontuario = () => {
                                                             onChange={e => atualizarItem(index, "frequencia", e.target.value)}
                                                         >
                                                             <option value="">Escolha a frequência</option>
-                                                            {/* n/n h = a cada n horas (ex: 4/4 h = a cada 4 horas) */}
+                                                            {/* n/n h = a cada n horas */}
                                                             {opcoesFrequencia.map(n => (
                                                                 <option key={n} value={n}>{n}/{n} h</option>
                                                             ))}
@@ -497,14 +550,53 @@ const Prontuario = () => {
                                             Salvar Prescrição
                                         </button>
                                     </div>
-
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ── Modal Cuidado ────────────────────────── */}
+                {/* ── Modal Editar Prescrição ──────────────────────────────── */}
+                <div className="modal fade" id="modalEditarPrescricao"
+                    tabIndex="-1" aria-hidden="true" ref={modalEditarPrescricao}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <div className="p-2">
+                                    <h5 className="modal-title">Editar Prescrição</h5>
+                                    <p className="small opacity-75">Altere a observação desta prescrição.</p>
+                                </div>
+                                <button type="button" className="btn-close mb-5" data-bs-dismiss="modal" />
+                            </div>
+                            <div className="modal-body">
+                                <div className="row g-3">
+                                    <div className="col-12">
+                                        <label className="form-label">Observação</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Ex: Administrar com alimento."
+                                            value={prescricaoEditando.observacao}
+                                            onChange={e => setPrescricaoEditando(prev => ({ ...prev, observacao: e.target.value }))}
+                                            maxLength={500}
+                                        />
+                                        <div className="form-text">Máximo 500 caracteres.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-outline-danger" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={fnSalvarEdicaoPrescricao}>
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* ── Modal Cuidado ────────────────────────────────────────── */}
                 <div className="modal fade" id="modalCriarCuidado"
                     tabIndex="-1" aria-hidden="true" ref={modalCriarCuidado}>
                     <div className="modal-dialog modal-dialog-centered">
@@ -700,7 +792,7 @@ const Prontuario = () => {
                                                 <div className='mt-3' key={p.id}>
                                                     <div className='border rounded-2 p-3'>
 
-                                                        {/* ── Cabeçalho da prescrição com botão de delete ── */}
+                                                        {/* ── Cabeçalho com botões de editar e deletar ── */}
                                                         <div className='d-flex justify-content-between align-items-start mb-3'>
                                                             <div>
                                                                 <h6 className="mb-0">Prescrição #{index + 1}</h6>
@@ -712,24 +804,36 @@ const Prontuario = () => {
                                                                 )}
                                                             </div>
 
-                                                            {/* Botão de delete com confirmação */}
-                                                            <button
-                                                                type="button"
-                                                                className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                                                                title="Excluir prescrição"
-                                                                onClick={() => deletarPrescricao(p.id, index + 1)}
-                                                            >
-                                                                <i className="bi bi-trash"></i>
-                                                                <span className="d-none d-md-inline">Excluir</span>
-                                                            </button>
+                                                            <div className="d-flex align-items-center gap-2">
+                                                                {/* Botão editar */}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                                                                    title="Editar prescrição"
+                                                                    onClick={() => abrirEdicaoPrescricao(p)}
+                                                                >
+                                                                    <i className="bi bi-pencil"></i>
+                                                                    <span className="d-none d-md-inline">Editar</span>
+                                                                </button>
+
+                                                                {/* Botão deletar */}
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                                                                    title="Excluir prescrição"
+                                                                    onClick={() => deletarPrescricao(p.id, index + 1)}
+                                                                >
+                                                                    <i className="bi bi-trash"></i>
+                                                                    <span className="d-none d-md-inline">Excluir</span>
+                                                                </button>
+                                                            </div>
                                                         </div>
 
-                                                        {/* ── Lista de medicamentos da prescrição ── */}
+                                                        {/* ── Medicamentos e horários ── */}
                                                         <div className="d-flex flex-column gap-2">
                                                             {p.itens?.map((item, i) => (
                                                                 <div key={item.id} className="border rounded-2 p-3">
 
-                                                                    {/* Info do medicamento */}
                                                                     <div className='d-flex flex-column flex-md-row justify-content-between gap-2'>
                                                                         <div className='row g-2'>
                                                                             <div className='col-12'>
@@ -742,25 +846,27 @@ const Prontuario = () => {
                                                                                 <span className="text-muted small">
                                                                                     <strong>Dosagem:</strong> {item.dosagem} {item.unidade} &nbsp;•&nbsp;
                                                                                     <strong>Via:</strong> {item.via} &nbsp;•&nbsp;
-                                                                                    {/* Frequência exibida no formato n/n h (a cada n horas) */}
                                                                                     <strong>Frequência:</strong> {item.frequencia}/{item.frequencia} h
                                                                                 </span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
 
-                                                                    {/* ── Horários do item ── */}
+                                                                    {/* ── Horários com DATETIME formatado ── */}
                                                                     <div className="mt-3">
                                                                         {item.horarios?.map((h, j) => (
                                                                             <div key={h.id} className="d-flex justify-content-between align-items-center border rounded p-2 mt-2">
 
                                                                                 <div className="d-flex flex-column">
-                                                                                    <span className="fw-semibold">{h.horario}</span>
+                                                                                    {/* Exibe DD/MM/YYYY HH:MM */}
+                                                                                    <span className="fw-semibold">
+                                                                                        {formatarHorarioPrescricao(h.horario)}
+                                                                                    </span>
                                                                                 </div>
 
                                                                                 <div className="grupo-validacao">
 
-                                                                                    {/* 2 = finalizado (ok) */}
+                                                                                    {/* 2 = finalizado */}
                                                                                     <input
                                                                                         type="radio"
                                                                                         className="btn-check"
@@ -773,7 +879,7 @@ const Prontuario = () => {
                                                                                         <i className="bi bi-check2"></i>
                                                                                     </label>
 
-                                                                                    {/* 4 = negado_paciente (recusado) */}
+                                                                                    {/* 4 = negado_paciente */}
                                                                                     <input
                                                                                         type="radio"
                                                                                         className="btn-check"
@@ -786,7 +892,7 @@ const Prontuario = () => {
                                                                                         <i className="bi bi-circle"></i>
                                                                                     </label>
 
-                                                                                    {/* 3 = nao_feito (negado) */}
+                                                                                    {/* 3 = nao_feito */}
                                                                                     <input
                                                                                         type="radio"
                                                                                         className="btn-check"

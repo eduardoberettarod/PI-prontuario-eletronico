@@ -1,11 +1,9 @@
-import React from 'react'
-import { useEffect } from 'react'
+import {useState, useEffect} from 'react'
 import { useLocation } from 'react-router-dom'
 import * as bootstrap from 'bootstrap'
 import './Navbar.css'
 import logo from '/image/logo.svg';
-import { NavLink } from "react-router-dom";
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from "react-router-dom";
 import { urlServer } from '../../../config'
 import { useAuth } from '../AuthContext/AuthContext'
 
@@ -78,7 +76,7 @@ function Navbar() {
 
     async function fnSairLogin() {
         try {
-            const response = await fetch("http://localhost:3000/auth/logout", {
+            const response = await fetch(`${urlServer}/auth/logout`, {
                 method: "POST",
                 credentials: "include"
             });
@@ -109,6 +107,42 @@ function Navbar() {
         document.body.style.overflow = 'auto'
     }, [location])
 
+    const [nomeUsuario, setNomeUsuario] = useState('')
+    const [nivelAcesso, setNivelAcesso] = useState('')
+
+    useEffect(() => {
+        async function buscarUsuario() {
+            try {
+                const response = await fetch(`${urlServer}/usuarios/me`, {
+                    method: "GET",
+                    credentials: "include"
+                })
+
+                if (!response.ok) {
+                    throw new Error("Erro ao buscar usuário")
+                }
+
+                const data = await response.json()
+
+                setNomeUsuario(`${data.primeiro_nome} ${data.sobrenome}`)
+                setNivelAcesso(data.nivel_acesso)
+
+            } catch (erro) {
+                console.error("Erro ao carregar usuário:", erro)
+            }
+        }
+
+        buscarUsuario()
+    }, [])
+
+    function formatarNivel(nivel) {
+        switch (nivel) {
+            case 'admin': return 'Administrador'
+            case 'docente': return 'Docente'
+            case 'aluno': return 'Aluno'
+            default: return nivel
+        }
+    }
 
     return (
         <>
@@ -118,8 +152,8 @@ function Navbar() {
 
                 {/* Logo à esquerda */}
                 <div className="d-flex align-items-center ms-4">
-                    <a
-                        href="#"
+                    <NavLink
+                        to={'/index'}
                         className="navbar-brand d-flex align-items-center"
                     >
                         <img
@@ -137,7 +171,7 @@ function Navbar() {
                                 Sistema Senac
                             </p>
                         </div>
-                    </a>
+                    </NavLink>
                 </div>
 
 
@@ -168,8 +202,8 @@ function Navbar() {
                             aria-expanded="false"
                         >
                             <div>
-                                <h1 className="mb-0 fs-6 fw-semibold">Eduardo Beretta</h1>
-                                <p className="mb-0 small text-muted text-end">Docente</p>
+                                <h1 className="mb-0 fs-6 fw-semibold">{nomeUsuario}</h1>
+                                <p className="mb-0 small text-muted text-end">{formatarNivel(nivelAcesso)}</p>
                             </div>
                             <span className="dropdown-icon">
                                 <i className="bi bi-person fs-6"></i>
@@ -201,8 +235,8 @@ function Navbar() {
 
                     {/* Botões da Esquerda */}
                     <div className="d-flex align-items-center">
-                        <a
-                            href="#"
+                        <NavLink
+                            to={'/index'}
                             className="navbar-brand d-flex align-items-center"
                         >
                             <img
@@ -220,7 +254,7 @@ function Navbar() {
                                     Sistema Senac
                                 </p>
                             </div>
-                        </a>
+                        </NavLink>
                     </div>
 
                     <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
@@ -238,8 +272,8 @@ function Navbar() {
                                         <i className='bi bi-person fs-6 mx-auto text-primary'></i>
                                     </span>
                                     <div className="me-4">
-                                        <h1 className="mb-0 fs-6 fw-semibold text-dark">Eduardo Beretta</h1>
-                                        <p className="mb-0 small text-muted text-start">Docente</p>
+                                        <h1 className="mb-0 fs-6 fw-semibold text-dark">{nomeUsuario}</h1>
+                                        <p className="mb-0 small text-muted text-start">{formatarNivel(nivelAcesso)}</p>
                                     </div>
                                 </NavLink>
                             </div>

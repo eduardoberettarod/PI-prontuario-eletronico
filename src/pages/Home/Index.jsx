@@ -3,9 +3,14 @@ import './Index.css'
 import { NavLink } from "react-router-dom";
 import TagStatus from '../../components/Tag/TagStatus';
 import Navbar from '../../components/Navbar/Navbar';
+import { useAuth } from '../../components/AuthContext/AuthContext';
 
 const Index = () => {
 
+    const { usuario, verificandoAuth } = useAuth()
+    if (verificandoAuth) {
+        return <p>Carregando...</p>
+    }
 
     const nomesDias = [
         "Domingo",
@@ -31,13 +36,13 @@ const Index = () => {
     return (
 
         <>
-        <Navbar />
+            <Navbar />
             <section id='home-page-section'>
 
                 <div className='container-home'>
                     <div className='text-start'>
                         <h1>
-                            Boa noite, Dr. Eduardo!
+                            Boa noite, Dr. {usuario?.primeiro_nome || 'Usuário'}!
                         </h1>
                         <p className='opacity-75'>{diaSemana}, {dia} de {mes} de {ano}</p>
                     </div>
@@ -101,7 +106,7 @@ const Index = () => {
 
                                 <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
                                     <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-                                    
+
                                     <div className='p-2 width-a-home'>
                                         <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
                                         <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
