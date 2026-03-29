@@ -34,9 +34,9 @@ const Prontuario = () => {
     const modalCriarPrescricao = useRef(null)
     const formRefPrescricao = useRef(null)
 
-    const [listaMedicamentos, setListaMedicamentos] = useState([]);     // <-- medicamentos da API
-    const [observacaoPrescricao, setObservacaoPrescricao] = useState(""); // <-- campo único da prescrição
-    const [itens, setItens] = useState([itemVazio()]);                  // <-- lista dinâmica
+    const [listaMedicamentos, setListaMedicamentos] = useState([]);
+    const [observacaoPrescricao, setObservacaoPrescricao] = useState("");
+    const [itens, setItens] = useState([itemVazio()]);
     const [prescricoesRegistradas, setprescricoesRegistradas] = useState([]);
 
     // ─── Funções de dados ─────────────────────────────────────────────────────
@@ -65,7 +65,6 @@ const Prontuario = () => {
             .catch(err => console.log(err));
     }
 
-    // ─── Carrega medicamentos da API ──────────────────────────────────────────
     function fnCarregarMedicamentos() {
         fetch(`${urlServer}/medicamentos`, { method: "GET", credentials: "include" })
             .then(res => res.json())
@@ -74,24 +73,22 @@ const Prontuario = () => {
     }
 
     function fnAdicionarNovaPrescricao() {
-        // ✅ Validar paciente_id
         const paciente_id = new URLSearchParams(window.location.search).get("id");
         if (!paciente_id || isNaN(parseInt(paciente_id))) {
             alert("⚠️ Paciente não identificado");
             return;
         }
 
-        // ✅ Validar se tem itens
         if (itens.length === 0) {
             alert("⚠️ Adicione pelo menos um medicamento");
             return;
         }
 
-        // ✅ Mapear itens com validações
-        let itensComHorarios;
+        // Valida os campos de cada item — horários NÃO são enviados,
+        // pois são gerados automaticamente no backend com base em
+        // data_prescricao + frequência (intervalo em horas)
         try {
-            itensComHorarios = itens.map((item, idx) => {
-                // Validar campos obrigatórios
+            itens.forEach((item, idx) => {
                 if (!item.medicamento_id) {
                     throw new Error(`Medicamento ${idx + 1}: selecione um medicamento`);
                 }
@@ -104,44 +101,23 @@ const Prontuario = () => {
                 if (!item.frequencia || isNaN(parseInt(item.frequencia))) {
                     throw new Error(`Medicamento ${idx + 1}: frequência inválida`);
                 }
-
-                const horarios = gerarHorarios(item);
-                if (horarios.length === 0) {
-                    throw new Error(`Medicamento ${idx + 1}: frequência inválida (deve estar entre 1 e 24)`);
-                }
-
-                return {
-                    ...item,
-                    horarios
-                };
             });
         } catch (e) {
             alert("❌ " + e.message);
             return;
         }
 
+        // Payload sem horarios — geração é responsabilidade do backend
         const payload = {
             paciente_id: parseInt(paciente_id),
             observacao: observacaoPrescricao.trim(),
-            itens: itensComHorarios
+            itens: itens.map(item => ({
+                medicamento_id: item.medicamento_id,
+                dosagem: item.dosagem,
+                via: item.via,
+                frequencia: item.frequencia,
+            }))
         };
-
-        // ✅ Mostrar loading
-        const forms = document.querySelectorAll("form");
-        let botaoSalvar = null;
-        for (let form of forms) {
-            let btn = form.querySelector('button[type="submit"]');
-            if (btn && btn.textContent.includes("Salvar")) {
-                botaoSalvar = btn;
-                break;
-            }
-        }
-
-        const textoOriginal = botaoSalvar?.textContent || "Salvar Prescrição";
-        if (botaoSalvar) {
-            botaoSalvar.disabled = true;
-            botaoSalvar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
-        }
 
         fetch(`${urlServer}/prescricoes`, {
             method: "POST",
@@ -163,14 +139,52 @@ const Prontuario = () => {
                 fnCarregarPrescricoes();
             })
             .catch(err => {
-                console.error("❌ Erro:", err);
+                console.error("Erro:", err);
                 alert("❌ " + err.message);
+            });
+    }
+
+    // ─── Deletar prescrição ────────────────────────────────────────────────────
+    function deletarPrescricao(prescricao_id, numeroPrescricao) {
+        if (!confirm(`Tem certeza que deseja excluir a Prescrição #${numeroPrescricao}?\n\nEsta ação também removerá todos os medicamentos e horários vinculados.`)) {
+            return;
+        }
+
+        fetch(`${urlServer}/prescricoes/${prescricao_id}`, {
+            method: "DELETE",
+            credentials: "include",
+        })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.erro || "Erro ao deletar prescrição") });
+                return res.json();
             })
-            .finally(() => {
-                if (botaoSalvar) {
-                    botaoSalvar.disabled = false;
-                    botaoSalvar.innerHTML = textoOriginal;
-                }
+            .then(() => {
+                fnCarregarPrescricoes();
+            })
+            .catch(err => {
+                console.error("Erro ao deletar prescrição:", err);
+                alert("❌ " + err.message);
+            });
+    }
+
+    // ─── Alterar status de horário ─────────────────────────────────────────────
+    // Mapeamento de status_id:
+    //   1 = pendente | 2 = finalizado (ok) | 3 = nao_feito (negado) | 4 = negado_paciente (recusado)
+    function alterarStatusHorario(horario_id, status_id) {
+        fetch(`${urlServer}/prescricoes/horario/${horario_id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status_id })
+        })
+            .then(res => {
+                if (!res.ok) return res.json().then(err => { throw new Error(err.erro || "Erro ao atualizar status") });
+                return res.json();
+            })
+            .then(() => fnCarregarPrescricoes())
+            .catch(err => {
+                console.error("Erro ao atualizar status do horário:", err);
+                alert("❌ " + err.message);
             });
     }
 
@@ -224,7 +238,7 @@ const Prontuario = () => {
         return () => modalEl.removeEventListener("hidden.bs.modal", handleHidden);
     }, []);
 
-    // ─── Cuidados (sem alteração) ──────────────────────────────────────────────
+    // ─── Cuidados ──────────────────────────────────────────────────────────────
 
     function fnAdicionarNovoCuidado() {
         const paciente_id = new URLSearchParams(window.location.search).get("id");
@@ -315,41 +329,10 @@ const Prontuario = () => {
         if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) idade--;
     }
 
-    // ─── Frequências (lista reutilizável) ─────────────────────────────────────
+    // ─── Opções de frequência (intervalo em horas) ────────────────────────────
+    // Valor = intervalo em horas | Label = "n/n h" (a cada n horas)
+    // Exemplos: 1/1 h = a cada 1h | 4/4 h = a cada 4h | 24/24 h = a cada 24h
     const opcoesFrequencia = Array.from({ length: 24 }, (_, i) => i + 1);
-
-    // Gera os horários para um item de prescrição
-    // item: { medicamento_id, dosagem, via, frequencia }
-    // Retorna um array de objetos com { horario: "HH:MM", status_id: 1 }
-    function gerarHorarios(item) {
-        const frequencia = parseInt(item.frequencia);
-
-        // ✅ Validação rigorosa
-        if (!frequencia || isNaN(frequencia) || frequencia <= 0 || frequencia > 24) {
-            return [];
-        }
-
-        const interval = 24 / frequencia;
-        const horarios = [];
-
-        for (let i = 0; i < frequencia; i++) {
-            let hora = Math.floor(i * interval);
-            let minuto = 0;
-            // Formata em HH:MM
-            let hh = hora.toString().padStart(2, "0");
-            let mm = minuto.toString().padStart(2, "0");
-
-            // ✅ Retorna OBJETO, não string
-            horarios.push({
-                horario: `${hh}:${mm}`,
-                status_id: 1  // Pendente
-            });
-        }
-
-        return horarios;
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────
 
     function fnCarregarPrescricoes() {
         const paciente_id = new URLSearchParams(window.location.search).get("id");
@@ -367,6 +350,7 @@ const Prontuario = () => {
             })
             .catch(err => console.log(err));
     }
+
     return (
         <>
             <Navbar />
@@ -394,7 +378,6 @@ const Prontuario = () => {
                                     onSubmit={SubmitPrescricao}
                                 >
 
-                                    {/* ── Observação geral da prescrição ── */}
                                     <div className="col-12">
                                         <label className="form-label">Observação Geral</label>
                                         <input
@@ -410,12 +393,10 @@ const Prontuario = () => {
                                         <hr className="my-1 opacity-25" />
                                     </div>
 
-                                    {/* ── Itens dinâmicos ── */}
                                     {itens.map((item, index) => (
                                         <div key={index} className="col-12">
                                             <div className="border rounded-2 p-3 position-relative">
 
-                                                {/* Label + botão remover */}
                                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                                     <span className="fw-semibold small text-muted">
                                                         Medicamento {index + 1}
@@ -433,7 +414,6 @@ const Prontuario = () => {
 
                                                 <div className="row g-2">
 
-                                                    {/* Medicamento */}
                                                     <div className="col-12 col-md-6">
                                                         <label className="form-label">Medicamento *</label>
                                                         <select
@@ -450,7 +430,6 @@ const Prontuario = () => {
                                                         <div className="invalid-feedback">Informe um medicamento.</div>
                                                     </div>
 
-                                                    {/* Dosagem */}
                                                     <div className="col-12 col-md-6">
                                                         <label className="form-label">Dosagem *</label>
                                                         <input
@@ -464,7 +443,6 @@ const Prontuario = () => {
                                                         <div className="invalid-feedback">Informe a dosagem.</div>
                                                     </div>
 
-                                                    {/* Via */}
                                                     <div className="col-12 col-md-6">
                                                         <label className="form-label">Via *</label>
                                                         <input
@@ -478,7 +456,6 @@ const Prontuario = () => {
                                                         <div className="invalid-feedback">Informe a via.</div>
                                                     </div>
 
-                                                    {/* Frequência */}
                                                     <div className="col-12 col-md-6">
                                                         <label className="form-label">Frequência *</label>
                                                         <select
@@ -488,8 +465,9 @@ const Prontuario = () => {
                                                             onChange={e => atualizarItem(index, "frequencia", e.target.value)}
                                                         >
                                                             <option value="">Escolha a frequência</option>
+                                                            {/* n/n h = a cada n horas (ex: 4/4 h = a cada 4 horas) */}
                                                             {opcoesFrequencia.map(n => (
-                                                                <option key={n} value={n}>{n}/{n}hr</option>
+                                                                <option key={n} value={n}>{n}/{n} h</option>
                                                             ))}
                                                         </select>
                                                         <div className="invalid-feedback">Informe a frequência.</div>
@@ -500,7 +478,6 @@ const Prontuario = () => {
                                         </div>
                                     ))}
 
-                                    {/* ── Botão adicionar medicamento ── */}
                                     <div className="col-12">
                                         <button
                                             type="button"
@@ -527,7 +504,7 @@ const Prontuario = () => {
                     </div>
                 </div>
 
-                {/* ── Modal Cuidado (sem alteração) ────────────────────────── */}
+                {/* ── Modal Cuidado ────────────────────────── */}
                 <div className="modal fade" id="modalCriarCuidado"
                     tabIndex="-1" aria-hidden="true" ref={modalCriarCuidado}>
                     <div className="modal-dialog modal-dialog-centered">
@@ -665,7 +642,6 @@ const Prontuario = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Relatórios */}
                                             <div className="mt-5">
                                                 <hr className='text-muted mb-5' />
                                                 <h5 className="fw-semibold mb-4">Relatórios do Paciente</h5>
@@ -721,10 +697,10 @@ const Prontuario = () => {
                                             )}
 
                                             {prescricoesRegistradas.map((p, index) => (
-                                                <div className='mt-3' key={index}>
+                                                <div className='mt-3' key={p.id}>
                                                     <div className='border rounded-2 p-3'>
 
-                                                        {/* Cabeçalho da prescrição */}
+                                                        {/* ── Cabeçalho da prescrição com botão de delete ── */}
                                                         <div className='d-flex justify-content-between align-items-start mb-3'>
                                                             <div>
                                                                 <h6 className="mb-0">Prescrição #{index + 1}</h6>
@@ -735,93 +711,101 @@ const Prontuario = () => {
                                                                     </span>
                                                                 )}
                                                             </div>
+
+                                                            {/* Botão de delete com confirmação */}
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                                                                title="Excluir prescrição"
+                                                                onClick={() => deletarPrescricao(p.id, index + 1)}
+                                                            >
+                                                                <i className="bi bi-trash"></i>
+                                                                <span className="d-none d-md-inline">Excluir</span>
+                                                            </button>
                                                         </div>
 
                                                         {/* ── Lista de medicamentos da prescrição ── */}
                                                         <div className="d-flex flex-column gap-2">
-                                                            {p.itens?.map((item, i) => {
-                                                                const nomeMed = listaMedicamentos.find(m => String(m.id) === String(item.medicamento_id))?.nome_medicamento
-                                                                    ?? item.medicamento_id;
-                                                                return (
-                                                                    <div key={i} className="border rounded-2 p-3">
-                                                                        <div className='d-flex flex-column flex-md-row justify-content-between gap-2'>
-                                                                            <div className='row g-2'>
-                                                                                <div className='col-12'>
-                                                                                    <h6 className="mb-0">
-                                                                                        <i className="bi bi-capsule text-primary me-2"></i>
-                                                                                        {item.medicamento}
-                                                                                    </h6>
-                                                                                </div>
-                                                                                <div className='col-12'>
-                                                                                    <span className="text-muted small">
-                                                                                        <strong>Dosagem:</strong> {item.dosagem} {item.unidade}
-                                                                                        <strong>Via:</strong> {item.via} &nbsp;•&nbsp;
-                                                                                        <strong>Frequência:</strong> {item.frequencia}/{item.frequencia}hr
-                                                                                    </span>
-                                                                                </div>
+                                                            {p.itens?.map((item, i) => (
+                                                                <div key={item.id} className="border rounded-2 p-3">
+
+                                                                    {/* Info do medicamento */}
+                                                                    <div className='d-flex flex-column flex-md-row justify-content-between gap-2'>
+                                                                        <div className='row g-2'>
+                                                                            <div className='col-12'>
+                                                                                <h6 className="mb-0">
+                                                                                    <i className="bi bi-capsule text-primary me-2"></i>
+                                                                                    {item.medicamento}
+                                                                                </h6>
+                                                                            </div>
+                                                                            <div className='col-12'>
+                                                                                <span className="text-muted small">
+                                                                                    <strong>Dosagem:</strong> {item.dosagem} {item.unidade} &nbsp;•&nbsp;
+                                                                                    <strong>Via:</strong> {item.via} &nbsp;•&nbsp;
+                                                                                    {/* Frequência exibida no formato n/n h (a cada n horas) */}
+                                                                                    <strong>Frequência:</strong> {item.frequencia}/{item.frequencia} h
+                                                                                </span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                        <div className="mt-3">
 
-                                                            {p.horarios.map((h, i) => (
+                                                                    {/* ── Horários do item ── */}
+                                                                    <div className="mt-3">
+                                                                        {item.horarios?.map((h, j) => (
+                                                                            <div key={h.id} className="d-flex justify-content-between align-items-center border rounded p-2 mt-2">
 
-                                                                <div key={i} className="d-flex justify-content-between align-items-center border rounded p-2 mt-2">
+                                                                                <div className="d-flex flex-column">
+                                                                                    <span className="fw-semibold">{h.horario}</span>
+                                                                                </div>
 
-                                                                    <div className="d-flex flex-column">
-                                                                        <span className="fw-semibold">{h.hora}</span>
-                                                                        <span className="small text-muted">{h.data}</span>
-                                                                    </div>
+                                                                                <div className="grupo-validacao">
 
-                                                                    <div className="grupo-validacao">
+                                                                                    {/* 2 = finalizado (ok) */}
+                                                                                    <input
+                                                                                        type="radio"
+                                                                                        className="btn-check"
+                                                                                        name={`horario-${index}-${i}-${j}`}
+                                                                                        id={`ok-${index}-${i}-${j}`}
+                                                                                        checked={h.status_id === 2}
+                                                                                        onChange={() => alterarStatusHorario(h.id, 2)}
+                                                                                    />
+                                                                                    <label className="btn-validacao sucesso" htmlFor={`ok-${index}-${i}-${j}`}>
+                                                                                        <i className="bi bi-check2"></i>
+                                                                                    </label>
 
-                                                                        <input
-                                                                            type="radio"
-                                                                            className="btn-check"
-                                                                            name={`horario-${index}-${i}`}
-                                                                            id={`ok-${index}-${i}`}
-                                                                            checked={h.status === "ok"}
-                                                                            onChange={() => alterarStatusHorario(index, i, "ok")}
-                                                                        />
-                                                                        <label className="btn-validacao sucesso" htmlFor={`ok-${index}-${i}`}>
-                                                                            <i className="bi bi-check2"></i>
-                                                                        </label>
+                                                                                    {/* 4 = negado_paciente (recusado) */}
+                                                                                    <input
+                                                                                        type="radio"
+                                                                                        className="btn-check"
+                                                                                        name={`horario-${index}-${i}-${j}`}
+                                                                                        id={`recusado-${index}-${i}-${j}`}
+                                                                                        checked={h.status_id === 4}
+                                                                                        onChange={() => alterarStatusHorario(h.id, 4)}
+                                                                                    />
+                                                                                    <label className="btn-validacao negadoPorPaciente" htmlFor={`recusado-${index}-${i}-${j}`}>
+                                                                                        <i className="bi bi-circle"></i>
+                                                                                    </label>
 
+                                                                                    {/* 3 = nao_feito (negado) */}
+                                                                                    <input
+                                                                                        type="radio"
+                                                                                        className="btn-check"
+                                                                                        name={`horario-${index}-${i}-${j}`}
+                                                                                        id={`negado-${index}-${i}-${j}`}
+                                                                                        checked={h.status_id === 3}
+                                                                                        onChange={() => alterarStatusHorario(h.id, 3)}
+                                                                                    />
+                                                                                    <label className="btn-validacao negado" htmlFor={`negado-${index}-${i}-${j}`}>
+                                                                                        <i className="bi bi-x-lg"></i>
+                                                                                    </label>
 
-                                                                        <input
-                                                                            type="radio"
-                                                                            className="btn-check"
-                                                                            name={`horario-${index}-${i}`}
-                                                                            id={`recusado-${index}-${i}`}
-                                                                            checked={h.status === "recusado"}
-                                                                            onChange={() => alterarStatusHorario(index, i, "recusado")}
-                                                                        />
-                                                                        <label className="btn-validacao negadoPorPaciente" htmlFor={`recusado-${index}-${i}`}>
-                                                                            <i className="bi bi-circle"></i>
-                                                                        </label>
-
-
-                                                                        <input
-                                                                            type="radio"
-                                                                            className="btn-check"
-                                                                            name={`horario-${index}-${i}`}
-                                                                            id={`negado-${index}-${i}`}
-                                                                            checked={h.status === "negado"}
-                                                                            onChange={() => alterarStatusHorario(index, i, "negado")}
-                                                                        />
-                                                                        <label className="btn-validacao negado" htmlFor={`negado-${index}-${i}`}>
-                                                                            <i className="bi bi-x-lg"></i>
-                                                                        </label>
-
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
                                                                     </div>
 
                                                                 </div>
-
                                                             ))}
-
                                                         </div>
 
                                                     </div>
@@ -830,7 +814,7 @@ const Prontuario = () => {
                                         </div>
                                     )}
 
-                                    {/* ── Aba: Cuidados (sem alteração) ── */}
+                                    {/* ── Aba: Cuidados ── */}
                                     {activeTab === "cuidados" && (
                                         <div>
                                             <button className='btn btn-primary d-flex align-items-center gap-2'
