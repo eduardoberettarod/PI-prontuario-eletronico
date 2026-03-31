@@ -85,6 +85,7 @@ const Login = () => {
                     <div className='col-12'>
                         <label className='form-label'>Email</label>
                         <div className='container-input-login'>
+                            <i className='bi bi-person fs-5'></i>
                             <input
                                 type="email"
                                 className='form-control px-3'
@@ -93,7 +94,6 @@ const Login = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                             />
-                            <i className='bi bi-person fs-5'></i>
                         </div>
                         <div className='invalid-feedback'>
                             Informe um email válido.
@@ -103,6 +103,9 @@ const Login = () => {
                     <div className='col-12'>
                         <label className='form-label'>Senha</label>
                         <div className='container-input-login-senha'>
+                            <button type='button' onClick={fnMudarTextoSenha}>
+                                <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>
+                            </button>
                             <input
                                 type={textPassword}
                                 className='form-control h-50 px-3'
@@ -111,9 +114,6 @@ const Login = () => {
                                 onChange={(e) => setSenha(e.target.value)}
                                 required
                             />
-                            <button type='button' onClick={fnMudarTextoSenha}>
-                                <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>
-                            </button>
                         </div>
                         <div className='invalid-feedback'>
                             Informe uma senha válida

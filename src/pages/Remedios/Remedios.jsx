@@ -75,7 +75,6 @@ function Remedios() {
 
             fnCarregarDados();
 
-            // 🔥 TOAST DINÂMICO
             if (medicamentoEditando) {
                 setToastMsg({
                     titulo: "Medicamento Editado",

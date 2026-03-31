@@ -11,6 +11,13 @@ const Setor = () => {
     const toastRefSetor = useRef(null)
     const toastInstanceSetor = useRef(null);
 
+    const [toastMsg, setToastMsg] = useState({
+        titulo: "",
+        mensagem: "",
+        tipo: "success"
+    });
+
+
     useEffect(() => {
         if (toastRefSetor.current) {
             toastInstanceSetor.current = bootstrap.Toast.getOrCreateInstance(toastRefSetor.current, {
@@ -25,69 +32,95 @@ const Setor = () => {
     const modalRefSetor = useRef(null)
 
     const [setor, setSetor] = useState([]);
-
+    const [setorEditando, setSetorEditando] = useState(null);
 
     const formRefSetor = useRef(null)
-    function SubmitSetor(e) {
-
+    async function SubmitSetor(e) {
         e.preventDefault();
 
-        const formSetor = formRefSetor.current
+        const formSetor = formRefSetor.current;
 
         if (!formSetor.checkValidity()) {
             formSetor.classList.add("was-validated");
-            return
+            return;
         }
 
-        const novoSetor = {
+        const dados = {
             nome_setor: nome_setor.current.value
         };
 
-        fetch(`${urlServer}/setores`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(novoSetor)
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    navigate('/login')
-                    return
-                }
+        const url = setorEditando
+            ? `${urlServer}/setores/${setorEditando.id}`
+            : `${urlServer}/setores`;
 
-                if (res.status === 403) {
-                    alert("Sem permissão")
-                    return
-                }
+        const method = setorEditando ? "PUT" : "POST";
 
-                if (!res.ok) {
-                    throw new Error("Erro ao cadastrar setor")
-                }
+        try {
+            const res = await fetch(url, {
+                method,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            });
 
-                return res.json()
-            })
-            .then(() => {
+            if (res.status === 401) {
+                navigate('/login');
+                return;
+            }
 
-                // recarrega tabela
-                fnCarregarDados()
+            if (res.status === 403) {
+                alert("Sem permissão");
+                return;
+            }
 
-                // fecha modal
-                const modalInstance = bootstrap.Modal.getOrCreateInstance(
-                    modalRefSetor.current
-                );
-                modalInstance.hide();
+            const data = await res.json();
 
-                document.activeElement.blur();
+            if (!res.ok) throw new Error(data.erro || "Erro");
 
-                toastInstanceSetor.current?.show();
+            // recarrega tabela
+            fnCarregarDados();
 
-                formSetor.classList.remove("was-validated")
+            if (setorEditando) {
+                setToastMsg({
+                    titulo: "Setor Editado",
+                    mensagem: "Setor atualizado com sucesso!",
+                    tipo: "success"
+                });
+            } else {
+                setToastMsg({
+                    titulo: "Setor Criado",
+                    mensagem: "Setor adicionado com sucesso!",
+                    tipo: "success"
+                });
+            }
 
-            })
-            .catch(erro => console.log(erro))
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                modalRefSetor.current
+            );
+            modalInstance.hide();
 
+            document.activeElement.blur();
+
+            toastInstanceSetor.current?.show();
+
+            formSetor.reset();
+            formSetor.classList.remove("was-validated");
+
+            setSetorEditando(null);
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao salvar Setor",
+                tipo: "danger"
+            });
+
+            toastInstanceSetor.current?.show();
+        }
     }
 
 
@@ -200,8 +233,10 @@ const Setor = () => {
 
                             <div className="modal-header">
                                 <div className="p-2">
-                                    <h5 className="modal-title">Novo Setor</h5>
-                                    <p className="small opacity-75">Adicione um novo Setor à tabela</p>
+                                    <h5 className="modal-title">
+                                        {setorEditando ? "Editar Setor" : "Novo Setor"}
+                                    </h5>
+                                    <p className="small opacity-75">{setorEditando ? "Edite um Setor da tabela" : "Adicione um novo Setor à tabela"}</p>
                                 </div>
                                 <button
                                     type="button"
@@ -235,7 +270,7 @@ const Setor = () => {
                                         </button>
 
                                         <button type="submit" className="btn btn-primary">
-                                            Adicionar
+                                            {setorEditando ? "Salvar Alterações" : "Adicionar"}
                                         </button>
                                     </div>
                                 </form>
@@ -248,14 +283,14 @@ const Setor = () => {
                 <div className="toast-container position-fixed bottom-0 end-0 p-3">
                     <div ref={toastRefSetor} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
                         <div className="toast-header toast-color">
-                            <strong className="me-auto d-flex align-items-center text-success">
-                                Setor adicionado <i className="bi bi-check fs-5 ms-1"></i>
+                            <strong className={`me-auto d-flex align-items-center text-${toastMsg.tipo}`}>
+                                {toastMsg.titulo}
                             </strong>
                             <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                         </div>
 
                         <div className="toast-body">
-                            Setor adicionado com sucesso!
+                            {toastMsg.mensagem}
                         </div>
                     </div>
                 </div>
@@ -333,7 +368,16 @@ const Setor = () => {
                                             <td className="pe-4 py-3 text-end">
                                                 <div className="d-inline-flex align-items-center gap-3">
 
-                                                    <button className="btn btn-sm text-success p-1">
+                                                    <button
+                                                        className="btn btn-sm text-success p-1"
+                                                        onClick={() => {
+                                                            setSetorEditando(setor);
+                                                            nome_setor.current.value = setor.nome_setor;
+
+                                                            const modal = new bootstrap.Modal(modalRefSetor.current);
+                                                            modal.show();
+                                                        }}
+                                                    >
                                                         <i className="bi bi-pencil-square fs-5"></i>
                                                     </button>
 

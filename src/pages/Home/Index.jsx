@@ -1,11 +1,129 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './Index.css'
 import { NavLink } from "react-router-dom";
 import TagStatus from '../../components/Tag/TagStatus';
 import Navbar from '../../components/Navbar/Navbar';
 import { useAuth } from '../../components/AuthContext/AuthContext';
+import { urlServer } from '../../../config';
 
 const Index = () => {
+
+    const [usuarios, setUsuarios] = useState([]);
+    const [totalPrescricoes, setTotalPrescricoes] = useState(0);
+    const [totalCuidados, setTotalCuidados] = useState(0);
+    const [totalRelatorios, setTotalRelatorios] = useState(0);
+
+    const mapa = Object.fromEntries(
+        usuarios.map(u => [u.status_paciente, u.total])
+    );
+
+    const estavel = mapa.estavel || 0;
+    const observacao = mapa.observacao || 0;
+    const critico = mapa.critico || 0;
+
+    const totalPacientes = estavel + observacao + critico;
+
+    function fnCarregarQuantPaciente() {
+        fetch(`${urlServer}/pacientes/count`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                setUsuarios(dados)
+            })
+            .catch(erro => console.log(erro.message))
+    }
+    
+    function fnCarregarQuantPrescricoes() {
+        fetch(`${urlServer}/prescricoes/count`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                setTotalPrescricoes(dados.total)
+            })
+            .catch(erro => console.log(erro.message))
+    }
+
+    function fnCarregarQuantCuidados() {
+        fetch(`${urlServer}/paciente-cuidados/count`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                setTotalCuidados(dados.total)
+            })
+            .catch(erro => console.log(erro.message))
+    }
+
+    function fnCarregarQuantRelatorios() {
+        fetch(`${urlServer}/relatorios/count`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(res => {
+
+                if (res.status === 401) {
+                    window.location.href = "/login"
+                    return
+                }
+
+                if (!res.ok) {
+                    throw new Error("Usuário não autorizado");
+                }
+                return res.json();
+            })
+            .then(dados => {
+                setTotalRelatorios(dados.total)
+            })
+            .catch(erro => console.log(erro.message))
+    }
+
+    useEffect(() => {
+        fnCarregarQuantRelatorios()
+        fnCarregarQuantCuidados()
+        fnCarregarQuantPaciente()
+        fnCarregarQuantPrescricoes()
+    }, [])
+
+
+
 
     const { usuario, verificandoAuth } = useAuth()
     if (verificandoAuth) {
@@ -55,8 +173,14 @@ const Index = () => {
                                     <i className='bi bi-people text-primary fs-4'></i>
                                 </span>
                                 <p className='mb-0 fw-bold mt-3'>Pacientes Ativos:</p>
-                                <p className='mt-1'>3</p>
-                                <p className='mt-3'><span className='text-danger'>1 crítico</span> • <span className='text-warning'>1 em observação</span></p>
+                                <p className='mt-1'>{totalPacientes}</p>
+                                <p className='mt-3'>
+                                    <span className='text-danger'>
+                                        {critico} crítico
+                                    </span> • <span className='text-warning'>
+                                        {observacao} em observação
+                                    </span>
+                                </p>
                             </div>
                         </div>
 
@@ -67,7 +191,7 @@ const Index = () => {
                                     <i className='bi bi-journal-medical text-success fs-4'></i>
                                 </span>
                                 <p className='mb-0 fw-bold mt-3'>Prescrições:</p>
-                                <p className='mt-1'>0</p>
+                                <p className='mt-1'>{totalPrescricoes}</p>
                             </div>
                         </div>
 
@@ -78,7 +202,7 @@ const Index = () => {
                                     <i className='bi bi-clipboard-check fs-4'></i>
                                 </span>
                                 <p className='mb-0 fw-bold mt-3'>Cuidados Registrados:</p>
-                                <p className='mt-1'>0</p>
+                                <p className='mt-1'>{totalCuidados}</p>
                             </div>
                         </div>
 
@@ -89,7 +213,7 @@ const Index = () => {
                                     <i className='bi bi-clipboard fs-4'></i>
                                 </span>
                                 <p className='mb-0 fw-bold mt-3'>Meus Relatórios:</p>
-                                <p className='mt-1'>0</p>
+                                <p className='mt-1'>{totalRelatorios}</p>
                             </div>
                         </div>
                     </div>

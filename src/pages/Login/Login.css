@@ -34,6 +34,7 @@
 .container-input-login input,
 .container-input-login-senha input {
     padding: 13px 0;
+    text-indent: 20px;
 }
 
 .container-input-login i,
@@ -41,7 +42,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 10px;
+    left: 10px;
     opacity: 0.5;
     pointer-events: none;
 }
@@ -51,7 +52,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 5px;
+    left: 5px;
     opacity: 0.6;
     border: none;
 }

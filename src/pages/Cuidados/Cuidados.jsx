@@ -11,6 +11,12 @@ function Cuidados() {
     const toastRefCuidados = useRef(null)
     const toastInstanceCuidados = useRef(null);
 
+    const [toastMsg, setToastMsg] = useState({
+        titulo: "",
+        mensagem: "",
+        tipo: "success"
+    });
+
     useEffect(() => {
         if (toastRefCuidados.current) {
             toastInstanceCuidados.current = bootstrap.Toast.getOrCreateInstance(toastRefCuidados.current, {
@@ -25,62 +31,95 @@ function Cuidados() {
     const modalRefCuidados = useRef(null)
 
     const [cuidados, setCuidados] = useState([]);
-
-    function fnAdicionarCuidado() {
-
-        const novoCuidado = {
-            tipoCuidado: tipoCuidado.current.value
-        };
-
-        setCuidados(prev => [...prev, novoCuidado]);
-    }
-
+    const [cuidadosEditando, setCuidadosEditando] = useState(null);
 
     const formRefCuidados = useRef(null)
-    function SubmitCuidados(e) {
-
+    async function SubmitCuidados(e) {
         e.preventDefault();
 
-        const formCuidados = formRefCuidados.current
+        const formCuidados = formRefCuidados.current;
 
         if (!formCuidados.checkValidity()) {
             formCuidados.classList.add("was-validated");
-            return
+            return;
         }
 
-        const novoCuidado = {
+        const dados = {
             tipo_cuidado: tipo_cuidado.current.value
         };
 
-        fetch(`${urlServer}/cuidados`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(novoCuidado)
-        })
-            .then(res => res.json())
-            .then(() => {
+        const url = cuidadosEditando
+            ? `${urlServer}/cuidados/${cuidadosEditando.id}`
+            : `${urlServer}/cuidados`;
 
-                // recarrega tabela
-                fnCarregarDados()
+        const method = cuidadosEditando ? "PUT" : "POST";
 
-                // fecha modal
-                const modalInstance = bootstrap.Modal.getOrCreateInstance(
-                    modalRefCuidados.current
-                );
-                modalInstance.hide();
+        try {
+            const res = await fetch(url, {
+                method,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dados)
+            });
 
-                document.activeElement.blur();
+            if (res.status === 401) {
+                navigate('/login');
+                return;
+            }
 
-                toastInstanceCuidados.current?.show();
+            if (res.status === 403) {
+                alert("Sem permissão");
+                return;
+            }
 
-                formCuidados.classList.remove("was-validated")
+            const data = await res.json();
 
-            })
-            .catch(erro => console.log(erro))
+            if (!res.ok) throw new Error(data.erro || "Erro");
 
+            // recarrega tabela
+            fnCarregarDados();
+
+            if (cuidadosEditando) {
+                setToastMsg({
+                    titulo: "Cuidado Editado",
+                    mensagem: "Cuidado atualizado com sucesso!",
+                    tipo: "success"
+                });
+            } else {
+                setToastMsg({
+                    titulo: "Cuidado Criado",
+                    mensagem: "Cuidado adicionado com sucesso!",
+                    tipo: "success"
+                });
+            }
+
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(
+                modalRefCuidados.current
+            );
+            modalInstance.hide();
+
+            document.activeElement.blur();
+
+            toastInstanceCuidados.current?.show();
+
+            formCuidados.reset();
+            formCuidados.classList.remove("was-validated");
+
+            setCuidadosEditando(null);
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao salvar Cuidado",
+                tipo: "danger"
+            });
+
+            toastInstanceCuidados.current?.show();
+        }
     }
 
 
@@ -225,14 +264,14 @@ function Cuidados() {
                 <div className="toast-container position-fixed bottom-0 end-0 p-3">
                     <div ref={toastRefCuidados} className="toast" role="alert" aria-live="assertive" aria-atomic="true">
                         <div className="toast-header toast-color">
-                            <strong className="me-auto d-flex align-items-center text-success">
-                                Cuidado adicionado <i className="bi bi-check fs-5 ms-1"></i>
+                            <strong className={`me-auto d-flex align-items-center text-${toastMsg.tipo}`}>
+                                {toastMsg.titulo}
                             </strong>
                             <button type="button" className="btn-close" data-bs-dismiss="toast"></button>
                         </div>
 
                         <div className="toast-body">
-                            Cuidado adicionado com sucesso!
+                            {toastMsg.mensagem}
                         </div>
                     </div>
                 </div>
@@ -316,7 +355,16 @@ function Cuidados() {
                                             <td className="pe-4 py-3 text-end">
                                                 <div className="d-inline-flex align-items-center gap-3">
 
-                                                    <button className="btn btn-sm text-success p-1">
+                                                    <button
+                                                        className="btn btn-sm text-success p-1"
+                                                        onClick={() => {
+                                                            setCuidadosEditando(cui);
+                                                            tipo_cuidado.current.value = cui.tipo_cuidado;
+
+                                                            const modal = new bootstrap.Modal(modalRefCuidados.current);
+                                                            modal.show();
+                                                        }}
+                                                    >
                                                         <i className="bi bi-pencil-square fs-5"></i>
                                                     </button>
 
