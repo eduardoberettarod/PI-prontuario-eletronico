@@ -268,7 +268,7 @@ function Navbar() {
 
                                 {/* Botão de perfil */}
                                 <NavLink to={'/perfil'} className={'d-flex align-items-center text-decoration-none'} id='navlink-perfil'>
-                                    <span href='' className="icon-button me-3">
+                                    <span className="icon-button me-3">
                                         <i className='bi bi-person fs-6 mx-auto text-primary'></i>
                                     </span>
                                     <div className="me-4">
