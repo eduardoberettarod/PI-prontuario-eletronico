@@ -5,6 +5,7 @@ import TagStatus from '../../components/Tag/TagStatus';
 import Navbar from '../../components/Navbar/Navbar';
 import { useAuth } from '../../components/AuthContext/AuthContext';
 import { urlServer } from '../../../config';
+import Loader from '../../components/Loader/Loader';
 
 const Index = () => {
 
@@ -45,7 +46,7 @@ const Index = () => {
             })
             .catch(erro => console.log(erro.message))
     }
-    
+
     function fnCarregarQuantPrescricoes() {
         fetch(`${urlServer}/prescricoes/count`, {
             method: 'GET',
@@ -127,7 +128,7 @@ const Index = () => {
 
     const { usuario, verificandoAuth } = useAuth()
     if (verificandoAuth) {
-        return <p>Carregando...</p>
+        return <Loader />
     }
 
     const nomesDias = [
@@ -160,7 +161,7 @@ const Index = () => {
                 <div className='container-home'>
                     <div className='text-start'>
                         <h1>
-                            Boa noite, Dr. {usuario?.primeiro_nome || 'Usuário'}!
+                            Boa noite, {usuario?.primeiro_nome || 'Usuário'}!
                         </h1>
                         <p className='opacity-75'>{diaSemana}, {dia} de {mes} de {ano}</p>
                     </div>

@@ -55,6 +55,14 @@ const Registro = () => {
         navigate("/login")
     }
 
+    const [textPassword, setTextPassword] = useState("password")
+
+    function fnMudarTextoSenha() {
+        setTextPassword(prev =>
+            prev === "password" ? "text" : "password"
+        )
+    }
+
     return (
         <>
             <section
@@ -128,7 +136,7 @@ const Registro = () => {
 
                                 <div className='col-12'>
                                     <label className='form-label'>Senha</label>
-                                    <input type="password"
+                                    <input type={textPassword}
                                         className='form-control'
                                         placeholder='Digite a sua senha'
                                         required
@@ -142,7 +150,7 @@ const Registro = () => {
 
                                 <div className='col-12'>
                                     <label className='form-label'>Confirme sua senha</label>
-                                    <input type="password"
+                                    <input type={textPassword}
                                         className='form-control'
                                         placeholder='Confirme a sua senha'
                                         required
@@ -151,6 +159,21 @@ const Registro = () => {
                                     />
                                     <div className='invalid-feedback'>
                                         A senha e a confirmação de senha devem ser idênticas.
+                                    </div>
+                                </div>
+
+                                <div className="col-12">
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id="mostrarSenha"
+                                            checked={textPassword === "text"}
+                                            onChange={fnMudarTextoSenha}
+                                        />
+                                        <label className="form-check-label" htmlFor="mostrarSenha">
+                                            Mostrar senhas
+                                        </label>
                                     </div>
                                 </div>
 

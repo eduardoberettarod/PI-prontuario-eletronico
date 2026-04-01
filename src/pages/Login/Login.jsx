@@ -83,11 +83,12 @@ const Login = () => {
                     noValidate
                     ref={formRef}>
                     <div className='col-12'>
-                        <label className='form-label'>Email</label>
+                        <label className='form-label' htmlFor='email'>Email</label>
                         <div className='container-input-login'>
                             <i className='bi bi-person fs-5'></i>
                             <input
                                 type="email"
+                                id='email'
                                 className='form-control px-3'
                                 placeholder='seu.email@senacsp.edu.br'
                                 value={email}
@@ -101,13 +102,15 @@ const Login = () => {
                     </div>
 
                     <div className='col-12'>
-                        <label className='form-label'>Senha</label>
+                        <label className='form-label' htmlFor='senha'>Senha</label>
                         <div className='container-input-login-senha'>
-                            <button type='button' onClick={fnMudarTextoSenha}>
+                            <button type='button' onClick={fnMudarTextoSenha}
+                            title='Mostrar senha'>
                                 <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>
                             </button>
                             <input
                                 type={textPassword}
+                                id='senha'
                                 className='form-control h-50 px-3'
                                 placeholder='Senha'
                                 value={senha}
@@ -117,6 +120,21 @@ const Login = () => {
                         </div>
                         <div className='invalid-feedback'>
                             Informe uma senha válida
+                        </div>
+                    </div>
+
+                    <div className="col-12">
+                        <div className="form-check">
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                id="mostrarSenha"
+                                checked={textPassword === "text"}
+                                onChange={fnMudarTextoSenha}
+                            />
+                            <label className="form-check-label" htmlFor="mostrarSenha">
+                                Mostrar senha
+                            </label>
                         </div>
                     </div>
 
