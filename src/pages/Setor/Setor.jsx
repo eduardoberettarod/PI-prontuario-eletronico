@@ -141,40 +141,72 @@ const Setor = () => {
         };
     }, []);
 
-    //EXCLUIR O MEDICAMENTO
+    // excluir setor
 
-    function fnDeletarSetor(id) {
+    const [setorParaExcluir, setSetorParaExcluir] = useState(null);
 
-        if (!confirm("Tem certeza que deseja deletar este setor?")) return
+    function pedirConfirmacaoDelete(id) {
+        setSetorParaExcluir(id);
 
-        fetch(`${urlServer}/setores/${id}`, {
-            method: "DELETE",
-            credentials: "include"
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    navigate('/login')
-                    return
-                }
+        const modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('modalConfirmarDeleteSetor')
+        );
 
-                if (res.status === 403) {
-                    alert("Sem permissão")
-                    return
-                }
-
-                if (!res.ok) {
-                    throw new Error("Erro ao deletar")
-                }
-
-                return res.json()
-            })
-            .then(dados => {
-                console.log(dados)
-                fnCarregarDados() // recarrega tabela
-            })
-            .catch(erro => console.log(erro))
-
+        modal.show();
     }
+
+    async function confirmarDelete() {
+        if (!setorParaExcluir) return;
+
+        await removerSetor(setorParaExcluir);
+
+        setSetorParaExcluir(null);
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalConfirmarDeleteSetor')
+        );
+
+        modal.hide();
+    }
+
+    async function removerSetor(id) {
+
+        try {
+            const response = await fetch(`${urlServer}/setores/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            })
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.erro || "Erro ao deletar");
+            }
+
+            fnCarregarDados();
+
+            setToastMsg({
+                titulo: "Setor removido",
+                mensagem: "Setor excluído com sucesso!",
+                tipo: "success"
+            });
+
+            toastInstanceSetor.current?.show();
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao excluir setor",
+                tipo: "danger"
+            });
+
+            toastInstanceSetor.current?.show();
+        }
+    }
+
+    // carregar dados da tabela
 
     const navigate = useNavigate()
 
@@ -224,6 +256,45 @@ const Setor = () => {
             <Navbar />
 
             <section id='setor-page-section'>
+
+                {/* Modal para excluir setor */}
+                <div
+                    className="modal fade"
+                    id="modalConfirmarDeleteSetor"
+                    tabIndex="-1"
+                    aria-hidden="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
+                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div className="modal-body">
+                                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este setor?</p>
+                                <p className="small text-muted">
+                                    Essa ação não pode ser desfeita.
+                                </p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={confirmarDelete}
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
                 {/* Modal Criar Setor */}
                 <div className="modal fade" id="modalCriarSetor"
@@ -383,7 +454,7 @@ const Setor = () => {
 
                                                     <button
                                                         className="btn btn-sm text-danger p-1"
-                                                        onClick={() => fnDeletarSetor(setor.id)}
+                                                        onClick={() => pedirConfirmacaoDelete(setor.id)}
                                                     >
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>

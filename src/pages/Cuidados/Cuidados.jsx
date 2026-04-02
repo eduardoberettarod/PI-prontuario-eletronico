@@ -140,24 +140,72 @@ function Cuidados() {
         };
     }, []);
 
-    //EXCLUIR O MEDICAMENTO
+    // excluir cuidado
 
-    function fnDeletarCuidado(id) {
+    const [cuidadoParaExcluir, setCuidadoParaExcluir] = useState(null);
 
-        if (!confirm("Tem certeza que deseja deletar este cuidado?")) return
+    function pedirConfirmacaoDelete(id) {
+        setCuidadoParaExcluir(id);
 
-        fetch(`${urlServer}/cuidados/${id}`, {
-            method: "DELETE",
-            credentials: "include"
-        })
-            .then(res => res.json())
-            .then(dados => {
-                console.log(dados)
-                fnCarregarDados() // recarrega tabela
-            })
-            .catch(erro => console.log(erro))
+        const modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('modalConfirmarDeleteCuidado')
+        );
 
+        modal.show();
     }
+
+    async function confirmarDelete() {
+        if (!cuidadoParaExcluir) return;
+
+        await removerCuidado(cuidadoParaExcluir);
+
+        setCuidadoParaExcluir(null);
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalConfirmarDeleteCuidado')
+        );
+
+        modal.hide();
+    }
+
+    async function removerCuidado(id) {
+
+        try {
+            const response = await fetch(`${urlServer}/cuidados/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            })
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.erro || "Erro ao deletar");
+            }
+
+            fnCarregarDados();
+
+            setToastMsg({
+                titulo: "Cuidado removido",
+                mensagem: "Cuidado excluído com sucesso!",
+                tipo: "success"
+            });
+
+            toastInstanceCuidados.current?.show();
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao excluir cuidado",
+                tipo: "danger"
+            });
+
+            toastInstanceCuidados.current?.show();
+        }
+    }
+
+    // carregar dados da tabela
 
     const navigate = useNavigate()
 
@@ -208,7 +256,46 @@ function Cuidados() {
             <Navbar />
             <section id='cuidados-page-section'>
 
-                {/* Modal Criar Relatorio */}
+                {/* Modal para excluir cuidado */}
+                <div
+                    className="modal fade"
+                    id="modalConfirmarDeleteCuidado"
+                    tabIndex="-1"
+                    aria-hidden="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
+                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div className="modal-body">
+                                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este cuidado?</p>
+                                <p className="small text-muted">
+                                    Essa ação não pode ser desfeita.
+                                </p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={confirmarDelete}
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {/* Modal Criar Cuidado */}
                 <div className="modal fade" id="modalCriarCuidado"
                     tabIndex="-1" aria-hidden="true" ref={modalRefCuidados}>
                     <div className="modal-dialog modal-dialog-centered">
@@ -370,7 +457,7 @@ function Cuidados() {
 
                                                     <button
                                                         className="btn btn-sm text-danger p-1"
-                                                        onClick={() => fnDeletarCuidado(cui.id)}
+                                                        onClick={() => pedirConfirmacaoDelete(cui.id)}
                                                     >
                                                         <i className="bi bi-trash fs-5"></i>
                                                     </button>
