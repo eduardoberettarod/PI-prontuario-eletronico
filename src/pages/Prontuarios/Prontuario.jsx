@@ -7,6 +7,7 @@ import Navbar from '../../components/Navbar/Navbar'
 import TagStatus from '../../components/Tag/TagStatus'
 import './Prontuario.css'
 import { urlServer } from '../../../config';
+import CardRelatorio from '../../components/CardRelatorio/CardRelatorio';
 
 // ─── Item vazio padrão ────────────────────────────────────────────────────────
 const itemVazio = () => ({
@@ -62,10 +63,19 @@ const Prontuario = () => {
             .catch(erro => console.log(erro.message))
     }
 
-    function carregarRelatoriosPaciente(pacienteId) {
-        fetch(`${urlServer}/relatorios/paciente/${pacienteId}`, { credentials: "include", method: 'GET' })
-            .then(res => { if (res.status === 401) return; return res.json(); })
-            .then(dados => { if (Array.isArray(dados)) setRelatorios(dados); })
+    function fnCarregarRelatorios(pacienteId) {
+        fetch(`${urlServer}/relatorios/paciente/${pacienteId}`, {
+            credentials: 'include',
+            method: 'GET'
+        })
+
+            .then(res => {
+                if (res.status === 401)
+                    return; return res.json();
+            })
+            .then(dados => {
+                if (Array.isArray(dados)) setRelatorios(dados);
+            })
             .catch(err => console.log(err));
     }
 
@@ -350,7 +360,7 @@ const Prontuario = () => {
     // ─── useEffects ───────────────────────────────────────────────────────────
 
     useEffect(() => { fnCarregarDados() }, [])
-    useEffect(() => { if (paciente?.id) carregarRelatoriosPaciente(paciente.id); }, [paciente]);
+    useEffect(() => { if (paciente?.id) fnCarregarRelatorios(paciente.id); }, [paciente]);
     useEffect(() => { fnCarregarCuidados(); fnCarregarCuidadosPaciente(); fnCarregarMedicamentos(); fnCarregarPrescricoes(); }, [])
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -740,29 +750,21 @@ const Prontuario = () => {
                                                 {relatorios.length === 0 && (
                                                     <p className="text-muted text-center fs-6">Nenhum relatório encontrado.</p>
                                                 )}
-                                                {relatorios.map((rel) => (
-                                                    <div key={rel.id} className="card-relatorio-prontuario mb-3 border">
-                                                        <div className="card-relatorio-prontuario-barra" />
-                                                        <div className="card-relatorio-prontuario-body">
-                                                            <div className="card-relatorio-prontuario-header">
-                                                                <h6 className="card-relatorio-prontuario-titulo">{rel.titulo}</h6>
-                                                                <span className="card-relatorio-prontuario-data">
-                                                                    {new Date(rel.created_at).toLocaleDateString()}
-                                                                </span>
-                                                            </div>
-                                                            <p className="card-relatorio-prontuario-conteudo">{rel.conteudo}</p>
-                                                            <div className="card-relatorio-prontuario-footer">
-                                                                <span className="card-relatorio-prontuario-autor">
-                                                                    <i className="bi bi-person-fill me-1"></i>
-                                                                    {rel.usuario_nome}
-                                                                </span>
-                                                                <button className="btn btn-outline-secondary btn-sm card-relatorio-prontuario-print" title="Imprimir relatório" onClick={() => window.print()}>
-                                                                    <i className="bi bi-printer"></i>
-                                                                </button>
-                                                            </div>
+                                                <div className='row g-3 '>
+                                                    {relatorios.map((r, index) => (
+                                                        <div className='col-12' key={index}>
+                                                            <CardRelatorio
+                                                                PacienteSelecionado={r.nome_paciente}
+                                                                usuario_nome={r.usuario_nome}
+                                                                created_at={r.created_at}
+                                                                TituloRelatorio={r.titulo}
+                                                                ConteudoRelatorio={r.conteudo}
+                                                                onPrint={() => onPrint(r)}
+                                                                mostrarAcoes={true}
+                                                            />
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     )}

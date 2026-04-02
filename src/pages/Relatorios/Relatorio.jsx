@@ -382,8 +382,9 @@ Sugestões de estrutura:
                   ConteudoRelatorio={r.conteudo}
                   onDelete={() => pedirConfirmacaoDelete(r.id)}
                   onEdit={() => abrirModalEditar(r)}
+                  onPrint={() => onPrint(r)}
+                  mostrarAcoes={true}
                 />
-
               </div>
             ))}
           </div>

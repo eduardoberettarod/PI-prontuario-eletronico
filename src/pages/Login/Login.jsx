@@ -103,7 +103,7 @@ const Login = () => {
 
                     <div className='col-12'>
                         <label className='form-label' htmlFor='senha'>Senha</label>
-                        <div className='container-input-login-senha'>
+                        <div className='container-input-login-senha2'>
                             <button type='button' onClick={fnMudarTextoSenha}
                             title='Mostrar senha'>
                                 <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>

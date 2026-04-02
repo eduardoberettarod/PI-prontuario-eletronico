@@ -27,12 +27,12 @@
 }
 
 .container-input-login,
-.container-input-login-senha {
+.container-input-login-senha2 {
     position: relative;
 }
 
 .container-input-login input,
-.container-input-login-senha input {
+.container-input-login-senha2 input {
     padding: 13px 0;
     text-indent: 20px;
 }
@@ -47,8 +47,8 @@
     pointer-events: none;
 }
 
-.container-input-login-senha i,
-.container-input-login-senha button {
+.container-input-login-senha2 i,
+.container-input-login-senha2 button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
