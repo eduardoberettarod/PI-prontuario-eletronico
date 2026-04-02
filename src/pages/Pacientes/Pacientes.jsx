@@ -5,8 +5,14 @@ import * as bootstrap from 'bootstrap';
 import Navbar from '../../components/Navbar/Navbar';
 import { urlServer } from "../../../config";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../components/AuthContext/AuthContext";
 
 const Pacientes = () => {
+
+    const { usuario } = useAuth();
+
+    const nivelAcesso = usuario?.nivel_acesso;
+    const podeEditar = ['admin', 'docente'].includes(nivelAcesso);
 
     /* ============================
        COLLAPSE (Filtros)
@@ -233,12 +239,11 @@ const Pacientes = () => {
 
                 if (res.status === 401) {
                     navigate('/login')
-                    return
+                    return null;
                 }
 
                 if (res.status === 403) {
-                    alert("Sem permissão")
-                    return
+                    return [];
                 }
 
                 if (!res.ok) {
@@ -248,7 +253,9 @@ const Pacientes = () => {
                 return res.json();
             })
             .then(dados => {
-                setListaSetores(dados);
+                if (dados) {
+                    setListaSetores(dados);
+                }
             })
             .catch((erro) => {
                 console.log(erro)
@@ -256,8 +263,12 @@ const Pacientes = () => {
     }
 
     useEffect(() => {
-        fnCarregarSetores()
-    }, [])
+        if (!nivelAcesso) return;
+
+        if (nivelAcesso !== 'aluno') {
+            fnCarregarSetores()
+        }
+    }, [nivelAcesso])
 
     // Excluir Pacientes
 
@@ -597,15 +608,17 @@ const Pacientes = () => {
                             <p>Crie e gerencie pacientes fictícios para o aprendizado</p>
                         </div>
 
-                        <div className="d-flex justify-content-md-end container-action-btn">
-                            <button className="btn btn-primary d-flex align-items-center gap-2 header-action-btn"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalCriarPaciente"
-                            >
-                                <i className="bi bi-plus fs-5"></i>
-                                Novo Paciente
-                            </button>
-                        </div>
+                        {podeEditar && (
+                            <div className="d-flex justify-content-md-end container-action-btn">
+                                <button className="btn btn-primary d-flex align-items-center gap-2 header-action-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalCriarPaciente"
+                                >
+                                    <i className="bi bi-plus fs-5"></i>
+                                    Novo Paciente
+                                </button>
+                            </div>
+                        )}
                     </div>
 
 

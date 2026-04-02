@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import * as bootstrap from 'bootstrap'
 import './Navbar.css'
+import Loader from '../Loader/Loader'
 import logo from '/image/logo.svg';
 import { NavLink, useNavigate } from "react-router-dom";
 import { urlServer } from '../../../config'
@@ -66,10 +67,41 @@ const navItems = [
     }
 ];
 
+const navItemsAluno = [
+    {
+        route: 'index',
+        label: 'Página Inicial',
+        iconClass: "bi bi-house",
+        desktop: true,
+        mobile: true
+    },
+    {
+        route: 'pacientes',
+        label: 'Pacientes',
+        iconClass: "bi bi-people",
+        desktop: true,
+        mobile: true
+    },
+    {
+        route: 'relatorios',
+        label: 'Relatórios',
+        iconClass: "bi bi-clipboard-data",
+        desktop: true,
+        mobile: true
+    },
+    {
+        route: 'perfil',
+        label: 'Perfil',
+        iconClass: "bi bi-person",
+        desktop: false,
+        mobile: true
+    }
+];
+
 
 function Navbar() {
 
-    const { setUsuario } = useAuth();
+    const { usuario, setUsuario, verificandoAuth } = useAuth();
 
     const navigate = useNavigate()
 
@@ -106,33 +138,14 @@ function Navbar() {
         document.body.style.overflow = 'auto'
     }, [location])
 
-    const [nomeUsuario, setNomeUsuario] = useState('')
-    const [nivelAcesso, setNivelAcesso] = useState('')
 
-    useEffect(() => {
-        async function buscarUsuario() {
-            try {
-                const response = await fetch(`${urlServer}/usuarios/me`, {
-                    method: "GET",
-                    credentials: "include"
-                })
+    if (verificandoAuth) {
+        return <Loader />;
+    }
 
-                if (!response.ok) {
-                    throw new Error("Erro ao buscar usuário")
-                }
-
-                const data = await response.json()
-
-                setNomeUsuario(`${data.primeiro_nome} ${data.sobrenome}`)
-                setNivelAcesso(data.nivel_acesso)
-
-            } catch (erro) {
-                console.error("Erro ao carregar usuário:", erro)
-            }
-        }
-
-        buscarUsuario()
-    }, [])
+    const nomeUsuario = `${usuario?.primeiro_nome} ${usuario?.sobrenome}`;
+    const nivelAcesso = usuario?.nivel_acesso;
+    const isAluno = nivelAcesso === 'aluno';
 
     function formatarNivel(nivel) {
         switch (nivel) {
@@ -143,93 +156,98 @@ function Navbar() {
         }
     }
 
+    const itensNavbar =
+        nivelAcesso === 'aluno' ? navItemsAluno : navItems;
+
     return (
         <>
             {/* Navbar Desktop */}
+            {isAluno && (
+                <nav className={`navbar navbar-system mt-3 rounded-4 position-relative bg-body-tertiary 
+    ${isAluno ? 'd-none d-xl-flex' : 'd-none'}`}>
 
-            <nav className="navbar navbar-system mt-3 rounded-4 position-relative bg-body-tertiary d-none d-xl-flex">
-
-                {/* Logo à esquerda */}
-                <div className="d-flex align-items-center ms-4">
-                    <NavLink
-                        to={'/index'}
-                        className="navbar-brand d-flex align-items-center"
-                    >
-                        <img
-                            src={logo}
-                            alt="Logo Sistema Senac"
-                            className="img-fluid object-fit-contain"
-                            style={{ height: 40 }}
-                        />
-
-                        <div className="ms-3">
-                            <h1 className="mb-0 fs-6 fw-semibold">
-                                Prontuário Eletrônico
-                            </h1>
-                            <p className="mb-0 fs-6 text-muted">
-                                Sistema Senac
-                            </p>
-                        </div>
-                    </NavLink>
-                </div>
-
-
-                {/* Botões centralizados */}
-                <div className="position-absolute top-50 start-50 translate-middle d-flex container-button-navbar">
-                    {navItems
-                        .filter(item => item.desktop)
-                        .map((item) => (
-                            <NavLink
-                                key={item.route}
-                                to={`/${item.route}`}
-                                className={({ isActive }) =>
-                                    `btn btn-link text-decoration-none d-flex align-items-center gap-1 p-0
-     ${isActive ? 'nav-active text-primary fw-semibold' : 'text-dark'}`}>
-                                <i className={`${item.iconClass} fs-6 me-1`} />
-                                <span className="fs-6">{item.label}</span>
-                            </NavLink>
-
-                        ))}
-                </div>
-                {/* Botões à direita */}
-                <div className="d-flex align-items-center me-2">
-                    <div className="dropdown dropdown-navbar-desk">
-                        <button
-                            className="btn d-flex gap-3 align-items-center"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
+                    {/* Logo à esquerda */}
+                    <div className="d-flex align-items-center ms-4">
+                        <NavLink
+                            to={'/index'}
+                            className="navbar-brand d-flex align-items-center"
                         >
-                            <div>
-                                <h1 className="mb-0 fs-6 fw-semibold">{nomeUsuario}</h1>
-                                <p className="mb-0 small text-muted text-end">{formatarNivel(nivelAcesso)}</p>
-                            </div>
-                            <span className="dropdown-icon">
-                                <i className="bi bi-person fs-6"></i>
-                            </span>
-                        </button>
+                            <img
+                                src={logo}
+                                alt="Logo Sistema Senac"
+                                className="img-fluid object-fit-contain"
+                                style={{ height: 40 }}
+                            />
 
-                        <ul className="dropdown-menu dropdown-menu-end">
-                            <li><NavLink className="dropdown-item" to={'/perfil'}>Meu Perfil</NavLink></li>
-                            <li><hr className="dropdown-divider" /></li>
-                            <li>
-                                <button className="dropdown-item text-danger"
-                                    onClick={fnSairLogin}>
-                                    <i className="bi bi-box-arrow-left fs-6 me-2"></i>
-                                    Sair
-                                </button>
-                            </li>
-                        </ul>
+                            <div className="ms-3">
+                                <h1 className="mb-0 fs-6 fw-semibold">
+                                    Prontuário Eletrônico
+                                </h1>
+                                <p className="mb-0 fs-6 text-muted">
+                                    Sistema Senac
+                                </p>
+                            </div>
+                        </NavLink>
                     </div>
 
-                </div>
-            </nav>
 
+                    {/* Botões centralizados */}
+                    <div className="position-absolute top-50 start-50 translate-middle d-flex container-button-navbar">
+                        {itensNavbar
+                            .filter(item => item.desktop)
+                            .map((item) => (
+                                <NavLink
+                                    key={item.route}
+                                    to={`/${item.route}`}
+                                    className={({ isActive }) =>
+                                        `btn btn-link text-decoration-none d-flex align-items-center gap-1 p-0
+     ${isActive ? 'nav-active text-primary fw-semibold' : 'text-dark'}`}>
+                                    <i className={`${item.iconClass} fs-6 me-1`} />
+                                    <span className="fs-6">{item.label}</span>
+                                </NavLink>
+
+                            ))}
+                    </div>
+                    {/* Botões à direita */}
+                    <div className="d-flex align-items-center me-2">
+                        <div className="dropdown dropdown-navbar-desk">
+                            <button
+                                className="btn d-flex gap-3 align-items-center"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                <div>
+                                    <h1 className="mb-0 fs-6 fw-semibold">{nomeUsuario}</h1>
+                                    <p className="mb-0 small text-muted text-end">{formatarNivel(nivelAcesso)}</p>
+                                </div>
+                                <span className="dropdown-icon">
+                                    <i className="bi bi-person fs-6"></i>
+                                </span>
+                            </button>
+
+                            <ul className="dropdown-menu dropdown-menu-end">
+                                <li><NavLink className="dropdown-item" to={'/perfil'}>Meu Perfil</NavLink></li>
+                                <li><hr className="dropdown-divider" /></li>
+                                <li>
+                                    <button className="dropdown-item text-danger"
+                                        onClick={fnSairLogin}>
+                                        <i className="bi bi-box-arrow-left fs-6 me-2"></i>
+                                        Sair
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </nav>
+            )}
 
 
             {/* Navbar Mobile */}
 
-            <nav className="navbar fixed-top d-flex d-xl-none bg-navbar navbar-mobile">
+            <nav className={`navbar fixed-top d-flex bg-navbar navbar-mobile 
+    ${isAluno ? 'd-xl-none' : ''}`}>
                 <div className="container-fluid">
 
                     {/* Botões da Esquerda */}
@@ -282,7 +300,7 @@ function Navbar() {
                         <div className="offcanvas-body">
                             <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Menu</p>
                             <ul className="navbar-nav">
-                                {navItems
+                                {itensNavbar
                                     .filter(item => item.mobile)
                                     .map((item) => (
                                         <NavLink

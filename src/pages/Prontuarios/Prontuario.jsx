@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import * as bootstrap from 'bootstrap';
-
+import { useAuth } from '../../components/AuthContext/AuthContext';
 import Navbar from '../../components/Navbar/Navbar'
 import TagStatus from '../../components/Tag/TagStatus'
 import './Prontuario.css'
@@ -18,6 +18,11 @@ const itemVazio = () => ({
 });
 
 const Prontuario = () => {
+
+    const { usuario } = useAuth();
+
+    const nivelAcesso = usuario?.nivel_acesso;
+    const podeEditar = ['admin', 'docente'].includes(nivelAcesso);
 
     const [activeTab, setActiveTab] = useState("dados");
     const [tipoCuidado, setTipoCuidado] = useState("");
@@ -744,42 +749,47 @@ const Prontuario = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="mt-5">
-                                                <hr className='text-muted mb-5' />
-                                                <h5 className="fw-semibold mb-4">Relatórios do Paciente</h5>
-                                                {relatorios.length === 0 && (
-                                                    <p className="text-muted text-center fs-6 pb-3">Nenhum relatório encontrado.</p>
-                                                )}
-                                                <div className='row g-3 '>
-                                                    {relatorios.map((r, index) => (
-                                                        <div className='col-12' key={index}>
-                                                            <CardRelatorio
-                                                                PacienteSelecionado={r.nome_paciente}
-                                                                usuario_nome={r.usuario_nome}
-                                                                created_at={r.created_at}
-                                                                TituloRelatorio={r.titulo}
-                                                                ConteudoRelatorio={r.conteudo}
-                                                                onPrint={() => onPrint(r)}
-                                                                mostrarAcoes={true}
-                                                            />
-                                                        </div>
-                                                    ))}
+                                            {podeEditar && (
+                                                <div className="mt-5">
+                                                    <hr className='text-muted mb-5' />
+                                                    <h5 className="fw-semibold mb-4">Relatórios do Paciente</h5>
+                                                    {relatorios.length === 0 && (
+                                                        <p className="text-muted text-center fs-6 pb-3">Nenhum relatório encontrado.</p>
+                                                    )}
+                                                    <div className='row g-3 '>
+                                                        {relatorios.map((r, index) => (
+                                                            <div className='col-12' key={index}>
+                                                                <CardRelatorio
+                                                                    PacienteSelecionado={r.nome_paciente}
+                                                                    usuario_nome={r.usuario_nome}
+                                                                    created_at={r.created_at}
+                                                                    TituloRelatorio={r.titulo}
+                                                                    ConteudoRelatorio={r.conteudo}
+                                                                    onPrint={() => onPrint(r)}
+                                                                    mostrarAcoes={true}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
+
                                         </div>
                                     )}
 
                                     {/* ── Aba: Prescrições ── */}
                                     {activeTab === "prescricoes" && (
                                         <div>
-                                            <button
-                                                className='btn btn-primary d-flex align-items-center gap-2'
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalCriarPrescricao"
-                                            >
-                                                <i className='bi bi-plus fs-5 text-white'></i>
-                                                Nova Prescrição
-                                            </button>
+                                            {podeEditar && (
+                                                <button
+                                                    className='btn btn-primary d-flex align-items-center gap-2'
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modalCriarPrescricao"
+                                                >
+                                                    <i className='bi bi-plus fs-5 text-white'></i>
+                                                    Nova Prescrição
+                                                </button>
+                                            )}
 
                                             {prescricoesRegistradas.length === 0 && (
                                                 <div className='mt-3 p-2 pb-3 text-muted'>
@@ -806,29 +816,32 @@ const Prontuario = () => {
                                                                 )}
                                                             </div>
 
-                                                            <div className="d-flex align-items-center gap-2">
-                                                                {/* Botão editar */}
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
-                                                                    title="Editar prescrição"
-                                                                    onClick={() => abrirEdicaoPrescricao(p)}
-                                                                >
-                                                                    <i className="bi bi-pencil"></i>
-                                                                    <span className="d-none d-md-inline">Editar</span>
-                                                                </button>
+                                                            {podeEditar && (
+                                                                <div className="d-flex align-items-center gap-2">
+                                                                    {/* Botão editar */}
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1"
+                                                                        title="Editar prescrição"
+                                                                        onClick={() => abrirEdicaoPrescricao(p)}
+                                                                    >
+                                                                        <i className="bi bi-pencil"></i>
+                                                                        <span className="d-none d-md-inline">Editar</span>
+                                                                    </button>
 
-                                                                {/* Botão deletar */}
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
-                                                                    title="Excluir prescrição"
-                                                                    onClick={() => deletarPrescricao(p.id, index + 1)}
-                                                                >
-                                                                    <i className="bi bi-trash"></i>
-                                                                    <span className="d-none d-md-inline">Excluir</span>
-                                                                </button>
-                                                            </div>
+                                                                    {/* Botão deletar */}
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                                                                        title="Excluir prescrição"
+                                                                        onClick={() => deletarPrescricao(p.id, index + 1)}
+                                                                    >
+                                                                        <i className="bi bi-trash"></i>
+                                                                        <span className="d-none d-md-inline">Excluir</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+
                                                         </div>
 
                                                         {/* ── Medicamentos e horários ── */}
@@ -925,11 +938,13 @@ const Prontuario = () => {
                                     {/* ── Aba: Cuidados ── */}
                                     {activeTab === "cuidados" && (
                                         <div>
-                                            <button className='btn btn-primary d-flex align-items-center gap-2'
-                                                data-bs-toggle="modal" data-bs-target="#modalCriarCuidado">
-                                                <i className='bi bi-plus fs-5 text-white'></i>
-                                                Registrar Cuidado
-                                            </button>
+                                            {podeEditar && (
+                                                <button className='btn btn-primary d-flex align-items-center gap-2'
+                                                    data-bs-toggle="modal" data-bs-target="#modalCriarCuidado">
+                                                    <i className='bi bi-plus fs-5 text-white'></i>
+                                                    Registrar Cuidado
+                                                </button>
+                                            )}
 
                                             {cuidadosPaciente.length === 0 && (
                                                 <div className='mt-3 p-2 pb-3 text-muted'>
@@ -956,16 +971,49 @@ const Prontuario = () => {
                                                             <div className='d-flex align-items-start justify-content-end gap-3'>
                                                                 <div className="d-flex flex-column align-items-end gap-2">
                                                                     <div className="grupo-validacao">
-                                                                        <input type="radio" className="btn-check" name={`validadoOpcoesCuidado-${index}`} id={`validado-okCuidado-${index}`} checked={cuiRe.status_id === 2} onChange={() => alterarStatusCuidado(cuiRe.id, 2)} />
-                                                                        <label className="btn-validacao sucesso" htmlFor={`validado-okCuidado-${index}`}><i className="bi bi-check2"></i></label>
-                                                                        <input type="radio" className="btn-check" name={`validadoOpcoesCuidado-${index}`} id={`validado-negadoPorPacienteCuidado-${index}`} checked={cuiRe.status_id === 4} onChange={() => alterarStatusCuidado(cuiRe.id, 4)} />
-                                                                        <label className="btn-validacao negadoPorPaciente" htmlFor={`validado-negadoPorPacienteCuidado-${index}`}><i className="bi bi-circle"></i></label>
-                                                                        <input type="radio" className="btn-check" name={`validadoOpcoesCuidado-${index}`} id={`validado-negadoCuidado-${index}`} checked={cuiRe.status_id === 3} onChange={() => alterarStatusCuidado(cuiRe.id, 3)} />
-                                                                        <label className="btn-validacao negado" htmlFor={`validado-negadoCuidado-${index}`}><i className="bi bi-x-lg"></i></label>
+
+                                                                        <input type="radio" className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-okCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 2}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 2)}
+                                                                        />
+
+                                                                        <label className="btn-validacao sucesso"
+                                                                            htmlFor={`validado-okCuidado-${index}`}>
+                                                                            <i className="bi bi-check2"></i>
+                                                                        </label>
+
+                                                                        <input type="radio" className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-negadoPorPacienteCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 4}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 4)}
+                                                                        />
+
+                                                                        <label className="btn-validacao negadoPorPaciente"
+                                                                            htmlFor={`validado-negadoPorPacienteCuidado-${index}`}>
+                                                                            <i className="bi bi-circle"></i>
+                                                                        </label>
+
+                                                                        <input type="radio" className="btn-check"
+                                                                            name={`validadoOpcoesCuidado-${index}`}
+                                                                            id={`validado-negadoCuidado-${index}`}
+                                                                            checked={cuiRe.status_id === 3}
+                                                                            onChange={() => alterarStatusCuidado(cuiRe.id, 3)}
+                                                                        />
+
+                                                                        <label className="btn-validacao negado"
+                                                                            htmlFor={`validado-negadoCuidado-${index}`}>
+                                                                            <i className="bi bi-x-lg"></i>
+                                                                        </label>
+
                                                                     </div>
                                                                     <span className="text-muted small">{formatarDataBR(cuiRe.created_at)}</span>
                                                                 </div>
-                                                                <button type='button' className='btn btn-sm' title="Deletar cuidado" onClick={() => deletarCuidado(cuiRe.id)}>
+                                                                <button type='button' className='btn btn-sm'
+                                                                    title="Deletar cuidado"
+                                                                    onClick={() => deletarCuidado(cuiRe.id)}>
                                                                     <i className='bi bi-trash text-danger'></i>
                                                                 </button>
                                                             </div>

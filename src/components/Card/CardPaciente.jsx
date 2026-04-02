@@ -2,6 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom';
 import TagStatus from '../Tag/TagStatus.jsx'
 import './CardPaciente.css'
+import { useAuth } from '../AuthContext/AuthContext.jsx';
 
 function CardPaciente({
     id,
@@ -32,6 +33,11 @@ function CardPaciente({
     if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
         idade--;
     }
+
+    const { usuario } = useAuth();
+
+    const nivelAcesso = usuario?.nivel_acesso;
+    const podeEditar = ['admin', 'docente'].includes(nivelAcesso);
 
     return (
         <>
@@ -94,35 +100,37 @@ function CardPaciente({
                     <NavLink className='btn btn-primary flex-grow-1' to={`/prontuario?id=${id}`}>
                         Ver Prontuário
                     </NavLink>
-
-                    <button
-                        className='btn btn-outline-success d-flex align-items-center justify-content-center'
-                        title='Editar paciente'
-                        onClick={() => onEditar({
-                            id,
-                            nome_paciente: NomePaciente,
-                            mae_paciente: NomeMaePaciente,
-                            data_nasc: NascPaciente,
-                            tipo_sanguineo: TipoSanguePaciente,
-                            fator_rh: FatorRhPaciente,
-                            equipe: EquipePaciente,
-                            status_paciente: StatusPaciente,
-                            convenio: ConvenioPaciente,
-                            quarto: QuartoPaciente,
-                            leito: LeitoPaciente,
-                            id_setor: id_setor
-                        })}
-                    >
-                        <i className='bi bi-pencil-square'></i>
-                    </button>
-
-                    <button
-                        className='btn btn-outline-danger'
-                        title='Excluir paciente'
-                        onClick={() => pedirConfirmacaoDelete(id)}
-                    >
-                        <i className='bi bi-trash'></i>
-                    </button>
+                    {podeEditar && (
+                        <button
+                            className='btn btn-outline-success d-flex align-items-center justify-content-center'
+                            title='Editar paciente'
+                            onClick={() => onEditar({
+                                id,
+                                nome_paciente: NomePaciente,
+                                mae_paciente: NomeMaePaciente,
+                                data_nasc: NascPaciente,
+                                tipo_sanguineo: TipoSanguePaciente,
+                                fator_rh: FatorRhPaciente,
+                                equipe: EquipePaciente,
+                                status_paciente: StatusPaciente,
+                                convenio: ConvenioPaciente,
+                                quarto: QuartoPaciente,
+                                leito: LeitoPaciente,
+                                id_setor: id_setor
+                            })}
+                        >
+                            <i className='bi bi-pencil-square'></i>
+                        </button>
+                    )}
+                    {podeEditar && (
+                        <button
+                            className='btn btn-outline-danger'
+                            title='Excluir paciente'
+                            onClick={() => pedirConfirmacaoDelete(id)}
+                        >
+                            <i className='bi bi-trash'></i>
+                        </button>
+                    )}
                 </div>
 
             </div>
