@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import * as bootstrap from 'bootstrap'
 import './Navbar.css'
@@ -50,19 +50,18 @@ const navItems = [
         desktop: true,
         mobile: true
     },
-
-    {
-        route: 'perfil',
-        label: 'Perfil',
-        iconClass: "bi bi-person",
-        desktop: false,
-        mobile: true
-    },
     {
         route: 'setor',
         label: 'Setor',
         iconClass: "bi bi-hospital",
         desktop: true,
+        mobile: true
+    },
+    {
+        route: 'perfil',
+        label: 'Perfil',
+        iconClass: "bi bi-person",
+        desktop: false,
         mobile: true
     }
 ];

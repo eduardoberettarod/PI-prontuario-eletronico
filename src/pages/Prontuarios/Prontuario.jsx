@@ -748,7 +748,7 @@ const Prontuario = () => {
                                                 <hr className='text-muted mb-5' />
                                                 <h5 className="fw-semibold mb-4">Relatórios do Paciente</h5>
                                                 {relatorios.length === 0 && (
-                                                    <p className="text-muted text-center fs-6">Nenhum relatório encontrado.</p>
+                                                    <p className="text-muted text-center fs-6 pb-3">Nenhum relatório encontrado.</p>
                                                 )}
                                                 <div className='row g-3 '>
                                                     {relatorios.map((r, index) => (

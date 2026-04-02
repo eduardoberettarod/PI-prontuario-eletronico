@@ -78,7 +78,7 @@ const Pacientes = () => {
     const [pacientes, setPacientes] = useState([]);
     const [modoEdicao, setModoEdicao] = useState(false);
     const [pacienteEditando, setPacienteEditando] = useState(null);
-    
+
 
     const NascInvalido = useRef(null);
 
@@ -259,23 +259,71 @@ const Pacientes = () => {
         fnCarregarSetores()
     }, [])
 
-    function deletarPaciente(id) {
+    // Excluir Pacientes
 
-        if (!confirm("Tem certeza que deseja excluir este paciente?")) return;
+    const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null);
 
-        fetch(`${urlServer}/pacientes/${id}`, {
-            method: "DELETE",
-            credentials: "include"
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro ao deletar paciente");
-                return res.json();
-            })
-            .then(() => {
-                fnCarregarDados(); // recarrega lista
-            })
-            .catch(err => console.log(err));
+    function pedirConfirmacaoDelete(id) {
+        setPacienteParaExcluir(id);
+
+        const modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('modalConfirmarDeletePaciente')
+        );
+
+        modal.show();
     }
+
+    async function confirmarDelete() {
+        if (!pacienteParaExcluir) return;
+
+        await removerPaciente(pacienteParaExcluir);
+
+        setPacienteParaExcluir(null);
+
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalConfirmarDeletePaciente')
+        );
+
+        modal.hide();
+    }
+
+    async function removerPaciente(id) {
+
+        try {
+            const response = await fetch(`${urlServer}/pacientes/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            })
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.erro || "Erro ao deletar");
+            }
+
+            fnCarregarDados();
+
+            setToastMsg({
+                titulo: "Paciente removido",
+                mensagem: "Paciente excluído com sucesso!",
+                tipo: "success"
+            });
+
+            toastInstance.current?.show();
+
+        } catch (erro) {
+            console.error(erro);
+
+            setToastMsg({
+                titulo: "Erro",
+                mensagem: "Erro ao excluir paciente",
+                tipo: "danger"
+            });
+
+            toastInstance.current?.show();
+        }
+    }
+
 
     function editarPaciente(paciente) {
 
@@ -304,6 +352,46 @@ const Pacientes = () => {
         <>
             <Navbar />
             <section id="pacientes-page-section">
+
+                {/* Modal para excluir paciente */}
+                <div
+                    className="modal fade"
+                    id="modalConfirmarDeletePaciente"
+                    tabIndex="-1"
+                    aria-hidden="true"
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
+                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div className="modal-body">
+                                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este paciente?</p>
+                                <p className="small text-muted">
+                                    Essa ação não pode ser desfeita.
+                                </p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={confirmarDelete}
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
 
                 {/* Modal Criar Paciente */}
                 <div className="modal fade" id="modalCriarPaciente" tabIndex="-1" aria-hidden="true" ref={modalRefPaciente}>
@@ -607,7 +695,7 @@ const Pacientes = () => {
                                     ConvenioPaciente={p.convenio}
                                     setor={p.nome_setor}
                                     id_setor={p.id_setor}
-                                    onExcluir={deletarPaciente}
+                                    pedirConfirmacaoDelete={pedirConfirmacaoDelete}
                                     onEditar={editarPaciente}
                                 />
                             </div>

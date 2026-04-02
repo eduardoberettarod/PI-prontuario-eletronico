@@ -18,7 +18,7 @@ function CardPaciente({
     setor,
     id_setor,
     onEditar,
-    onExcluir,
+    pedirConfirmacaoDelete,
 }) {
 
     const statusClass = `status-${StatusPaciente}`
@@ -119,7 +119,7 @@ function CardPaciente({
                     <button
                         className='btn btn-outline-danger'
                         title='Excluir paciente'
-                        onClick={() => onExcluir(id)}
+                        onClick={() => pedirConfirmacaoDelete(id)}
                     >
                         <i className='bi bi-trash'></i>
                     </button>
