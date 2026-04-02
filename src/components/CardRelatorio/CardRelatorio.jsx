@@ -24,8 +24,16 @@ function CardRelatorio({
     }
 
 
+    // DEPOIS ✅
     function onPrint() {
         const doc = new jsPDF({ unit: "mm", format: "a4" });
+
+        // Guarda de segurança — evita crash do jsPDF com valores undefined
+        const safePaciente = PacienteSelecionado || "Não informado";
+        const safeTitulo = TituloRelatorio || "Sem título";
+        const safeConteudo = ConteudoRelatorio || "";
+        const safeAutor = usuario_nome || "Não informado";
+        const safeData = created_at || new Date().toISOString();
 
         // ─── CONFIGURAÇÕES GLOBAIS ───────────────────────────────────────────────
         const PAGE_W = 210;
@@ -49,7 +57,7 @@ function CardRelatorio({
         const setDraw = ([r, g, b]) => doc.setDrawColor(r, g, b);
         const setFill = ([r, g, b]) => doc.setFillColor(r, g, b);
 
-        const dataFormatada = new Date(created_at).toLocaleDateString("pt-BR", {
+        const dataFormatada = new Date(safeData).toLocaleDateString("pt-BR", {
             day: "2-digit", month: "long", year: "numeric"
         });
 
@@ -120,7 +128,7 @@ function CardRelatorio({
             doc.setFont("Helvetica", "normal");
             doc.setFontSize(10);
             setColor(COLOR_TEXT);
-            doc.text(usuario_nome, MARGIN_LEFT, yBase + 13);
+            doc.text(safeAutor, MARGIN_LEFT, yBase + 13);
 
             // Linha de assinatura
             setDraw(COLOR_BORDER);
@@ -205,7 +213,7 @@ function CardRelatorio({
         doc.setFont("Helvetica", "normal");
         doc.setFontSize(11);
         setColor(COLOR_TEXT);
-        doc.text(PacienteSelecionado, colLeft, y + 22);
+        doc.text(safePaciente, colLeft, y + 22);
 
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(7.5);
@@ -229,7 +237,7 @@ function CardRelatorio({
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(15);
         setColor(COLOR_PRIMARY);
-        const tituloLines = doc.splitTextToSize(TituloRelatorio, CONTENT_WIDTH);
+        const tituloLines = doc.splitTextToSize(safeTitulo, CONTENT_WIDTH);
         doc.text(tituloLines, MARGIN_LEFT, y);
         y += tituloLines.length * 7 + 4;
 
@@ -260,7 +268,7 @@ function CardRelatorio({
         setColor(COLOR_TEXT);
         doc.setLineHeightFactor(1.6);
 
-        const paragrafos = ConteudoRelatorio.split("\n").filter(p => p.trim() !== "");
+        const paragrafos = safeConteudo.split("\n").filter(p => p.trim() !== "");
 
         for (const paragrafo of paragrafos) {
             const linhas = doc.splitTextToSize(paragrafo.trim(), CONTENT_WIDTH);
@@ -292,7 +300,7 @@ function CardRelatorio({
         drawFooter();
 
         // ─── SALVAR ──────────────────────────────────────────────────────────────
-        doc.save(`relatorio_${TituloRelatorio.replace(/\s+/g, "_")}.pdf`);
+        doc.save(`relatorio_${safeTitulo.replace(/\s+/g, "_")}.pdf`);
     }
 
 
