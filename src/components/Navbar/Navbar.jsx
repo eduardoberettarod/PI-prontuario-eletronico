@@ -159,6 +159,7 @@ function Navbar() {
     const itensNavbar =
         nivelAcesso === 'aluno' ? navItemsAluno : navItems;
 
+    const podeVerServicosRapidos = ['admin', 'docente'].includes(nivelAcesso);
     return (
         <>
             {/* Navbar Desktop */}
@@ -312,27 +313,31 @@ function Navbar() {
                                         </NavLink>
                                     ))}
                             </ul>
-                            <hr className="my-3 border-secondary opacity-25" />
-                            <div className='navbar-nav position-relative'>
-                                <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Serviços Rápidos</p>
+                            {podeVerServicosRapidos && (
+                                <>
+                                    <hr className="my-3 border-secondary opacity-25" />
+                                    <div className='navbar-nav position-relative'>
+                                        <p className='ms-3 opacity-50 fw-bold text-uppercase small'>Serviços Rápidos</p>
 
-                                <div className="list-group rounded-4 p-2">
-                                    <NavLink to={'/pacientes'} className="list-group-item d-flex btn-slide-navbar quick-item">
-                                        <i className="bi bi-person-plus me-2"></i>
-                                        Registrar paciente
-                                    </NavLink>
+                                        <div className="list-group rounded-4 p-2">
+                                            <NavLink to={'/pacientes'} className="list-group-item d-flex btn-slide-navbar quick-item">
+                                                <i className="bi bi-person-plus me-2"></i>
+                                                Registrar paciente
+                                            </NavLink>
 
-                                    <button className="list-group-item d-flex btn-slide-navbar quick-item">
-                                        <i className="bi bi-file-earmark-medical me-2"></i>
-                                        Criar prescrição
-                                    </button>
+                                            <button className="list-group-item d-flex btn-slide-navbar quick-item">
+                                                <i className="bi bi-file-earmark-medical me-2"></i>
+                                                Criar prescrição
+                                            </button>
 
-                                    <NavLink to={'/relatorios'} className="list-group-item d-flex btn-slide-navbar quick-item">
-                                        <i className="bi bi-clipboard-plus me-2"></i>
-                                        Criar relatório
-                                    </NavLink>
-                                </div>
-                            </div>
+                                            <NavLink to={'/relatorios'} className="list-group-item d-flex btn-slide-navbar quick-item">
+                                                <i className="bi bi-clipboard-plus me-2"></i>
+                                                Criar relatório
+                                            </NavLink>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
 
                             <hr className="my-3 border-secondary opacity-25" />
 

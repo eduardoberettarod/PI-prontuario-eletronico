@@ -12,6 +12,7 @@ const Relatorio = () => {
   const [relatorioParaExcluir, setRelatorioParaExcluir] = useState(null);
   const [relatorioEditando, setRelatorioEditando] = useState(null);
   const [pacientes, setPacientes] = useState([]);
+  const [busca, setBusca] = useState("");
 
   function pedirConfirmacaoDelete(id) {
     setRelatorioParaExcluir(id);
@@ -227,6 +228,17 @@ const Relatorio = () => {
     }, 100);
   }
 
+  const relatoriosFiltrados = relatorios.filter((r) => {
+
+    const termo = busca.toLowerCase();
+
+    return (
+      r.titulo?.toLowerCase().includes(termo) ||
+      r.nome_paciente?.toLowerCase().includes(termo)
+    );
+
+  });
+
   return (
     <>
       <Navbar />
@@ -366,13 +378,15 @@ Sugestões de estrutura:
                   type="text"
                   className="form-control input-search"
                   placeholder="Buscar por título ou nome do paciente..."
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
                 />
               </div>
             </form>
           </div>
 
           <div className='mt-4 row g-2'>
-            {relatorios.map((r, index) => (
+            {relatoriosFiltrados.map((r, index) => (
               <div className='col-12' key={index}>
                 <CardRelatorio
                   PacienteSelecionado={r.nome_paciente}

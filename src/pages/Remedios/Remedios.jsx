@@ -6,6 +6,9 @@ import { urlServer } from '../../../config';
 
 function Remedios() {
 
+    // filtro
+    const [busca, setBusca] = useState("");
+
     // TOAST RELATORIO
     const toastRefRemedios = useRef(null)
     const toastInstanceRemedios = useRef(null);
@@ -248,6 +251,18 @@ function Remedios() {
         fnCarregarDados()
     }, [])
 
+    const medicamentosFiltrados = medicamentos.filter((med) => {
+
+        const termo = busca.toLowerCase();
+
+        return (
+            med.nome_medicamento?.toLowerCase().includes(termo) ||
+            med.classe_terapeutica?.toLowerCase().includes(termo) ||
+            med.unidade?.toLowerCase().includes(termo)
+        );
+
+    });
+
 
     return (
         <>
@@ -416,7 +431,9 @@ function Remedios() {
                                 <input
                                     type="text"
                                     className="form-control input-search"
-                                    placeholder="Buscar por nome ou classe..."
+                                    placeholder="Buscar por nome, unidade ou classe..."
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
                                 />
                             </div>
                         </form>
@@ -434,7 +451,7 @@ function Remedios() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {medicamentos.length === 0 && (
+                                    {medicamentosFiltrados.length === 0 && (
                                         <tr>
                                             <td colSpan="4" className="text-center text-secondary py-4">
                                                 Nenhum medicamento cadastrado
@@ -442,7 +459,7 @@ function Remedios() {
                                         </tr>
                                     )}
 
-                                    {medicamentos.map((med, index) => (
+                                    {medicamentosFiltrados.map((med, index) => (
                                         <tr key={index} className="align-middle">
 
                                             <td className="ps-4 py-3">

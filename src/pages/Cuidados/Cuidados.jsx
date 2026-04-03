@@ -7,6 +7,9 @@ import { urlServer } from '../../../config';
 
 function Cuidados() {
 
+    // filtro
+    const [busca, setBusca] = useState("");
+
     // TOAST RELATORIO
     const toastRefCuidados = useRef(null)
     const toastInstanceCuidados = useRef(null);
@@ -251,6 +254,17 @@ function Cuidados() {
         fnCarregarDados()
     }, [])
 
+    const cuidadosFiltrados = cuidados.filter((cui) => {
+
+        const termo = busca.toLowerCase();
+
+        return (
+            cui.tipo_cuidado?.toLowerCase().includes(termo) ||
+            String(cui.id).includes(termo)
+        );
+
+    });
+
     return (
         <>
             <Navbar />
@@ -394,6 +408,8 @@ function Cuidados() {
                                     type="text"
                                     className="form-control input-search"
                                     placeholder="Buscar por nome ou ID..."
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
                                 />
                             </div>
                         </form>
@@ -417,7 +433,7 @@ function Cuidados() {
                                 </thead>
 
                                 <tbody>
-                                    {cuidados.length === 0 && (
+                                    {cuidadosFiltrados.length === 0 && (
                                         <tr>
                                             <td colSpan="3" className="text-center text-secondary py-4">
                                                 Nenhum cuidado cadastrado
@@ -425,11 +441,11 @@ function Cuidados() {
                                         </tr>
                                     )}
 
-                                    {cuidados.map((cui, index) => (
+                                    {cuidadosFiltrados.map((cui, index) => (
                                         <tr key={index}>
 
                                             <td className="ps-4 py-3">
-                                                {index + 1}
+                                                {cui.id}
                                             </td>
 
                                             <td className="py-3" id='td-cuidado'>

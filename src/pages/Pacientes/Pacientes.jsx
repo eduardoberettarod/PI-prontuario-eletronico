@@ -19,7 +19,9 @@ const Pacientes = () => {
     ============================ */
     const collapseRef = useRef(null);
     const [aberto, setAberto] = useState(false);
-
+    const [busca, setBusca] = useState("");
+    const [filtroStatus, setFiltroStatus] = useState("");
+    const [filtroSetor, setFiltroSetor] = useState("");
     const [listaSetores, setListaSetores] = useState([]);
 
     useEffect(() => {
@@ -46,6 +48,10 @@ const Pacientes = () => {
     const formFiltro = useRef(null);
     function fnLimparFiltro() {
         formFiltro.current.reset();
+
+        setBusca("");
+        setFiltroStatus("");
+        setFiltroSetor("");
     }
 
 
@@ -242,9 +248,6 @@ const Pacientes = () => {
                     return null;
                 }
 
-                if (res.status === 403) {
-                    return [];
-                }
 
                 if (!res.ok) {
                     throw new Error("Erro na requisição")
@@ -265,9 +268,8 @@ const Pacientes = () => {
     useEffect(() => {
         if (!nivelAcesso) return;
 
-        if (nivelAcesso !== 'aluno') {
-            fnCarregarSetores()
-        }
+        fnCarregarSetores()
+
     }, [nivelAcesso])
 
     // Excluir Pacientes
@@ -358,6 +360,22 @@ const Pacientes = () => {
         modal.show();
     }
 
+    
+    const pacientesFiltrados = pacientes.filter((p) => {
+
+        const matchBusca =
+            p.nome_paciente.toLowerCase().includes(busca.toLowerCase()) ||
+            p.equipe.toLowerCase().includes(busca.toLowerCase()) ||
+            p.quarto.toLowerCase().includes(busca.toLowerCase());
+
+        const matchStatus =
+            !filtroStatus || p.status_paciente === filtroStatus;
+
+        const matchSetor =
+            !filtroSetor || String(p.id_setor) === filtroSetor;
+
+        return matchBusca && matchStatus && matchSetor;
+    });
 
     return (
         <>
@@ -632,6 +650,8 @@ const Pacientes = () => {
                                     type="text"
                                     className="form-control input-search"
                                     placeholder="Buscar por nome, equipe ou quarto..."
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
                                 />
                             </div>
 
@@ -652,7 +672,11 @@ const Pacientes = () => {
 
                                 <div className="col-md-6">
                                     <label className="form-label">Status do Paciente</label>
-                                    <select className="form-select">
+                                    <select
+                                        className="form-select"
+                                        value={filtroStatus}
+                                        onChange={(e) => setFiltroStatus(e.target.value)}
+                                    >
                                         <option value="">Todos os status</option>
                                         <option value="estavel">Estável</option>
                                         <option value="observacao">Em Observação</option>
@@ -662,13 +686,20 @@ const Pacientes = () => {
 
 
                                 <div className="col-md-6">
-                                    <label className="form-label">Convênio</label>
-                                    <select className="form-select">
-                                        <option value="">Todos os convênios</option>
-                                        <option value="SUS">SUS</option>
-                                        <option value="Unimed">Unimed</option>
-                                        <option value="Particular">Particular</option>
-                                        <option value="Outros">Outros</option>
+                                    <label className="form-label">Setor</label>
+                                    <select
+                                        className="form-select"
+                                        value={filtroSetor}
+                                        onChange={(e) => setFiltroSetor(e.target.value)}
+                                    >
+                                        <option value="">Selecione um setor</option>
+
+                                        {listaSetores.map(s => (
+                                            <option key={s.id} value={s.id}>
+                                                {s.nome_setor}
+                                            </option>
+                                        ))}
+
                                     </select>
                                 </div>
 
@@ -685,13 +716,15 @@ const Pacientes = () => {
 
                     {/* Contador */}
                     <div className="mt-4">
-                        <p className="opacity-75 small">{pacientes.length} pacientes encontrados</p>
+                        <p className="opacity-75 small">
+                            {pacientesFiltrados.length} pacientes encontrados
+                        </p>
                     </div>
 
 
                     {/* Cards */}
                     <div className="row g-2">
-                        {pacientes.map((p, index) => (
+                        {pacientesFiltrados.map((p, index) => (
                             <div className="col-12 col-md-4 card-pacientes" key={index}>
                                 <CardPaciente
                                     key={p.id}

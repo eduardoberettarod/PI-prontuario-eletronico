@@ -6,6 +6,9 @@ import { urlServer } from '../../../config'
 
 const Usuarios = () => {
 
+    // filtro
+    const [busca, setBusca] = useState("");
+
     /* ============================
        TOAST
     ============================ */
@@ -57,13 +60,13 @@ const Usuarios = () => {
     }
 
     async function confirmarDeleteUsuarios() {
-    await removerUsuarios();
+        await removerUsuarios();
 
-    const modal = bootstrap.Modal.getInstance(
-        document.getElementById('modalConfirmarDeleteUsuarios')
-    );
-    modal.hide();
-}
+        const modal = bootstrap.Modal.getInstance(
+            document.getElementById('modalConfirmarDeleteUsuarios')
+        );
+        modal.hide();
+    }
 
     async function removerUsuarios() {
 
@@ -167,6 +170,18 @@ const Usuarios = () => {
             toastInstance.current?.show();
         }
     }
+
+    const usuariosFiltrados = usuarios.filter((usuario) => {
+
+        const termo = busca.toLowerCase();
+
+        return (
+            usuario.primeiro_nome?.toLowerCase().includes(termo) ||
+            usuario.sobrenome?.toLowerCase().includes(termo) ||
+            String(usuario.id).includes(termo)
+        );
+
+    });
 
     return (
         <>
@@ -295,6 +310,8 @@ const Usuarios = () => {
                                     type="text"
                                     className="form-control input-search"
                                     placeholder="Buscar por nome ou ID..."
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
                                 />
                             </div>
                         </form>
@@ -314,7 +331,7 @@ const Usuarios = () => {
                                 </thead>
                                 <tbody>
 
-                                    {usuarios.map((usuario) => (
+                                    {usuariosFiltrados.map((usuario) => (
 
                                         <tr key={usuario.id} className="align-middle">
 

@@ -7,6 +7,9 @@ import { urlServer } from '../../../config';
 
 const Setor = () => {
 
+    // filtro
+    const [busca, setBusca] = useState("");
+
     // TOAST SETOR
     const toastRefSetor = useRef(null)
     const toastInstanceSetor = useRef(null);
@@ -251,6 +254,17 @@ const Setor = () => {
         fnCarregarDados()
     }, [])
 
+    const setorFiltrado = setor.filter((setor) => {
+
+        const termo = busca.toLowerCase();
+
+        return (
+            setor.nome_setor?.toLowerCase().includes(termo) ||
+            String(setor.id).includes(termo)
+        );
+
+    });
+
     return (
         <>
             <Navbar />
@@ -397,6 +411,8 @@ const Setor = () => {
                                     type="text"
                                     className="form-control input-search"
                                     placeholder="Buscar por nome ou ID..."
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
                                 />
                             </div>
                         </form>
@@ -414,7 +430,7 @@ const Setor = () => {
                                 </thead>
                                 <tbody>
 
-                                    {setor.length === 0 && (
+                                    {setorFiltrado.length === 0 && (
                                         <tr>
                                             <td colSpan="3" className="text-center text-secondary py-4">
                                                 Nenhum setor cadastrado
@@ -422,7 +438,7 @@ const Setor = () => {
                                         </tr>
                                     )}
 
-                                    {setor.map((setor, index) => (
+                                    {setorFiltrado.map((setor, index) => (
                                         <tr key={index}>
 
                                             <td className="ps-4 py-3">
