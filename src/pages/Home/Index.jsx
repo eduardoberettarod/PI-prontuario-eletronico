@@ -152,6 +152,13 @@ const Index = () => {
     const mes = meses[hoje.getMonth()];
     const ano = hoje.getFullYear();
 
+    const [ultimos, setUltimos] = useState([]);
+
+    useEffect(() => {
+        const dados = JSON.parse(localStorage.getItem("ultimosPacientes")) || [];
+        setUltimos(dados);
+    }, []);
+
     return (
 
         <>
@@ -219,78 +226,37 @@ const Index = () => {
                         </div>
                     </div>
 
-                    <div className='row g-3 mt-4 container-cards-home'>
+                    <div className='mt-4 container-cards-home'>
 
                         {/* Card de ultimos acessos */}
-                        <div className='col-12 col-md-8'>
-                            <div className='list-group shadow h-100'>
+                        <div>
+                            <div className='list-group shadow'>
                                 <div className='list-group-item p-3'>
                                     <p className='fw-bold mb-0 fs-6 ms-2 mt-2'>Últimos Acessos</p>
                                     <p className='card-subtitle opacity-75 mt-0 ms-2'>Pacientes acessados recentemente</p>
                                 </div>
 
-                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
-                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
+                                {ultimos.length === 0 &&
+                                    <div className='bg-light p-3 text-center'>
+                                        <p className='text-muted'>Nenhum acesso recente.</p>
+                                    </div>}
+                                {ultimos.map(p => (
+                                    <div key={p.id}>
+                                        <NavLink to={`/prontuario?id=${p.id}`} className='list-group-item d-flex align-items-center gap-3 a-card-home'>
+                                            <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
 
-                                    <div className='p-2 width-a-home'>
-                                        <p className='fw-bold mb-0'>Carlos da Silva Santos</p>
-                                        <p className='opacity-75 m-0'>Quarto 201/A • Equipe Azul</p>
+                                            <div className='p-2 width-a-home'>
+                                                <p className='fw-bold mb-0'>{p.nome}</p>
+                                                <p className='opacity-75 m-0'>Quarto {p.quarto}/{p.leito} • {p.equipe}</p>
+                                            </div>
+
+                                            <span className='position-absolute end-0 me-4'>
+                                                <TagStatus status={p.status} />
+                                            </span>
+                                        </NavLink>
+
                                     </div>
-
-                                    <span className='position-absolute end-0 me-4'>
-                                        <TagStatus status="critico" />
-                                    </span>
-                                </a>
-
-                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home'>
-                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-                                    <div className='p-2 width-a-home'>
-                                        <p className='fw-bold mb-0'>Vania Rodrigues</p>
-                                        <p className='opacity-75 m-0'>Quarto 102/A • Equipe Amarela</p>
-                                    </div>
-                                    <span className='position-absolute end-0 me-4'>
-                                        <TagStatus status="estavel" />
-                                    </span>
-                                </a>
-
-                                <a href="" className='list-group-item d-flex align-items-center gap-3 a-card-home h-100'>
-                                    <span className='a-card-home-icon'><i className='bi bi-person text-primary'></i></span>
-
-                                    <div className='p-2 width-a-home'>
-                                        <p className='fw-bold mb-0'>Roberto Santana</p>
-                                        <p className='opacity-75 m-0 '>Quarto 325/B • Equipe Vermelha</p>
-                                    </div>
-
-                                    <span className='position-absolute end-0 me-4'>
-                                        <TagStatus status="observacao" />
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Card de acesso rapido */}
-                        <div className='col-12 col-md-4'>
-                            <div className='list-group shadow h-100'>
-                                <div className='list-group-item p-3'>
-                                    <p className='fw-bold mb-0 fs-6 ms-2 mt-2'>Acesso Rápido</p>
-                                    <p className='card-subtitle opacity-75 mt-0 ms-2'>Atalhos do sistema</p>
-                                </div>
-
-                                <NavLink to='/pacientes' className="list-group-item d-flex align-items-center gap-3 button-card-home">
-                                    <span><i className="bi bi-person-plus"></i></span>
-                                    Registrar paciente
-                                </NavLink>
-
-                                <a href='/prescricao' className="list-group-item d-flex align-items-center gap-3 button-card-home">
-                                    <span><i className="bi bi-file-earmark-medical"></i></span>
-                                    Criar prescrição
-                                </a>
-
-                                <NavLink to={'/relatorios'} className="list-group-item d-flex align-items-center gap-3 button-card-home">
-                                    <span><i className="bi bi-clipboard-plus"></i></span>
-                                    Criar relatório
-                                </NavLink>
-
+                                ))}
                             </div>
                         </div>
 

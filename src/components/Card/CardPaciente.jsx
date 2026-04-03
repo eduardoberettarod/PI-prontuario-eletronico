@@ -39,6 +39,18 @@ function CardPaciente({
     const nivelAcesso = usuario?.nivel_acesso;
     const podeEditar = ['admin', 'docente'].includes(nivelAcesso);
 
+    function salvarUltimoPaciente(paciente) {
+        let historico = JSON.parse(localStorage.getItem("ultimosPacientes")) || [];
+
+        historico = historico.filter(p => p.id !== paciente.id);
+
+        historico.unshift(paciente);
+
+        historico = historico.slice(0, 3);
+
+        localStorage.setItem("ultimosPacientes", JSON.stringify(historico));
+    }
+
     return (
         <>
             <div className={`card rounded-2 p-3 card-paciente h-100 ${statusClass}`}>
@@ -97,7 +109,16 @@ function CardPaciente({
 
                 {/* Rodapé: prontuário + botões de ação */}
                 <div className='d-flex gap-2 mt-auto'>
-                    <NavLink className='btn btn-primary flex-grow-1' to={`/prontuario?id=${id}`}>
+                    <NavLink className='btn btn-primary flex-grow-1' to={`/prontuario?id=${id}`}
+                        onClick={() => salvarUltimoPaciente({
+                            id,
+                            nome: NomePaciente,
+                            status: StatusPaciente,
+                            quarto: QuartoPaciente,
+                            leito: LeitoPaciente,
+                            equipe: EquipePaciente
+                        })}
+                    >
                         Ver Prontuário
                     </NavLink>
                     {podeEditar && (

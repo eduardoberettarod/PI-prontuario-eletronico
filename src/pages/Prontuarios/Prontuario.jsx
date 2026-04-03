@@ -87,7 +87,13 @@ const Prontuario = () => {
     function fnCarregarMedicamentos() {
         fetch(`${urlServer}/medicamentos`, { method: "GET", credentials: "include" })
             .then(res => res.json())
-            .then(dados => setListaMedicamentos(dados))
+            .then(dados => {
+                if (Array.isArray(dados)) {
+                    setListaMedicamentos(dados);
+                } else {
+                    setListaMedicamentos([]);
+                }
+            })
             .catch(err => console.log(err))
     }
 
@@ -366,7 +372,15 @@ const Prontuario = () => {
 
     useEffect(() => { fnCarregarDados() }, [])
     useEffect(() => { if (paciente?.id) fnCarregarRelatorios(paciente.id); }, [paciente]);
-    useEffect(() => { fnCarregarCuidados(); fnCarregarCuidadosPaciente(); fnCarregarMedicamentos(); fnCarregarPrescricoes(); }, [])
+    useEffect(() => { fnCarregarCuidadosPaciente(); fnCarregarPrescricoes(); }, [])
+
+    useEffect(() => {
+        if (!nivelAcesso) return;
+        if (nivelAcesso !== 'aluno') {
+            fnCarregarCuidados();
+            fnCarregarMedicamentos();
+        }
+    }, [nivelAcesso])
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
@@ -1011,11 +1025,13 @@ const Prontuario = () => {
                                                                     </div>
                                                                     <span className="text-muted small">{formatarDataBR(cuiRe.created_at)}</span>
                                                                 </div>
-                                                                <button type='button' className='btn btn-sm'
-                                                                    title="Deletar cuidado"
-                                                                    onClick={() => deletarCuidado(cuiRe.id)}>
-                                                                    <i className='bi bi-trash text-danger'></i>
-                                                                </button>
+                                                                {podeEditar && (
+                                                                    <button type='button' className='btn btn-sm'
+                                                                        title="Deletar cuidado"
+                                                                        onClick={() => deletarCuidado(cuiRe.id)}>
+                                                                        <i className='bi bi-trash text-danger'></i>
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>
