@@ -1,1 +1,1 @@
-export const urlServer = 'https://api.paulowh.com'
+export const urlServer = 'https://pi-prontuario-eletronico-backend.onrender.com'
