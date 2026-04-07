@@ -1,1 +1,1 @@
-export const urlServer = 'modeninventory.ddns.net'
+export const urlServer = 'api.paulowh.com'
