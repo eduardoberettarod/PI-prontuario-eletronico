@@ -1,1 +1,2 @@
-export const urlServer = 'https://pi-prontuario-eletronico-backend.onrender.com'
+
+export const urlServer = 'http://localhost:3000'
