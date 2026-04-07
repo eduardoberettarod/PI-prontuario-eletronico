@@ -1,1 +1,1 @@
-export const urlServer = 'api.paulowh.com'
+export const urlServer = 'https://api.paulowh.com'
