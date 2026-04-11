@@ -278,28 +278,28 @@ const Setor = () => {
                     tabIndex="-1"
                     aria-hidden="true"
                 >
-                    <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-dialog modal-dialog-centered" style={{maxWidth: "350px"}}>
                         <div className="modal-content">
 
-                            <div className="modal-header">
-                                <h5 className="modal-title text-danger fw-bold">Confirmar exclusão</h5>
-                                <button className="btn-close" data-bs-dismiss="modal"></button>
+                            <div className="d-flex p-3 justify-content-center">
+                                <div className="d-flex align-items-center flex-column justify-content-center text-center gap-2">
+                                    <i className="bi bi-exclamation-circle text-danger" style={{fontSize: "5rem"}}></i>
+                                    <h5 className="p-0 m-0">Confirmar exclusão</h5>
+                                </div>
+                                <button className="btn-close position-absolute end-0 top-0 me-3 mt-3" data-bs-dismiss="modal"  style={{fontSize: "0.75rem"}}></button>
                             </div>
 
-                            <div className="modal-body">
-                                <p className='mb-1 mt-2'>Tem certeza que deseja excluir este setor?</p>
-                                <p className="small text-muted">
-                                    Essa ação não pode ser desfeita.
-                                </p>
+                            <div className="modal-body text-center">
+                                <p className='mt-2 text-muted small'>Tem certeza que deseja excluir este setor? Essa ação não pode ser desfeita.</p>
                             </div>
 
-                            <div className="modal-footer">
-                                <button className="btn btn-secondary" data-bs-dismiss="modal">
+                            <div className="p-3 d-flex align-items-center gap-2 border-top">
+                                <button className="btn btn-secondary w-50" data-bs-dismiss="modal">
                                     Cancelar
                                 </button>
 
                                 <button
-                                    className="btn btn-danger"
+                                    className="btn btn-danger w-50"
                                     onClick={confirmarDelete}
                                 >
                                     Excluir
