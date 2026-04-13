@@ -121,6 +121,17 @@ O sistema utiliza autenticação via contexto React (`AuthContext`) que valida c
 
 Para mais informações sobre a configuração completa, banco de dados e documentação do projeto, consulte o repositório `documentacao-prontuario-eletronico`.
 
+## 👤 Conta de Teste
+
+Para testar o sistema, utilize as seguintes credenciais:
+
+| Campo | Valor |
+|-------|-------|
+| **Email** | `teste.docente@demo.com` |
+| **Senha** | `senha123` |
+
+> **Nota**: Esta conta de teste está disponível no banco de dados após a execução do schema de documentação.
+
 ## 📝 Licença
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
