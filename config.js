@@ -1,2 +1,2 @@
 
-export const urlServer = 'http://localhost:3000'
+export const urlServer = 'https://pi-prontuario-eletronico-backend.vercel.app'
