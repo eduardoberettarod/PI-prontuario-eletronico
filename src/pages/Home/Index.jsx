@@ -25,13 +25,17 @@ const Index = () => {
     const totalPacientes = estavel + observacao + critico;
 
     function fnCarregarQuantPaciente() {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/pacientes/count`, {
             method: 'GET',
-            credentials: 'include'
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }
@@ -48,13 +52,17 @@ const Index = () => {
     }
 
     function fnCarregarQuantPrescricoes() {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes/count`, {
             method: 'GET',
-            credentials: 'include'
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }
@@ -71,13 +79,17 @@ const Index = () => {
     }
 
     function fnCarregarQuantCuidados() {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/paciente-cuidados/count`, {
             method: 'GET',
-            credentials: 'include'
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }
@@ -94,13 +106,17 @@ const Index = () => {
     }
 
     function fnCarregarQuantRelatorios() {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/relatorios/count`, {
             method: 'GET',
-            credentials: 'include'
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }

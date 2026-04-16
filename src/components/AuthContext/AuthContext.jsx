@@ -9,11 +9,21 @@ export function AuthProvider({ children }) {
     const [verificandoAuth, setVerificandoAuth] = useState(true);
 
     useEffect(() => {
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+            setVerificandoAuth(false);
+            return;
+        }
+
         fetch(`${urlServer}/auth/me`, {
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     setUsuario(null);
                     setVerificandoAuth(false);
                     return;
@@ -21,11 +31,14 @@ export function AuthProvider({ children }) {
                 return res.json();
             })
             .then(dados => {
-
-                if (dados) {
+                if (dados && dados.id) {
                     setUsuario(dados);
                 }
-
+                setVerificandoAuth(false);
+            })
+            .catch(erro => {
+                console.error("Erro ao verificar autenticação:", erro);
+                localStorage.removeItem("authToken");
                 setVerificandoAuth(false);
             });
     }, []);

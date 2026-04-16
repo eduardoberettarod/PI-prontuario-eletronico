@@ -26,7 +26,6 @@ const Login = () => {
 
         const resposta = await fetch(`${urlServer}/auth/login`, {
             method: "POST",
-            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -40,17 +39,13 @@ const Login = () => {
             return;
         }
 
-        //  pega usuário logado
-        const respostaMe = await fetch(`${urlServer}/auth/me`, {
-            credentials: "include"
-        });
+        // Salva o token no localStorage
+        localStorage.setItem("authToken", dados.token);
 
-        const usuario = await respostaMe.json();
+        // Salva usuário no contexto
+        setUsuario(dados.usuario);
 
-        //  salva no contexto
-        setUsuario(usuario);
-
-        // redireciona
+        // Redireciona
         navigate("/index", { replace: true });
     }
 
@@ -105,7 +100,7 @@ const Login = () => {
                         <label className='form-label' htmlFor='senha'>Senha</label>
                         <div className='container-input-login-senha2'>
                             <button type='button' onClick={fnMudarTextoSenha}
-                            title='Mostrar senha'>
+                                title='Mostrar senha'>
                                 <i className={`bi ${textPassword === "password" ? "bi bi-lock" : "bi bi-unlock"} fs-5`}></i>
                             </button>
                             <input
