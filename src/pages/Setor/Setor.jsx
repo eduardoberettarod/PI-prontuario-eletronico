@@ -59,16 +59,18 @@ const Setor = () => {
         const method = setorEditando ? "PUT" : "POST";
 
         try {
+            const token = localStorage.getItem("authToken");
             const res = await fetch(url, {
                 method,
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dados)
             });
 
             if (res.status === 401) {
+                localStorage.removeItem("authToken");
                 navigate('/login');
                 return;
             }
@@ -175,9 +177,12 @@ const Setor = () => {
     async function removerSetor(id) {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/setores/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
 
             const data = await response.json();
@@ -214,14 +219,17 @@ const Setor = () => {
     const navigate = useNavigate()
 
     function fnCarregarDados() {
-
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/setores`, {
             method: "GET",
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     navigate('/login')
                     return
                 }
@@ -278,15 +286,15 @@ const Setor = () => {
                     tabIndex="-1"
                     aria-hidden="true"
                 >
-                    <div className="modal-dialog modal-dialog-centered" style={{maxWidth: "350px"}}>
+                    <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px" }}>
                         <div className="modal-content">
 
                             <div className="d-flex p-3 justify-content-center">
                                 <div className="d-flex align-items-center flex-column justify-content-center text-center gap-2">
-                                    <i className="bi bi-exclamation-circle text-danger" style={{fontSize: "5rem"}}></i>
+                                    <i className="bi bi-exclamation-circle text-danger" style={{ fontSize: "5rem" }}></i>
                                     <h5 className="p-0 m-0">Confirmar exclusão</h5>
                                 </div>
-                                <button className="btn-close position-absolute end-0 top-0 me-3 mt-3" data-bs-dismiss="modal"  style={{fontSize: "0.75rem"}}></button>
+                                <button className="btn-close position-absolute end-0 top-0 me-3 mt-3" data-bs-dismiss="modal" style={{ fontSize: "0.75rem" }}></button>
                             </div>
 
                             <div className="modal-body text-center">

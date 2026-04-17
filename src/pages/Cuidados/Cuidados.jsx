@@ -58,16 +58,18 @@ function Cuidados() {
         const method = cuidadosEditando ? "PUT" : "POST";
 
         try {
+            const token = localStorage.getItem("authToken");
             const res = await fetch(url, {
                 method,
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dados)
             });
 
             if (res.status === 401) {
+                localStorage.removeItem("authToken");
                 navigate('/login');
                 return;
             }
@@ -174,9 +176,12 @@ function Cuidados() {
     async function removerCuidado(id) {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/cuidados/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
 
             const data = await response.json();
@@ -213,14 +218,17 @@ function Cuidados() {
     const navigate = useNavigate()
 
     function fnCarregarDados() {
-
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/cuidados`, {
             method: "GET",
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     navigate('/login')
                     return
                 }

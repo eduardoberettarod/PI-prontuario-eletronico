@@ -133,15 +133,23 @@ const Pacientes = () => {
 
         const method = modoEdicao ? "PUT" : "POST";
 
+        const token = localStorage.getItem("authToken");
         fetch(url, {
             method,
-            credentials: "include",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(dadosPaciente)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
+            })
             .then(() => {
 
                 fnCarregarDados();
@@ -198,14 +206,17 @@ const Pacientes = () => {
     }, []);
 
     function fnCarregarDados() {
-
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/pacientes`, {
             method: "GET",
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }
@@ -237,14 +248,18 @@ const Pacientes = () => {
     const navigate = useNavigate()
 
     function fnCarregarSetores() {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/setores`, {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
         })
             .then(res => {
 
                 if (res.status === 401) {
-                    navigate('/login')
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
                     return null;
                 }
 
@@ -303,15 +318,18 @@ const Pacientes = () => {
     async function removerPaciente(id) {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/pacientes/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.erro || "Erro ao deletar");
+            if (response.status === 401) {
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
+                return;
             }
 
             fnCarregarDados();
@@ -389,15 +407,15 @@ const Pacientes = () => {
                     tabIndex="-1"
                     aria-hidden="true"
                 >
-                    <div className="modal-dialog modal-dialog-centered" style={{maxWidth: "350px"}}>
+                    <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: "350px" }}>
                         <div className="modal-content">
 
                             <div className="d-flex p-3 justify-content-center">
                                 <div className="d-flex align-items-center flex-column justify-content-center text-center gap-2">
-                                    <i className="bi bi-exclamation-circle text-danger" style={{fontSize: "5rem"}}></i>
+                                    <i className="bi bi-exclamation-circle text-danger" style={{ fontSize: "5rem" }}></i>
                                     <h5 className="p-0 m-0">Confirmar exclusão</h5>
                                 </div>
-                                <button className="btn-close position-absolute end-0 top-0 me-3 mt-3" data-bs-dismiss="modal"  style={{fontSize: "0.75rem"}}></button>
+                                <button className="btn-close position-absolute end-0 top-0 me-3 mt-3" data-bs-dismiss="modal" style={{ fontSize: "0.75rem" }}></button>
                             </div>
 
                             <div className="modal-body text-center">

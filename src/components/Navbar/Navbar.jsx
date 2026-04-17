@@ -107,12 +107,23 @@ function Navbar() {
 
     async function fnSairLogin() {
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/auth/logout`, {
                 method: "POST",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
+            if (response.status === 401) {
+                localStorage.removeItem("authToken");
+                setUsuario(null);
+                navigate('/login');
+                return;
+            }
+
             if (response.ok) {
+                localStorage.removeItem("authToken");
                 setUsuario(null);
                 navigate('/login');
             }

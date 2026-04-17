@@ -63,18 +63,21 @@ function Remedios() {
         const method = medicamentoEditando ? "PUT" : "POST";
 
         try {
+            const token = localStorage.getItem("authToken");
             const res = await fetch(url, {
                 method,
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dados)
             });
 
-            const data = await res.json();
-
-            if (!res.ok) throw new Error(data.erro || "Erro");
+            if (res.status === 401) {
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
+                return;
+            }
 
             fnCarregarDados();
 
@@ -178,9 +181,12 @@ function Remedios() {
     async function removerMedicamento(id) {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/medicamentos/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             });
 
             const data = await response.json();
@@ -215,14 +221,17 @@ function Remedios() {
     }
 
     function fnCarregarDados() {
-
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/medicamentos`, {
             method: "GET",
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
 
                 if (res.status === 401) {
+                    localStorage.removeItem("authToken");
                     window.location.href = "/login"
                     return
                 }

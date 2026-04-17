@@ -55,12 +55,19 @@ const Prontuario = () => {
         const parametros = new URLSearchParams(window.location.search)
         const id = parametros.get('id')
 
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/pacientes/` + id, {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
         })
             .then(res => {
-                if (res.status === 401) { window.location.href = "/login"; return }
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return
+                }
                 if (!res.ok) throw new Error("Usuário não autorizado");
                 return res.json();
             })
@@ -69,14 +76,21 @@ const Prontuario = () => {
     }
 
     function fnCarregarRelatorios(pacienteId) {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/relatorios/paciente/${pacienteId}`, {
-            credentials: 'include',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
             method: 'GET'
         })
 
             .then(res => {
-                if (res.status === 401)
-                    return; return res.json();
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
             })
             .then(dados => {
                 if (Array.isArray(dados)) setRelatorios(dados);
@@ -85,8 +99,16 @@ const Prontuario = () => {
     }
 
     function fnCarregarMedicamentos() {
-        fetch(`${urlServer}/medicamentos`, { method: "GET", credentials: "include" })
-            .then(res => res.json())
+        const token = localStorage.getItem("authToken");
+        fetch(`${urlServer}/medicamentos`, { method: "GET", headers: { "Authorization": `Bearer ${token}` } })
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
+            })
             .then(dados => {
                 if (Array.isArray(dados)) {
                     setListaMedicamentos(dados);
@@ -141,10 +163,13 @@ const Prontuario = () => {
             }))
         };
 
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes`, {
             method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify(payload),
         })
             .then(res => {
@@ -176,10 +201,13 @@ const Prontuario = () => {
     function fnSalvarEdicaoPrescricao() {
         if (!prescricaoEditando.id) return;
 
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes/${prescricaoEditando.id}`, {
             method: "PUT",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify({ observacao: prescricaoEditando.observacao })
         })
             .then(res => {
@@ -204,9 +232,12 @@ const Prontuario = () => {
             return;
         }
 
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes/${prescricao_id}`, {
             method: "DELETE",
-            credentials: "include",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
         })
             .then(res => {
                 if (!res.ok) return res.json().then(err => { throw new Error(err.erro || "Erro ao deletar prescrição") });
@@ -222,10 +253,13 @@ const Prontuario = () => {
     // ─── Alterar status de horário ─────────────────────────────────────────────
     // 1 = pendente | 2 = finalizado | 3 = nao_feito | 4 = negado_paciente
     function alterarStatusHorario(horario_id, status_id) {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes/horario/${horario_id}`, {
             method: "PUT",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify({ status_id })
         })
             .then(res => {
@@ -310,38 +344,74 @@ const Prontuario = () => {
             cuidado_id: tipoCuidadoRegistrado.current.value,
             observacao: observacao.current.value
         };
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/paciente-cuidados`, {
-            method: "POST", credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify(novoCuidado)
         }).then(() => fnCarregarCuidadosPaciente())
     }
 
     function deletarCuidado(id) {
         if (!confirm("Tem certeza que deseja excluir este cuidado?")) return;
-        fetch(`${urlServer}/paciente-cuidados/${id}`, { method: "DELETE", credentials: "include" })
+        const token = localStorage.getItem("authToken");
+        fetch(`${urlServer}/paciente-cuidados/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
             .then(res => { if (!res.ok) throw new Error("Erro ao deletar"); return res.json(); })
             .then(() => fnCarregarCuidadosPaciente())
             .catch(err => console.log(err));
     }
 
     function alterarStatusCuidado(id, status_id) {
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/paciente-cuidados/${id}`, {
-            method: "PUT", credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
             body: JSON.stringify({ status_id })
         }).then(() => fnCarregarCuidadosPaciente())
     }
 
     function fnCarregarCuidados() {
-        fetch(`${urlServer}/cuidados`, { method: "GET", credentials: "include" })
-            .then(res => res.json()).then(dados => setListaCuidados(dados)).catch(err => console.log(err))
+        const token = localStorage.getItem("authToken");
+        fetch(`${urlServer}/cuidados`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
+            }).then(dados => setListaCuidados(dados)).catch(err => console.log(err))
     }
 
     function fnCarregarCuidadosPaciente() {
         const id = new URLSearchParams(window.location.search).get("id");
-        fetch(`${urlServer}/paciente-cuidados/${id}`, { method: "GET", credentials: "include" })
-            .then(res => res.json())
+        const token = localStorage.getItem("authToken");
+        fetch(`${urlServer}/paciente-cuidados/${id}`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        })
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
+            })
             .then(dados => { if (Array.isArray(dados)) setCuidadosPaciente(dados); else setCuidadosPaciente([]) })
     }
 
@@ -423,11 +493,19 @@ const Prontuario = () => {
     function fnCarregarPrescricoes() {
         const paciente_id = new URLSearchParams(window.location.search).get("id");
 
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/prescricoes/paciente/${paciente_id}`, {
             method: "GET",
-            credentials: "include"
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
             .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
                 if (!res.ok) throw new Error("Erro ao carregar prescrições");
                 return res.json();
             })

@@ -27,10 +27,19 @@ const Relatorio = () => {
   async function confirmarDeleteRelatorio() {
     if (!relatorioParaExcluir) return;
 
+    const token = localStorage.getItem("authToken");
     const response = await fetch(`${urlServer}/relatorios/${relatorioParaExcluir}`, {
       method: 'DELETE',
-      credentials: 'include'
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+      return;
+    }
 
     if (response.ok) {
 
@@ -49,9 +58,18 @@ const Relatorio = () => {
   }
 
   async function fnCarregarPacientes() {
+    const token = localStorage.getItem("authToken");
     const response = await fetch(`${urlServer}/pacientes`, {
-      credentials: 'include'
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+      return;
+    }
 
     const data = await response.json();
     setPacientes(data);
@@ -92,14 +110,21 @@ const Relatorio = () => {
       conteudo: ConteudoRelatorio.current.value
     };
 
+    const token = localStorage.getItem("authToken");
     const response = await fetch(`${urlServer}/relatorios`, {
       method: 'POST',
-      credentials: 'include',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify(novoRelatorio)
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+      return;
+    }
 
     if (response.ok) {
       // recarregar lista depois
@@ -108,10 +133,19 @@ const Relatorio = () => {
   }
 
   async function fnCarregarRelatorios() {
+    const token = localStorage.getItem("authToken");
     const response = await fetch(`${urlServer}/relatorios`, {
-      credentials: 'include',
-      method: 'GET'
+      method: 'GET',
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+      return;
+    }
 
     const data = await response.json();
 
@@ -130,17 +164,24 @@ const Relatorio = () => {
       conteudo: ConteudoRelatorio.current.value
     };
 
+    const token = localStorage.getItem("authToken");
     const response = await fetch(
       `${urlServer}/relatorios/${relatorioEditando.id}`,
       {
         method: 'PUT',
-        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(dadosAtualizados)
       }
     );
+
+    if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      window.location.href = "/login";
+      return;
+    }
 
     if (response.ok) {
       fnCarregarRelatorios();

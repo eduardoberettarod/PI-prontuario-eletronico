@@ -43,11 +43,12 @@ const Perfil = () => {
         }
 
         try {
+            const token = localStorage.getItem("authToken");
             const res = await fetch(`${urlServer}/usuarios/alterar-senha`, {
                 method: "PUT",
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     senhaAtual,
@@ -56,6 +57,7 @@ const Perfil = () => {
             })
 
             if (res.status === 401) {
+                localStorage.removeItem("authToken");
                 window.location.href = "/login"
                 return
             }
@@ -126,10 +128,19 @@ const Perfil = () => {
     useEffect(() => {
         async function buscarUsuario() {
             try {
+                const token = localStorage.getItem("authToken");
                 const response = await fetch(`${urlServer}/usuarios/me`, {
                     method: "GET",
-                    credentials: "include"
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 })
+
+                if (response.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
 
                 if (!response.ok) {
                     throw new Error("Erro ao buscar usuário")
@@ -201,16 +212,18 @@ const Perfil = () => {
         }
 
         try {
+            const token = localStorage.getItem("authToken");
             const res = await fetch(`${urlServer}/usuarios/editar-perfil`, {
                 method: "PUT",
-                credentials: "include",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dados)
             })
 
             if (res.status === 401) {
+                localStorage.removeItem("authToken");
                 window.location.href = "/login"
                 return
             }

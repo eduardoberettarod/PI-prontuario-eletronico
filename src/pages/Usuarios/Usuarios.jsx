@@ -33,17 +33,25 @@ const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([])
 
     function fnCarregarDados() {
-
+        const token = localStorage.getItem("authToken");
         fetch(`${urlServer}/usuarios`, {
             method: 'GET',
-            credentials: 'include'
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/login";
+                    return;
+                }
+                return res.json();
+            })
             .then(dados => {
                 setUsuarios(dados)
             })
             .catch(erro => console.log(erro.message))
-
     }
 
     useEffect(() => {
@@ -71,15 +79,18 @@ const Usuarios = () => {
     async function removerUsuarios() {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/usuarios/alunos`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.erro || "Erro ao deletar");
+            if (response.status === 401) {
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
+                return;
             }
 
             fnCarregarDados();
@@ -137,15 +148,18 @@ const Usuarios = () => {
     async function removerUsuario(id) {
 
         try {
+            const token = localStorage.getItem("authToken");
             const response = await fetch(`${urlServer}/usuarios/${id}`, {
                 method: "DELETE",
-                credentials: "include"
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
             })
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.erro || "Erro ao deletar");
+            if (response.status === 401) {
+                localStorage.removeItem("authToken");
+                window.location.href = "/login";
+                return;
             }
 
             fnCarregarDados();

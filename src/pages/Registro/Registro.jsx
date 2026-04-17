@@ -36,7 +36,6 @@ const Registro = () => {
 
             const resposta = await fetch(`${urlServer}/registro`, {
                 method: "POST",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
